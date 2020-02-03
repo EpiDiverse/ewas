@@ -2,14 +2,19 @@
 [<img width="200" align="right" src="docs/images/epidiverse-logo.jpg">](https://epidiverse.eu)
 [![Nextflow](https://img.shields.io/badge/nextflow-%E2%89%A519.09.0-brightgreen.svg)](https://www.nextflow.io/)
 [![install with bioconda](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg)](http://bioconda.github.io/)
-[![Docker](https://img.shields.io/docker/automated/epidiverse/wgbs.svg)](https://hub.docker.com/r/epidiverse/wgbs)
-
-EpiDiverse-EWAS Pipeline
-========================
 
 **EpiDiverse/ewas** is a bioinformatics analysis pipeline for aligning performing epigenome wide association studies (EWAS)for non-model plant species.
 
 The workflow processes three input types, one is methylation calls from EpiDiverse WGBS pipeline ([WGBS] https://github.com/EpiDiverse/wgbs), others are Differentially Methylated Regions (DMRs) and Differentially Methylated Position (DMPs) from ([DMR] https://github.com/EpiDiverse/dmr) pipeline. EWAS analysis is performed by ([GEM] https://rdrr.io/bioc/GEM/man/GEM-package.html).
+=======
+[![Docker](https://img.shields.io/docker/automated/epidiverse/snp.svg)](https://hub.docker.com/r/epidiverse/snp)
+
+EpiDiverse-template Pipeline
+========================
+
+**EpiDiverse/template** is a bioinformatics analysis pipeline for XXX with YYY data and this is a brief summary of the pipeline.
+
+The workflow processes a collection of AAA files from the [Tool1](https://link/to/tool/1) pipeline using [Tool2](https://link/to/tool/2), then BBB and CCC. This paragraph gives a more involved description of the step-by-step processes that make up the pipeline. Finally the main output is described here which is performed using [Tool3](https://link/to/tool/3) and/or [Tool4](https://link/to/tool/4).
 
 > See the [output documentation](docs/output.md) for more details of the results.
 
@@ -24,21 +29,20 @@ ii. Install one of [`docker`](https://docs.docker.com/engine/installation/), [`s
 iii. Download the pipeline and test it on a minimal dataset with a single command
 
 ```bash
-nextflow run epidiverse/ewas -profile test,<docker|singularity|conda>
+nextflow run epidiverse/template -profile test,<docker|singularity|conda>
 ```
 
 iv. Start running your own analysis!
 
 ```bash
-nextflow run epidiverse/ewas -profile <docker|singularity|conda> \
---input /path/to/reads/directory --samples /path/to/samples --GEM_EModel|GEM_GModel|GEM_GXEmodel
+nextflow run epidiverse/template -profile <docker|singularity|conda> --input /path/to/wgbs/directory
 ```
 
 > See the [usage documentation](docs/usage.md) for all of the available options when running the pipeline.
 
 ### Wiki Documentation
 
-The EpiDiverse/ewas pipeline is part of the [EpiDiverse Toolkit](https://app.gitbook.com/@epidiverse/s/project/epidiverse-pipelines/overview), a best practice suite of tools intended for the study of [Ecological Plant Epigenetics](https://app.gitbook.com/@epidiverse/s/project/). Links to general guidelines and pipeline-specific documentation can be found below:
+The EpiDiverse/template pipeline is part of the [EpiDiverse Toolkit](https://app.gitbook.com/@epidiverse/s/project/epidiverse-pipelines/overview), a best practice suite of tools intended for the study of [Ecological Plant Epigenetics](https://app.gitbook.com/@epidiverse/s/project/). Links to general guidelines and pipeline-specific documentation can be found below:
 
 1. [Installation](https://app.gitbook.com/@epidiverse/s/project/epidiverse-pipelines/installation)
 2. Pipeline configuration
@@ -51,11 +55,11 @@ The EpiDiverse/ewas pipeline is part of the [EpiDiverse Toolkit](https://app.git
 
 ### Credits
 
-These scripts were originally written for use by the [EpiDiverse European Training Network](https://epidiverse.eu/), by S. Nilay Can ([@nilaycan](https://github.com/nilaycan)) and Adam Nunn ([@bio15anu](https://github.com/bio15anu)).
+These scripts were originally written for use by the [EpiDiverse European Training Network](https://epidiverse.eu/), by Firstname Surname ([@username](https://github.com/link-to-user-profile)).
 
 This project has received funding from the European Union’s Horizon 2020 research and innovation
 programme under the Marie Skłodowska-Curie grant agreement No 764965
 
 ## Citation
 
-If you use epidiverse/wgbs for your analysis, please cite it using the following doi: <placeholder>
+If you use epidiverse/template for your analysis, please cite it using the following doi: <placeholder>

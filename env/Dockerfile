@@ -1,9 +1,10 @@
-  
 FROM nfcore/base
-LABEL authors="S. Nilay Can" \
-      email="nilaycan@bşologie.uni-marburg.de" \
-      description="Docker image containing all requirements for the epidiverse/ewas pipeline"
+LABEL authors="Firstname Surname" \
+      email="firstname.surnname@domain.com" \
+      description="Docker image containing all requirements for the epidiverse/template pipeline"
 
 COPY environment.yml /
 RUN conda env create -f /environment.yml && conda clean -a
-ENV PATH /opt/conda/envs/ewas/bin:$PATH
+
+# you only need to change <template> in this line:
+ENV PATH /opt/conda/envs/<template>/bin:$PATH:
