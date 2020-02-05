@@ -19,8 +19,8 @@ dependencies:
   - fontconfig=2.13.1=h86ecdb6_1001
   - freetype=2.10.0=he983fc9_1
   - fribidi=1.0.5=h516909a_1002
-  - gcc_impl_linux-64=7.2.0-hc5ce805_2
-  - gcc_linux-64-7.3.0-h553295d_3
+  - gcc_impl_linux-64=7.2.0=hc5ce805_2
+  - gcc_linux-64-7.3.0=h553295d_3
   - gettext=0.19.8.1=hc5be6a0_1002
   - gfortran_impl_linux-64=7.3.0=hdf63c60_1
   - gfortran_linux-64=7.3.0=h553295d_9
