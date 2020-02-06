@@ -1,158 +1,61 @@
+[<img width="200" align="right" src="docs/images/euflagbetter.jpg">](https://ec.europa.eu/programmes/horizon2020/en)
+[<img width="200" align="right" src="docs/images/epidiverse-logo.jpg">](https://epidiverse.eu)
+[![Nextflow](https://img.shields.io/badge/nextflow-%E2%89%A519.09.0-brightgreen.svg)](https://www.nextflow.io/)
+[![install with bioconda](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg)](http://bioconda.github.io/)
+[![Docker](https://img.shields.io/docker/automated/epidiverse/wgbs.svg)](https://hub.docker.com/r/epidiverse/wgbs)
+
 EpiDiverse-EWAS Pipeline
 ========================
 
-This pipeline is configured for running on the EPI server cluster.
+**EpiDiverse/ewas** is a bioinformatics analysis pipeline for aligning performing epigenome wide association studies (EWAS)for non-model plant species.
 
-You must first make the pipeline available using this command:
+The workflow processes three input types, one is methylation calls from EpiDiverse WGBS pipeline ([WGBS] https://github.com/EpiDiverse/wgbs), others are Differentially Methylated Regions (DMRs) and Differentially Methylated Position (DMPs) from ([DMR] https://github.com/EpiDiverse/dmr) pipeline. EWAS analysis is performed by ([GEM] https://rdrr.io/bioc/GEM/man/GEM-package.html).
 
-	nextflow pull https://bitbucket.org/epidiverse/ewas
+> See the [output documentation](docs/output.md) for more details of the results.
 
-GEM is an R tool suite for performing epigenome wide association studies (EWAS). GEM provides three major functions named GEM_Emodel, 
+The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool to run tasks across multiple compute infrastructures in a very portable manner. It comes with docker containers making installation trivial and results highly reproducible.
 
-GEM_Gmodel and GEM_GxEmodel to study the interaction of Gene, Environment and Methylation (GEM).
+## Quick Start
 
+i. Install [`nextflow`](https://www.nextflow.io/)
 
+ii. Install one of [`docker`](https://docs.docker.com/engine/installation/), [`singularity`](https://www.sylabs.io/guides/3.0/user-guide/) or [`conda`](https://conda.io/miniconda.html)
 
-GEM_Emodel is used to find the association between methylation and environmental factor genome widely form using the following command:
+iii. Download the pipeline and test it on a minimal dataset with a single command
 
-Methylation calls:
+```bash
+nextflow run epidiverse/wgbs -profile test,<docker|singularity|conda>
+```
 
-	nextflow run epidiverse/ewas --input [path/to/bedGraph/files] --samples [path/to/samples.tsv] --GEM_Emodel --profile epi,custom
+iv. Start running your own analysis!
 
-DMPs:
+```bash
+nextflow run epidiverse/wgbs -profile <docker|singularity|conda> \
+--input /path/to/reads/directory --reference /path/to/reference.fasta
+```
 
-    nextflow run epidiverse/ewas --input [path/to/bedGraph/files] --samples [path/to/samples.tsv] --GEM_Emodel --DMP [path/to/DMPs]
-    --profile epi,custom
+> See the [usage documentation](docs/usage.md) for all of the available options when running the pipeline.
 
-DMRs:
+### Wiki Documentation
 
-    nextflow run epidiverse/ewas --input [path/to/bedGraph/files] --samples [path/to/samples.tsv] --GEM_Emodel --DMR [path/to/DMRs]
-    --profile epi,custom
+The EpiDiverse/ewas pipeline is part of the [EpiDiverse Toolkit](https://app.gitbook.com/@epidiverse/s/project/epidiverse-pipelines/overview), a best practice suite of tools intended for the study of [Ecological Plant Epigenetics](https://app.gitbook.com/@epidiverse/s/project/). Links to general guidelines and pipeline-specific documentation can be found below:
 
+1. [Installation](https://app.gitbook.com/@epidiverse/s/project/epidiverse-pipelines/installation)
+2. Pipeline configuration
+    * [Local installation](https://app.gitbook.com/@epidiverse/s/project/epidiverse-pipelines/installation#2-install-the-pipeline)
+    * [Adding your own system config](https://app.gitbook.com/@epidiverse/s/project/epidiverse-pipelines/installation#3-pipeline-configuration)
+    * [EpiDiverse infrastructure](https://app.gitbook.com/@epidiverse/s/project/epidiverse-pipelines/installation#appendices)
+3. [Running the pipeline](docs/usage.md)
+4. [Understanding the results](docs/output.md)
+5. [Troubleshooting](https://app.gitbook.com/@epidiverse/s/project/epidiverse-pipelines/troubleshooting)
 
+### Credits
 
-GEM_Gmodel is to create a methQTL genome-wide map using the following command:
+These scripts were originally written for use by the [EpiDiverse European Training Network](https://epidiverse.eu/), by S. Nilay Can ([@nilaycan](https://github.com/nilaycan)) and Adam Nunn ([@bio15anu](https://github.com/bio15anu)).
 
-	NOT IMPLEMENTED YET
+This project has received funding from the European Union’s Horizon 2020 research and innovation
+programme under the Marie Skłodowska-Curie grant agreement No 764965
 
+## Citation
 
-GEM_GxEmodel is to test ability of the interaction of gene and environmental factor to predict DNA methylation level using the following command:
-
-	NOT IMPLEMENTED YET
-
-
-Example of a sample.tsv file:
-
-    #sample_identifier             env   cov
-    PI_XX_NN_NN_X_YYMMDD_X_1		32	  1
-    PI_XX_NN_NN_X_YYMMDD_X_2		21	  1
-    PI_XX_NN_NN_X_YYMMDD_X_3		10	  1
-
-
-
-
-
-
-
-Pipeline Parameters
--------------------
-
-	 INPUT / OUTPUT
-
-  
-              --input                         [REQUIRED] Specify the path to the directory containing each sample output from the WGBS 
-                                              pipeline to be taken forward for analysis. All the subdirectories must correspond to sample 
-                                              names in the provided samples.tsv file, and contain within them a bedGraph directories with 
-                                              files in '*.bedGraph' format. 
-                                              
-                                              
-              --DMP                           Specify the path to the directory containing each sample output from DMR pipeline to run EWAS 
-                                              analysis with DMPs. [default: off]
-                                             
-         
-              --DMR                           Specify the path to the directory containing each sample output from DMR pipeline to run EWAS 
-                                              analysis with DMRs. [default: off]
-              
-              
-              --samples [path/to/samples.tsv] [REQUIRED] Specify the path to the "samples.tsv" file containing information 
-                                              regarding sample names and corresponding groupings/replicates. The file must contain
-                                              three tab-separated columns: 1) sample names, corresponding to subdirectories in the
-                                              --input directory, 2) group names, 3) replicates names, 4) environment values and 
-                                              5) covariate values
-
-              
-              --snp                           [path/to/snp_file] [REQUIRED for GEM_G and GEM_GXE Models run]. A subset with genotype data 
-                                              encoded as 1,2,3 for major allele homozygote (AA), heterozygote (AB) and minor allele homozygote 
-                                              (BB) for all SNPs across all samples.  
-
-              --output [STR]                  A string that will be used as the name for the output results directory, which will be generated 
-                                              in the working directory. This directory will contain sub-directories for each set of reads analysed 
-                                              during the pipeline. [default: 'ewas']
-
-              --GEM_Gmodel                   Specify this parameter to run GEM with Gmodel. GEM_Gmodel creates a methQTL genome-wide map. 
-                                             [default: off]
-                                             
-                                             
-              --GEM_Emodel                   Specify this parameter to run GEM with Emodel. GEM_Emodel  aims to find the association between 
-                                             methylation and environmental factor genome widely.  [default: off]
-              
-              --GEM_GXEmodel                 Specify this parameter to run GEM with GXEmodel. GEM_GXEmodel tests the ability of the interaction 
-                                             of gene and environmental factor to predict DNA methylation level.  [default: off] 
-
-                                             
-      PIPELINE OPTIONS                                      
-											 
-              
-              --noCpG                        Disables DMR analysis in CpG context. [default: off] 
-              --noCHG                        Disables DMR analysis in CHG context. [default: off]
-              --noCHH                        Disables DMR analysis in CHH context. [default: off]
-              
-
-    
-	
-	FILTERING
-    
-	
-	          --sig                         Specify the maximum p-value threshold for filtering EWAS post-analysis. [default: 0.05]
-              
-              --FDR                         Specify the maximum FDR threshold for filtering EWAS post-analysis. [default: 0.05]
-
-        
-              --cov                         Specify the minimum coverage threshold to filter methylated positions before running
-                                            the EWAS analyses with all input types. [default: 0] 
-   
-   
-    DEVELOPER USE
-        
-	          --debug                       Prevent nextflow from clearing the cache on completion of the pipeline. This includes '.work' 
-                                            and '.nextflow' directories and any log files that have been created. [default: off]
-                                            
-Pipeline Overview
------------------
-
-A general overview of the pipeline is given below. 
-
-
-Output Directory Structure
---------------------------
-
-An overview of the output directory structure produced by the pipeline. 
-
-![picture](workflow/EWAS_Output_dir_second_draft.jpg)
-
-Input Directory Structure
---------------------------
-
-An overview of the input directory structure produced by the pipeline. 
-
-![picture](workflow/EWAS_input_dir_second_draft.jpg)
-
-
-
-Bitbucket Credentials (DEVELOPER USE)
--------------------------------------
-
-In your `$HOME` directory, you can create a file to inform nextflow of your bitbucket credentials in order to
-avoid typing `-user user@e-mail.com` and your password during the pipeline execution. A `template_scm.txt` file
-has been included in the repository, where you can save your login credentials and store it under
-`$HOME/.nextflow/scm` on the server cluster.
+If you use epidiverse/wgbs for your analysis, please cite it using the following doi: <placeholder>
