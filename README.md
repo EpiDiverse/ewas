@@ -24,14 +24,14 @@ ii. Install one of [`docker`](https://docs.docker.com/engine/installation/), [`s
 iii. Download the pipeline and test it on a minimal dataset with a single command
 
 ```bash
-nextflow run epidiverse/wgbs -profile test,<docker|singularity|conda>
+nextflow run epidiverse/ewas -profile test,<docker|singularity|conda>
 ```
 
 iv. Start running your own analysis!
 
 ```bash
-nextflow run epidiverse/wgbs -profile <docker|singularity|conda> \
---input /path/to/reads/directory --reference /path/to/reference.fasta
+nextflow run epidiverse/ewas -profile <docker|singularity|conda> \
+--input /path/to/reads/directory --samples /path/to/samples --GEM_EModel|GEM_GModel|GEM_GXEmodel
 ```
 
 > See the [usage documentation](docs/usage.md) for all of the available options when running the pipeline.
