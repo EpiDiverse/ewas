@@ -146,7 +146,7 @@ if ( workflow.profile.tokenize(",").contains("test") ){
         Channel
             .fromFilePairs( CHG_path_DMPs, size: 1, type: "dir")
             .ifEmpty{ exit 1, "ERROR: No input found for CHG files: ${params.DMPs}\n"}
-    CHG_DMPs = params.noCHH  ? Channel.empty() : !params.DMPs ? Channel.empty() :
+    CHH_DMPs = params.noCHH  ? Channel.empty() : !params.DMPs ? Channel.empty() :
         Channel
             .fromFilePairs( CHH_path_DMPs, size: 1, type: "dir")
             .ifEmpty{ exit 1, "ERROR: No input found for CHH files: ${params.DMPs}\n"}
@@ -160,7 +160,7 @@ if ( workflow.profile.tokenize(",").contains("test") ){
         Channel
             .fromFilePairs( CHG_path_DMRs, size: 1, type: "dir")
             .ifEmpty{ exit 1, "ERROR: No input found for CHG files: ${params.DMRs}\n"}
-    CHG_DMRs = params.noCHH  ? Channel.empty() : !params.DMRs ? Channel.empty() :
+    CHH_DMRs = params.noCHH  ? Channel.empty() : !params.DMRs ? Channel.empty() :
         Channel
             .fromFilePairs( CHH_path_DMRs, size: 1, type: "dir")
             .ifEmpty{ exit 1, "ERROR: No input found for CHH files: ${params.DMRs}\n"}
