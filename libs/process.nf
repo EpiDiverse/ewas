@@ -88,7 +88,7 @@ process "bedtools_unionbedg" {
     // eg, [CpG, [DMRs, DMRs, DMRs, ...], [sample1, sample2, sample3, ...], [path1, path2, path3, ...]]
 
     output:
-    tuple context, "${types.unique().join("")}", path("${context}.${types.unique().join("")}.txt")
+    tuple context, val("${types.unique().join("")}"), path("${context}.${types.unique().join("")}.txt")
     // eg. [CpG, DMRs, /path/to/DMRs.txt]
 
     when:
@@ -96,8 +96,9 @@ process "bedtools_unionbedg" {
 
     script:
     """
-    bedtools unionbedg -filler NA -i ${beds} -header -names ${samples.join(" ")} |
-    sort -k1,1 -k2,2n > ${context}.${types.unique().join("")}.txt
+    bedtools unionbedg -filler NA -i ${beds} -header -names ${samples.join(" ")} > unsorted.${context}.${types.unique().join("")}.txt
+    head -1 unsorted.${context}.${types.unique().join("")}.txt > ${context}.${types.unique().join("")}.txt
+    tail -n+2 unsorted.${context}.${types.unique().join("")}.txt | sort -k1,1 -k2,2n >> ${context}.${types.unique().join("")}.txt
     """
 } 
 
