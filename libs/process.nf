@@ -90,7 +90,7 @@ process "bedtools_unionbedg" {
     // eg. [/path/to/bed1, /path/to/bed2]
 
     output:
-    tuple context, types.unique(), path("${context}.${types.unique()}.txt")
+    tuple context, "${types.unique()}", path("${context}.${types.unique()}.txt")
     // eg. [CpG, DMRs, /path/to/DMRs.txt]
 
     when:
