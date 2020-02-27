@@ -150,7 +150,7 @@ process "bedtools_merge" {
     // eg. [CpG, bedGraph, bedGraph.txt, DMRs, DMRs.txt]
 
     output:
-    tuple context, bedGraph, path(methylation), "merged", path("${type}.merged.txt")
+    tuple context, bedGraph, path(methylation), val("merged"), path("${type}.merged.txt")
      
     when:    
     params.input && params.merge
@@ -180,7 +180,7 @@ process "average_over_regions" {
     // eg. [CpG, bedGraph, bedGraph.txt, DMRs, DMRs.txt]
 
     output:
-    tuple context, "region", path("${context}.avg")
+    tuple context, val("region"), path("${context}.avg")
 
     when:
     params.input
@@ -223,8 +223,7 @@ process "GEM_Emodel" {
     awk -F "\\t" '{printf \"%s:%s-%s\",\$1,\$2,\$3; for(i=4; i<=NF; i++) {printf \"\\t%s\",\$i}; print null}' ${meth} > ${context}.txt
     Rscript ${baseDir}/bin/GEM_Emodel.R ${envs} ${covs} ${context}.txt ${params.Emodel_pv} > ${context}.${type}.txt
     sort -V ${context}.${type}.txt |
-    awk 'BEGIN{OFS="\\t"; print "cpg\\tbeta\\tstats\\tpvalue\\tFDR"} \$5<=${params.FDR}{print \$1,\$2,\$3,\$4,\$5}' >
-    ${context}.${type}.filtered_${params.FDR}_FDR.txt
+    awk 'BEGIN{OFS="\\t"; print "cpg\\tbeta\\tstats\\tpvalue\\tFDR"} \$5<=${params.FDR}{print \$1,\$2,\$3,\$4,\$5}' > ${context}.${type}.filtered_${params.FDR}_FDR.txt
     mv emodel.jpg ${context}.${type}.jpg
     """
 }
