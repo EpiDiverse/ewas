@@ -270,7 +270,7 @@ workflow {
         EWAS.out.parsing_cov to: "${params.output}", mode: 'copy'
         EWAS.out.bedtools_unionbedg_out to: "${params.output}/input", mode: 'copy'
         EWAS.out.bedtools_intersect_out to: "${params.output}/positions", mode: 'copy'
-        EWAS.out.average_over_bed_out to: "${params.output}/regions", mode: 'copy'
+        EWAS.out.average_over_regions_out to: "${params.output}/regions", mode: 'copy'
         //EWAS.out.GEM_Emodel_filtered_pos to: "${params.output}/positions/Emodel", mode: 'copy'
         //EWAS.out.GEM_Emodel_filtered_reg to: "${params.output}/regions/Emodel", mode: 'copy'
         //EWAS.out.GEM_Emodel_full_pos to: "${params.output}/positions/Emodel", mode: 'copy'
