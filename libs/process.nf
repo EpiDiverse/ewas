@@ -97,8 +97,8 @@ process "bedtools_unionbedg" {
     script:
     """
     bedtools unionbedg -filler NA -i ${beds} -header -names ${samples.join(" ")} > unsorted.${context}.${types.unique().join("")}.bed || exit \$?
-    head -1 unsorted.${context}.${types.unique().join("")}.txt > ${context}.${types.unique().join("")}.bed
-    tail -n+2 unsorted.${context}.${types.unique().join("")}.txt | sort -k1,1 -k2,2n >> ${context}.${types.unique().join("")}.bed
+    head -1 unsorted.${context}.${types.unique().join("")}.bed > ${context}.${types.unique().join("")}.bed
+    tail -n+2 unsorted.${context}.${types.unique().join("")}.bed | sort -k1,1 -k2,2n >> ${context}.${types.unique().join("")}.bed
     """
 } 
 
@@ -150,14 +150,14 @@ process "bedtools_merge" {
     // eg. [CpG, bedGraph, CpG.bedGraph.bed, DMRs, CpG.DMRs.bed]
 
     output:
-    tuple context, bedGraph, path(methylation), val("merged"), path("${type}.merged.txt")
+    tuple context, bedGraph, path(methylation), val("merged"), path("${context}.${type}.merged.txt")
      
     when:    
     params.input && params.merge
 
     script:
     """
-    bedtools merge -i ${differential} | sort -k1,1 -k2,2n > ${type}.merged.txt
+    bedtools merge -i ${differential} | sort -k1,1 -k2,2n > ${context}.${type}.merged.txt
     """  
 } 
 
