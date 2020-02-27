@@ -248,12 +248,14 @@ workflow 'EWAS' {
         bedtools_unionbedg_out = bedtools_unionbedg.out
         bedtools_intersect_out = bedtools_intersect.out
         average_over_regions_out = average_over_regions.out
-        GEM_Emodel_filtered_pos = GEM_Emodel.out[0].filter{ it[0] != "region" }
-        GEM_Emodel_filtered_reg = GEM_Emodel.out[0].filter{ it[0] == "region" }
-        GEM_Emodel_full_pos = GEM_Emodel.out[1].filter{ it[0] != "region" }
-        GEM_Emodel_full_reg = GEM_Emodel.out[1].filter{ it[0] == "region" }
-        GEM_Emodel_jpg_pos = GEM_Emodel.out[2].filter{ it[0] != "region" }
-        GEM_Emodel_jpg_reg = GEM_Emodel.out[2].filter{ it[0] == "region" }
+        gem_emodel_filtered_reg = GEM_Emodel.out[0].filter{ it[0] == "region" }
+        gem_emodel_filtered_pos = GEM_Emodel.out[0].filter{ it[0] != "region" }
+        //GEM_Emodel_filtered_pos = GEM_Emodel.out[0].filter{ it[0] != "region" }
+        //GEM_Emodel_filtered_reg = GEM_Emodel.out[0].filter{ it[0] == "region" }
+        //GEM_Emodel_full_pos = GEM_Emodel.out[1].filter{ it[0] != "region" }
+        //GEM_Emodel_full_reg = GEM_Emodel.out[1].filter{ it[0] == "region" }
+        //GEM_Emodel_jpg_pos = GEM_Emodel.out[2].filter{ it[0] != "region" }
+        //GEM_Emodel_jpg_reg = GEM_Emodel.out[2].filter{ it[0] == "region" }
 }
 
 // MAIN WORKFLOW 
@@ -270,12 +272,14 @@ workflow {
         EWAS.out.bedtools_unionbedg_out to: "${params.output}/input", mode: 'copy'
         EWAS.out.bedtools_intersect_out to: "${params.output}/positions", mode: 'copy'
         EWAS.out.average_over_regions_out to: "${params.output}/regions", mode: 'copy'
-        EWAS.out.GEM_Emodel_filtered_pos to: "${params.output}/positions/Emodel", mode: 'copy'
-        EWAS.out.GEM_Emodel_filtered_reg to: "${params.output}/regions/Emodel", mode: 'copy'
-        EWAS.out.GEM_Emodel_full_pos to: "${params.output}/positions/Emodel", mode: 'copy'
-        EWAS.out.GEM_Emodel_full_reg to: "${params.output}/regions/Emodel", mode: 'copy'
-        EWAS.out.GEM_Emodel_jpg_pos to: "${params.output}/positions/Emodel", mode: 'copy'
-        EWAS.out.GEM_Emodel_jpg_reg to: "${params.output}/regions/Emodel", mode: 'copy'
+        EWAS.out.gem_emodel_filtered_reg to: "${params.output}/regions", mode: 'copy'
+        EWAS.out.gem_emodel_filtered_pos to: "${params.output}/positions", mode: 'copy'
+        //EWAS.out.GEM_Emodel_filtered_pos to: "${params.output}/positions/Emodel", mode: 'copy'
+        //EWAS.out.GEM_Emodel_filtered_reg to: "${params.output}/regions/Emodel", mode: 'copy'
+        //EWAS.out.GEM_Emodel_full_pos to: "${params.output}/positions/Emodel", mode: 'copy'
+        //EWAS.out.GEM_Emodel_full_reg to: "${params.output}/regions/Emodel", mode: 'copy'
+        //EWAS.out.GEM_Emodel_jpg_pos to: "${params.output}/positions/Emodel", mode: 'copy'
+        //EWAS.out.GEM_Emodel_jpg_reg to: "${params.output}/regions/Emodel", mode: 'copy'
 
 }
 
