@@ -86,8 +86,6 @@ process "bedtools_unionbedg" {
     input:
     tuple context, types, samples, path(beds)
     // eg, [CpG, [DMRs, DMRs, DMRs, ...], [sample1, sample2, sample3, ...], [path1, path2, path3, ...]]
-    path beds
-    // eg. [/path/to/bed1, /path/to/bed2]
 
     output:
     tuple context, "${types.unique()}", path("${context}.${types.unique()}.txt")
