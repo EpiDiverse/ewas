@@ -88,7 +88,7 @@ process "bedtools_unionbedg" {
     // eg, [CpG, [DMRs, DMRs, DMRs, ...], [sample1, sample2, sample3, ...], [path1, path2, path3, ...]]
 
     output:
-    tuple context, val("${types.unique().join("")}"), path("${context}.${types.unique().join("")}.txt")
+    tuple context, val("${types.unique().join("")}"), path("${context}.${types.unique().join("")}.bed")
     // eg. [CpG, DMRs, /path/to/DMRs.txt]
 
     when:
