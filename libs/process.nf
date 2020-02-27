@@ -96,7 +96,7 @@ process "bedtools_unionbedg" {
 
     script:
     """
-    bedtools unionbedg -filler NA -i ${beds} -header -names ${samples.join(" ")d} |
+    bedtools unionbedg -filler NA -i ${beds} -header -names ${samples} |
     sort -k1,1 -k2,2n > ${context}.${types.unique()}.txt
     """
 } 
