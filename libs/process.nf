@@ -89,7 +89,7 @@ process "bedtools_unionbedg" {
 
     output:
     tuple context, val("${types.unique().join("")}"), path("${context}.${types.unique().join("")}.bed")
-    // eg. [CpG, DMRs, /path/to/DMRs.txt]
+    // eg. [CpG, DMRs, /path/to/DMRs.bed]
 
     when:
     params.input
