@@ -232,8 +232,8 @@ workflow 'EWAS' {
         // bedtools_merge for optionally combining filtered sub-regions
         bedtools_merge(bedGraph_DMRs)
 
-        // average_over_bed for calculating average methylation over defined regions
-        average_over_bed(bedGraph_DMRs.mix(bedtools_merge.out))
+        // average_over_regions for calculating average methylation over defined regions
+        average_over_regions(bedGraph_DMRs.mix(bedtools_merge.out))
 
         // run GEM_Emodel on selected combination of inputs
         emodel_channel = bedtools_unionbedg.out.filter{it[1] == "bedGraph"}.mix(bedtools_intersect.out, average_over_regions.out)
@@ -248,7 +248,7 @@ workflow 'EWAS' {
         parsing_cov = parsing.out[1]
         bedtools_unionbedg_out = bedtools_unionbedg.out
         bedtools_intersect_out = bedtools_intersect.out
-        average_over_bed_out = average_over_bed.out
+        average_over_regions_out = average_over_regions.out
         //GEM_Emodel_filtered_pos = GEM_Emodel.out[0].filter{it[1] != "region"}
         //GEM_Emodel_filtered_reg = GEM_Emodel.out[0].filter{it[1] == "region"}
         //GEM_Emodel_full_pos = GEM_Emodel.out[1].filter{it[1] != "region"}
