@@ -168,9 +168,9 @@ if ( workflow.profile.tokenize(",").contains("test") ){
 }
 
 // METHYLATION CALLS
-CpG_single = CpG.combine(samples_channel).map{tuple("CpG", "bedGraph", *it)}
-CHG_single = CHG.combine(samples_channel).map{tuple("CHG", "bedGraph", *it)}
-CHH_single = CHH.combine(samples_channel).map{tuple("CHH", "bedGraph", *it)}
+CpG_single = CpG.combine(samples_channel, by: 0).map{tuple("CpG", "bedGraph", *it)}
+CHG_single = CHG.combine(samples_channel, by: 0).map{tuple("CHG", "bedGraph", *it)}
+CHH_single = CHH.combine(samples_channel, by: 0).map{tuple("CHH", "bedGraph", *it)}
 single_channel = CpG_single.mix(CHG_single,CHH_single)
 
 // METHYLATION DMPs
