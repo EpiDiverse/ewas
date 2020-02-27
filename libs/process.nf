@@ -79,7 +79,7 @@ process "bedtools_unionbedg" {
 
     label "low"
     label "finish"
-    tag "${types.unique()} - $context"
+    tag "${types.unique().join("")} - $context"
 
     maxForks "${params.fork}".toInteger()
    
@@ -88,7 +88,7 @@ process "bedtools_unionbedg" {
     // eg, [CpG, [DMRs, DMRs, DMRs, ...], [sample1, sample2, sample3, ...], [path1, path2, path3, ...]]
 
     output:
-    tuple context, "${types.unique()}", path("${context}.${types.unique()}.txt")
+    tuple context, "${types.unique().join("")}", path("${context}.${types.unique().join("")}.txt")
     // eg. [CpG, DMRs, /path/to/DMRs.txt]
 
     when:
@@ -97,7 +97,7 @@ process "bedtools_unionbedg" {
     script:
     """
     bedtools unionbedg -filler NA -i ${beds} -header -names ${samples.join(" ")} |
-    sort -k1,1 -k2,2n > ${context}.${types.unique()}.txt
+    sort -k1,1 -k2,2n > ${context}.${types.unique().join("")}.txt
     """
 } 
 
