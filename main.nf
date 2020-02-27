@@ -7,9 +7,9 @@ nextflow.preview.dsl=2
 if(params.help){
     println """\
 
-         ===============================================
-          E P I D I V E R S E - X X X   P I P E L I N E
-         ===============================================
+         =================================================
+          E P I D I V E R S E - E W A S   P I P E L I N E
+         =================================================
          ~ version ${workflow.manifest.version}
 
          Usage: 
@@ -50,9 +50,9 @@ if(params.help){
 // PRINT VERSION AND EXIT
 if(params.version){
     println """\
-         ===============================================
-          E P I D I V E R S E - X X X   P I P E L I N E
-         ===============================================
+         =================================================
+          E P I D I V E R S E - E W A S   P I P E L I N E
+         =================================================
          ~ version ${workflow.manifest.version}
     """
     ["bash", "${baseDir}/bin/clean.sh", "${workflow.sessionId}"].execute()
@@ -60,53 +60,43 @@ if(params.version){
 }
 
 
-// DEFINE PATHS # these are strings which are used to define input Channels,
-// but they are specified here as they may be referenced in LOGGING
-bam_path = "${params.input}/*/*.bam"
+// DEFINE PATHS
+CpG_path = "${params.input}/*/bedGraph/*_CpG.bedGraph"
+CHG_path = "${params.input}/*/bedGraph/*_CHG.bedGraph"
+CHH_path = "${params.input}/*/bedGraph/*_CHH.bedGraph"
+  
+CpG_path_DMPs = "${params.DMPs}/CpG/metilene/*" 
+CHG_path_DMPs = "${params.DMPs}/CHG/metilene/*"
+CHH_path_DMPs = "${params.DMPs}/CHH/metilene/*"
 
-// SET CONDITIONALS # some user parameters may influence each other
-// eg. here the default behaviour is "process1" but this is switched off
-// when the user specifies --process2. Alternatively, the user may specify
-// both --process1 and --process2 to perform both.
-if( !params.process2 ){
-    process1 = true
-    process2 = false
-} else if( params.process1 ){
-    process1 = true
-    process2 = true
-} else {
-    process1 = false
-    process2 = true
-}
+CpG_path_DMRs = "${params.DMRs}/CpG/metilene/*" 
+CHG_path_DMRs = "${params.DMRs}/CHG/metilene/*"
+CHH_path_DMRs = "${params.DMRs}/CHH/metilene/*"
 
-// MORE CONDITIONALS # eg. here the input reference is only checked in 
-// "process1" mode
-if( process1 ){
-    fasta = file("${params.reference}", checkIfExists: true, glob: false)
-    fai = file("${params.reference}.fai", checkIfExists: true, glob: false)
-} else {
-    fasta = false
-    fai = false
-}
+//snp_path_mult = "${params.SNPs}"
+//snp_path = "${params.SNPs}/vcf/*.vcf"
+
+
+// PARAMETER CHECKS
+if( !params.input && (params.DMPs || params.DMRs) ){error "ERROR: "}
+if( params.noCpG && params.noCHG && params.noCHH ){error "ERROR: please specify at least one methylation context for analysis"}
+
 
 // PRINT STANDARD LOGGING INFO
 log.info ""
-log.info "         ================================================"
-log.info "          E P I D I V E R S E - S N P    P I P E L I N E"
+log.info "         =================================================="
+log.info "          E P I D I V E R S E - E W A S    P I P E L I N E"
 if(params.debug){
 log.info "         (debug mode enabled)"
-log.info "         ================================================" }
+log.info "         ==================================================" }
 else {
-log.info "         ================================================" }
+log.info "         ==================================================" }
 log.info "         ~ version ${workflow.manifest.version}"
 log.info ""
 log.info "         input dir    : ${params.input}"
-log.info "         reference    : ${params.reference ? "${params.reference}" : "-"}"
 log.info "         output dir   : ${params.output}"
-log.info "         process1     : ${process1 ? "enabled" : "disabled"}"
-log.info "         process2     : ${process2 ? "enabled" : "disabled"}"
 log.info ""
-log.info "         ================================================"
+log.info "         =================================================="
 log.info "         RUN NAME: ${workflow.runName}"
 log.info ""
 
@@ -116,11 +106,14 @@ log.info ""
 // STAGE CHANNELS //
 ////////////////////
 
-/*
- *   Channels are where you define the input for the different
- *    processes which make up a pipeline. Channels indicate
- *    the flow of data, aka the "route" that a file will take.
- */
+// STAGE SAMPLES CHANNEL
+samples_channel = Channel
+    .from(file("${params.samples}").readLines())
+    .ifEmpty{ exit 1, "ERROR: samples file is missing or invalid. Please remember to use the --samples parameter." }
+    .map { line ->
+        def field = line.toString().tokenize('\t').take(1)
+        return tuple(field[0].replaceAll("\\s",""))}
+
 
 // STAGE BAM FILES FROM TEST PROFILE # this establishes the test data to use with -profile test
 if ( workflow.profile.tokenize(",").contains("test") ){
@@ -130,79 +123,140 @@ if ( workflow.profile.tokenize(",").contains("test") ){
 
 } else {
 
-    // STAGE BAM CHANNELS # this defines the normal input when test profile is not in use
-    BAM = Channel.fromPath(bam_path)
-        .ifEmpty{ exit 1, "ERROR: cannot find valid *.bam files in dir: ${params.input}\n"}
-        .map{ tuple(it.parent.name, it) }
-        .take(params.take.toInteger())
+    // STAGE INPUT CHANNELS
+    CpG = params.noCpG  ? Channel.empty() : !params.input ? Channel.empty() :
+        Channel
+            .fromFilePairs( CpG_path, size: 1)
+            .ifEmpty{ exit 1, "ERROR: No input found for CpG files: ${params.input}\n"}
+    CHG = params.noCHG  ? Channel.empty() : !params.input ? Channel.empty() :
+        Channel
+            .fromFilePairs( CHG_path, size: 1)
+            .ifEmpty{ exit 1, "ERROR: No input found for CHG files: ${params.input}\n"}
+    CHG = params.noCHH  ? Channel.empty() : !params.input ? Channel.empty() :
+        Channel
+            .fromFilePairs( CHH_path, size: 1)
+            .ifEmpty{ exit 1, "ERROR: No input found for CHH files: ${params.input}\n"}
+
+    // STAGE DMP CHANNELS
+    CpG_DMPs = params.noCpG  ? Channel.empty() : !params.DMPs ? Channel.empty() :
+        Channel
+            .fromFilePairs( CpG_path_DMPs, size: 1, type: "dir")
+            .ifEmpty{ exit 1, "ERROR: No input found for CpG files: ${params.DMPs}\n"}
+    CHG_DMPs = params.noCHG  ? Channel.empty() : !params.DMPs ? Channel.empty() :
+        Channel
+            .fromFilePairs( CHG_path_DMPs, size: 1, type: "dir")
+            .ifEmpty{ exit 1, "ERROR: No input found for CHG files: ${params.DMPs}\n"}
+    CHG_DMPs = params.noCHH  ? Channel.empty() : !params.DMPs ? Channel.empty() :
+        Channel
+            .fromFilePairs( CHH_path_DMPs, size: 1, type: "dir")
+            .ifEmpty{ exit 1, "ERROR: No input found for CHH files: ${params.DMPs}\n"}
+
+    // STAGE DMR CHANNELS
+    CpG_DMRs = params.noCpG  ? Channel.empty() : !params.DMRs ? Channel.empty() :
+        Channel
+            .fromFilePairs( CpG_path_DMRs, size: 1, type: "dir")
+            .ifEmpty{ exit 1, "ERROR: No input found for CpG files: ${params.DMRs}\n"}
+    CHG_DMRs = params.noCHG  ? Channel.empty() : !params.DMRs ? Channel.empty() :
+        Channel
+            .fromFilePairs( CHG_path_DMRs, size: 1, type: "dir")
+            .ifEmpty{ exit 1, "ERROR: No input found for CHG files: ${params.DMRs}\n"}
+    CHG_DMRs = params.noCHH  ? Channel.empty() : !params.DMRs ? Channel.empty() :
+        Channel
+            .fromFilePairs( CHH_path_DMRs, size: 1, type: "dir")
+            .ifEmpty{ exit 1, "ERROR: No input found for CHH files: ${params.DMRs}\n"}
+
 }
 
-// ERROR HANDLING # for Channels which may contain bad data
-// eg. here the pipeline stops in "process2" mode with fewer than three samples
-if( process2 ){
+// METHYLATION CALLS
+CpG_single = CpG.combine(samples_channel).map{tuple("CpG", "bedGraph", *it)}
+CHG_single = CHG.combine(samples_channel).map{tuple("CHG", "bedGraph", *it)}
+CHH_single = CHH.combine(samples_channel).map{tuple("CHH", "bedGraph", *it)}
+single_channel = CpG_single.mix(CHG_single,CHH_single)
 
-    BAM
-        .count()
-        .subscribe{int c ->
-            if( c <= 2 ){
-                error "ERROR: process2 is only possible with a minimum of three samples"
-                exit 1
-            }
-        }
+// METHYLATION DMPs
+CpG_DMPs_single = CpG_DMPs.map{tuple("CpG", "DMPs", *it)}
+CHG_DMPs_single = CHG_DMPs.map{tuple("CHG", "DMPs", *it)}
+CHH_DMPs_single = CHH_DMPs.map{tuple("CHH", "DMPs", *it)}
+DMPs_channel = CpG_DMPs_single.mix(CHG_DMPs_single,CHH_DMPs_single)
 
-}
+// METHYLATION DMRs
+CpG_DMRs_single = CpG_DMRs.map{tuple("CpG", "DMRs", *it)}
+CHG_DMRs_single = CHG_DMRs.map{tuple("CHG", "DMRs", *it)}
+CHH_DMRs_single = CHH_DMRs.map{tuple("CHH", "DMRs", *it)}
+DMRs_channel = CpG_DMRs_single.mix(CHG_DMRs_single,CHH_DMRs_single)
 
+
+// STAGE FINAL INPUTS
+samples = file("${params.samples}", checkIfExists: true)
+input_channel = single_channel.mix(DMPs_channel, DMRs_channel)
 
 ////////////////////
 // BEGIN PIPELINE //
 ////////////////////
 
-/*
- *   Workflows are where you define how different processes link together. They
- *    may be modularised into "sub-workflows" which must be named eg. 'TEMPLATE'
- *    and there must always be one MAIN workflow to link them together, which
- *    is always unnamed.
- */
-
-
 // INCLUDES # here you must give the relevant process files from the libs directory 
 include './libs/process.nf' params(params)
 
 // SUB-WORKFLOWS
-workflow 'TEMPLATE' {
+workflow 'EWAS' {
 
-    // get the initial Channels
+    // get the initial files / Channels
     get:
-        BAM
-        fasta
-        fai
+        samples
+        input_channel
 
-    // define how the different processes lead into each other with
-    // eg. process(input1, input2, etc.)
-    // eg. process.out[0], process.out[1], etc.
+    // outline workflow
     main:
-        // eg. samtools sort + index
-        preprocessing(BAM)
+        // parse the samples.tsv file to get cov.txt and env.txt
+        parsing(samples)
 
-        // process outputs can be "forked" into multiple Channels for different processes 
-        process1_channel = process1 ? preprocessing.out.map{tuple("process1", *it)} : Channel.empty()
-        process2_channel = process2 ? preprocessing.out.map{tuple("process2", *it)} : Channel.empty()
+        // perform filtering on individual files
+        filtering(input_channel)
 
-        // now process1 will only run with process1_channel, process2 with process2_channel
-        process1(process1_channel, fasta, fai)
-        process2(process2_channel)
+        // stage channels for downstream processes
+        bedGraph_combined = filtering.out.filter{it[1] == "bedGraph"}.groupTuple()
+        DMPs_combined = filtering.out.filter{it[1] == "DMPs"}.groupTuple()
+        DMRs_combined = filtering.out.filter{it[1] == "DMRs"}.groupTuple()
 
-        // ... they can be combined back together again in process3. You can do whatever you like.
-        process3(process1.out.mix(process2.out))
+        // bedtools_unionbedg for taking the union set in each context
+        bedtools_unionbedg(bedGraph_combined.mix(DMPs_combined, DMRs_combined))
 
+        // stage channels for downstream processes
+        bedGraph_DMPs = bedtools_unionbedg.out.filter{it[1] == "bedGraph"}.combine(bedtools_unionbedg.out.filter{it[1] == "DMPs"}, by: 0)
+        bedGraph_DMRs = bedtools_unionbedg.out.filter{it[1] == "bedGraph"}.combine(bedtools_unionbedg.out.filter{it[1] == "DMRs"}, by: 0)
+        intersect_channel = bedGraph_DMPs.mix(bedGraph_DMRs)
 
-    // Emit the relevant output which should be "published" for the user to see
-    // index numbers 0,1,etc. refer to different outputs defined for processes in process.nf
+        // bedtools_intersect for intersecting individual methylation info based on DMPs/DMRs
+        bedtools_intersect(bedGraph_DMPs.mix(bedGraph_DMRs))
+
+        // bedtools_merge for optionally combining filtered sub-regions
+        bedtools_merge(bedGraph_DMRs)
+
+        // average_over_bed for calculating average methylation over defined regions
+        average_over_bed(bedGraph_DMRs.mix(bedtools_merge.out))
+
+        // run GEM_Emodel on selected combination of inputs
+        emodel_channel = bedtools_unionbedg.out.filter{it[1] == "bedGraph"}.mix(bedtools_intersect.out, average_over_regions.out)
+        GEM_Emodel(emodel_channel, parsing.out[0], parsing.out[1])
+
+        // additional steps for further downstream processing 
+        // ..
+
+    // Emit results
     emit:
-        process1_output = process1.out
-        process2_output_bam = process2.out[0]
-        process2_output_txt = process2.out[1]
-        process3_output = process3.out
+        parsing_env = parsing.out[0]
+        parsing_cov = parsing.out[1]
+
+        bedtools_unionbedg_out = bedtools_unionbedg.out
+        bedtools_intersect_out = bedtools_intersect.out
+        average_over_bed_out = average_over_bed.out
+
+        GEM_Emodel_filtered_pos = GEM_Emodel.out[0].filter{it[1] != "region"}
+        GEM_Emodel_filtered_reg = GEM_Emodel.out[0].filter{it[1] == "region"}
+        GEM_Emodel_full_pos = GEM_Emodel.out[1].filter{it[1] != "region"}
+        GEM_Emodel_full_reg = GEM_Emodel.out[1].filter{it[1] == "region"}
+        GEM_Emodel_jpg_pos = GEM_Emodel.out[2].filter{it[1] != "region"}
+        GEM_Emodel_jpg_reg = GEM_Emodel.out[2].filter{it[1] == "region"}
 }
 
 // MAIN WORKFLOW 
@@ -210,15 +264,24 @@ workflow {
 
     // call sub-workflows eg. WORKFLOW(Channel1, Channel2, Channel3, etc.)
     main:
-        TEMPLATE(BAM, fasta, fai)
+        EWAS(samples, input_channel)
 
     // define how the emitted files from each sub-workflow should be "published" for the user to see
     publish:
-        TEMPLATE.out.process1_output to: "${params.output}/bam", mode: 'copy'
-        TEMPLATE.out.process2_out_bam to: "${params.output}/bam", mode: 'copy'
-        TEMPLATE.out.process2_out_txt to: "${params.output}", mode: 'move'
-        TEMPLATE.out.process3_out to: "${params.output}/fastq", mode: 'copy'
+        EWAS.out.parsing_env to: "${params.output}", mode: 'copy'
+        EWAS.out.parsing_cov to: "${params.output}", mode: 'copy'
+        EWAS.out.bedtools_unionbedg_out to: "${params.output}/input", mode: 'copy'
+        EWAS.out.bedtools_intersect_out to: "${params.output}/positions", mode: 'copy'
+        EWAS.out.average_over_bed_out to: "${params.output}/regions", mode: 'copy'
+        EWAS.out.GEM_Emodel_filtered_pos to: "${params.output}/positions/Emodel", mode: 'copy'
+        EWAS.out.GEM_Emodel_filtered_reg to: "${params.output}/regions/Emodel", mode: 'copy'
+        EWAS.out.GEM_Emodel_full_pos to: "${params.output}/positions/Emodel", mode: 'copy'
+        EWAS.out.GEM_Emodel_full_reg to: "${params.output}/regions/Emodel", mode: 'copy'
+        EWAS.out.GEM_Emodel_jpg_pos to: "${params.output}/positions/Emodel", mode: 'copy'
+        EWAS.out.GEM_Emodel_jpg_reg to: "${params.output}/regions/Emodel", mode: 'copy'
+
 }
+
 
 
 //////////////////
