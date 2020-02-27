@@ -132,7 +132,7 @@ if ( workflow.profile.tokenize(",").contains("test") ){
         Channel
             .fromFilePairs( CHG_path, size: 1)
             .ifEmpty{ exit 1, "ERROR: No input found for CHG files: ${params.input}\n"}
-    CHG = params.noCHH  ? Channel.empty() : !params.input ? Channel.empty() :
+    CHH = params.noCHH  ? Channel.empty() : !params.input ? Channel.empty() :
         Channel
             .fromFilePairs( CHH_path, size: 1)
             .ifEmpty{ exit 1, "ERROR: No input found for CHH files: ${params.input}\n"}
