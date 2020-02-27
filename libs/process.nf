@@ -96,9 +96,9 @@ process "bedtools_unionbedg" {
 
     script:
     """
-    bedtools unionbedg -filler NA -i ${beds} -header -names ${samples.join(" ")} > unsorted.${context}.${types.unique().join("")}.txt || exit \$?
-    head -1 unsorted.${context}.${types.unique().join("")}.txt > ${context}.${types.unique().join("")}.txt
-    tail -n+2 unsorted.${context}.${types.unique().join("")}.txt | sort -k1,1 -k2,2n >> ${context}.${types.unique().join("")}.txt
+    bedtools unionbedg -filler NA -i ${beds} -header -names ${samples.join(" ")} > unsorted.${context}.${types.unique().join("")}.bed || exit \$?
+    head -1 unsorted.${context}.${types.unique().join("")}.txt > ${context}.${types.unique().join("")}.bed
+    tail -n+2 unsorted.${context}.${types.unique().join("")}.txt | sort -k1,1 -k2,2n >> ${context}.${types.unique().join("")}.bed
     """
 } 
 
@@ -119,8 +119,8 @@ process "bedtools_intersect" {
     maxForks "${params.fork}".toInteger()
    
     input:
-    tuple context, bedGraph, path(methylation), type, path(differential)
-    // eg. [CpG, bedGraph, bedGraph.txt, DMPs, DMPs.txt]
+    tuple context, bedGraph, path("methylation.txt"), type, path("differential.txt")
+    // eg. [CpG, bedGraph, CpG.bedGraph.bed, DMPs, CpG.DMPs.bed]
 
     output:
     tuple context, type, path("${context}.${type}.bed")
@@ -130,7 +130,7 @@ process "bedtools_intersect" {
 
     script:
     """
-    bedtools intersect -a ${methylation} -b ${differential} -sorted > ${context}.${type}.bed
+    bedtools intersect -a methylation.txt -b differential.txt -sorted > ${context}.${type}.bed
     """  
 } 
 
@@ -147,7 +147,7 @@ process "bedtools_merge" {
    
     input:
     tuple context, bedGraph, path(methylation), type, path(differential)
-    // eg. [CpG, bedGraph, bedGraph.txt, DMRs, DMRs.txt]
+    // eg. [CpG, bedGraph, CpG.bedGraph.bed, DMRs, CpG.DMRs.bed]
 
     output:
     tuple context, bedGraph, path(methylation), val("merged"), path("${type}.merged.txt")
@@ -176,18 +176,18 @@ process "average_over_regions" {
     maxForks "${params.fork}".toInteger()
    
     input:
-    tuple context, bedGraph, path(methylation), type, path(differential)
-    // eg. [CpG, bedGraph, bedGraph.txt, DMRs, DMRs.txt]
+    tuple context, bedGraph, path("methylation.txt"), type, path("differential.txt")
+    // eg. [CpG, bedGraph, CpG.bedGraph.bed, DMRs, CpG.DMRs.bed]
 
     output:
-    tuple context, val("region"), path("${context}.avg")
+    tuple context, val("region"), path("${context}.${type}.bed")
 
     when:
     params.input
 
     script:
     """
-    ${baseDir}/bin/average_over_bed.py ${differential} ${methylation} > ${context}.txt
+    ${baseDir}/bin/average_over_bed.py differential.txt methylation.txt > ${context}.${type}.bed
     """  
 } 
 
