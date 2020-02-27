@@ -211,9 +211,9 @@ process "GEM_Emodel" {
     path covs
     
     output:
-    path("${context}.${type}.filtered_${params.FDR}_FDR.txt")
-    path("${context}.${type}.txt")
-    path("${context}.${type}.jpg")
+    tuple type, path("${context}.${type}.filtered_${params.FDR}_FDR.txt")
+    tuple type, path("${context}.${type}.txt")
+    tuple type, path("${context}.${type}.jpg")
    
     when:
     params.input
