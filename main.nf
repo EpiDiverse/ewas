@@ -254,6 +254,8 @@ workflow 'EWAS' {
         gem_emodel_full_pos = GEM_Emodel.out[1].filter{ it[0] != "region" }
         gem_emodel_jpg_reg = GEM_Emodel.out[2].filter{ it[0] == "region" }
         gem_emodel_jpg_pos = GEM_Emodel.out[2].filter{ it[0] != "region" }
+        gem_emodel_log_reg = GEM_Emodel.out[3].filter{ it[0] == "region" }
+        gem_emodel_log_pos = GEM_Emodel.out[3].filter{ it[0] != "region" }
 }
 
 // MAIN WORKFLOW 
@@ -276,6 +278,8 @@ workflow {
         EWAS.out.gem_emodel_full_pos to: "${params.output}/positions/Emodel", mode: 'copy'
         EWAS.out.gem_emodel_jpg_reg to: "${params.output}/regions/Emodel", mode: 'copy'
         EWAS.out.gem_emodel_jpg_pos to: "${params.output}/positions/Emodel", mode: 'copy'
+        EWAS.out.gem_emodel_log_reg to: "${params.output}/regions/Emodel", mode: 'copy'
+        EWAS.out.gem_emodel_log_pos to: "${params.output}/positions/Emodel", mode: 'copy'
 
 }
 

@@ -216,6 +216,7 @@ process "GEM_Emodel" {
     tuple type, path("${context}.${type}.filtered_${params.FDR}_FDR.txt")
     tuple type, path("${context}.${type}.txt")
     tuple type, path("${context}.${type}.jpg")
+    tuple type, path("${context}.${type}.log")
    
     when:
     params.input
@@ -223,10 +224,9 @@ process "GEM_Emodel" {
     script: 
     """
     awk -F "\\t" '{printf \"%s:%s-%s\",\$1,\$2,\$3; for(i=4; i<=NF; i++) {printf \"\\t%s\",\$i}; print null}' ${meth} > ${context}.txt
-    Rscript ${baseDir}/bin/GEM_Emodel.R ${envs} ${covs} ${context}.txt ${params.Emodel_pv} > ${context}.${type}.txt
+    Rscript ${baseDir}/bin/GEM_Emodel.R ${envs} ${covs} ${context}.txt ${params.Emodel_pv} ${context}.${type} > ${context}.${type}.log
     sort -V ${context}.${type}.txt |
     awk 'BEGIN{OFS="\\t"; print "cpg\\tbeta\\tstats\\tpvalue\\tFDR"} \$5<=${params.FDR}{print \$1,\$2,\$3,\$4,\$5}' > ${context}.${type}.filtered_${params.FDR}_FDR.txt
-    mv emodel.jpg ${context}.${type}.jpg
     """
 }
 
