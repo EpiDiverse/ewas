@@ -16,8 +16,8 @@ meth= paste(".", args[3], sep="/")
 #meth= paste(".", "methylation.txt", sep="/")
 p= as.numeric(args[4])
 #main.nf takes p_value as an integer, but GEM process converts it into string. before this, this value be converted into int again. 
-emodel_txt = paste("./", args[4], ".txt", sep="")
-e_model_qq = paste("./", args[4], ".jpg", sep="")
+emodel_txt = paste("./", args[5], ".txt", sep="")
+e_model_qq = paste("./", args[5], ".jpg", sep="")
 
 
 #cov= paste(args[1], "cov.txt", sep = .Platform$file.sep)
