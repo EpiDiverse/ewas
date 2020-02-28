@@ -19,18 +19,18 @@ process "parsing" {
     script:
     """
     sed '/[0-9]\\,/s/\\,/./g' ${samples} |
-    awk -F "\\t" '{printf \"%s\t%.6f",\$1,\$2; for(i=3; i<=NF; i++) {printf \"\\t%s\",\$i}; print null}' |
+    awk -F "\\t" '{printf \"%s\\t%.6f",\$1,\$2; for(i=3; i<=NF; i++) {printf \"\\t%s\",\$i}; print null}' |
     awk -F "\\t" '{printf \"%s\\t%s\",\$1,\$2; for(i=3; i<=NF; i++) {printf \"\\t%s\",\$i}; print null}' > samples2.txt
     
     cat samples2.txt | grep '[0-9]'| sed 's/,//g' > samples3.txt
-    echo -e "ID\tenv" | cat - samples3.txt > samples4.txt
+    echo -e "ID\\tenv" | cat - samples3.txt > samples4.txt
     cat <(cut -f1 samples4.txt | paste -s) <(cut -f2 samples4.txt | paste -s) > env.txt
 
     cut -f1 samples3.txt > header.txt
     cut -d \$'\\t' -f3- samples3.txt  > pre_cov.txt
     
     paste header.txt pre_cov.txt > 2pre_cov.txt
-    awk 'NR==1{printf "ID"; for(i=1; i<=NF-1; i++) h=h OFS "cov" i; print h}1' OFS='\t' 2pre_cov.txt > 3pre_cov.txt
+    awk 'NR==1{printf "ID"; for(i=1; i<=NF-1; i++) h=h OFS "cov" i; print h}1' OFS='\\t' 2pre_cov.txt > 3pre_cov.txt
     cat 3pre_cov.txt | datamash transpose | tr -d "\\r" > cov.txt
     """
 }
@@ -130,7 +130,7 @@ process "bedtools_intersect" {
 
     script:
     """
-    bedtools intersect -a methylation.txt -b differential.txt -sorted > ${context}.${type}.bed
+    bedtools intersect -a methylation.txt -b differential.txt -sorted -header > ${context}.${type}.bed
     """  
 } 
 
@@ -187,7 +187,7 @@ process "average_over_regions" {
 
     script:
     """
-    ${baseDir}/bin/average_over_bed.py differential.txt methylation.txt > ${context}.${type}.bed
+    ${baseDir}/bin/average_over_bed.py <(tail -n+2 differential.txt) <(cut -f1,3- methylation.txt) > ${context}.${type}.bed
     """  
 } 
 
