@@ -161,7 +161,7 @@ process "filter_regions" {
     script:
     """
     awk -F "\\t" 'BEGIN{OFS="\\t"} {count=NF-3; for(i=4; i<=NF; i++) {if(\$i=="NA") {count--}};
-    if(count/(NF-3))>=${params.bootstrap}) {print \$0}}' ${differential} > filtered.txt
+    if((count/(NF-3))>=${params.bootstrap}) {print \$0}}' ${differential} > filtered.txt
     """  
 } 
 
