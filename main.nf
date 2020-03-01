@@ -228,11 +228,14 @@ workflow 'EWAS' {
         // bedtools_intersect for intersecting individual methylation info based on DMPs/DMRs
         bedtools_intersect(bedGraph_DMPs.mix(bedGraph_DMRs))
 
+        // filter regions based on bootstrap values
+        filter_regions(bedGraph_DMRs)
+
         // bedtools_merge for optionally combining filtered sub-regions
-        bedtools_merge(bedGraph_DMRs)
+        bedtools_merge(filter_regions.out)
 
         // average_over_regions for calculating average methylation over defined regions
-        average_over_regions(bedGraph_DMRs.mix(bedtools_merge.out))
+        average_over_regions(filter_regions.out.mix(bedtools_merge.out))
 
         // run GEM_Emodel on selected combination of inputs
         emodel_channel = bedtools_unionbedg.out.filter{it[1] == "bedGraph"}.mix(bedtools_intersect.out, average_over_regions.out)
@@ -248,14 +251,14 @@ workflow 'EWAS' {
         bedtools_unionbedg_out = bedtools_unionbedg.out
         bedtools_intersect_out = bedtools_intersect.out
         average_over_regions_out = average_over_regions.out
-        gem_emodel_filtered_reg = GEM_Emodel.out[0].filter{ it[0] == "region" }
-        gem_emodel_filtered_pos = GEM_Emodel.out[0].filter{ it[0] != "region" }
-        gem_emodel_full_reg = GEM_Emodel.out[1].filter{ it[0] == "region" }
-        gem_emodel_full_pos = GEM_Emodel.out[1].filter{ it[0] != "region" }
-        gem_emodel_jpg_reg = GEM_Emodel.out[2].filter{ it[0] == "region" }
-        gem_emodel_jpg_pos = GEM_Emodel.out[2].filter{ it[0] != "region" }
-        gem_emodel_log_reg = GEM_Emodel.out[3].filter{ it[0] == "region" }
-        gem_emodel_log_pos = GEM_Emodel.out[3].filter{ it[0] != "region" }
+        gem_emodel_filtered_reg = GEM_Emodel.out[0].filter{ it[0] == "region" || it[0] == "merged" }
+        gem_emodel_filtered_pos = GEM_Emodel.out[0].filter{ it[0] != "region" && it[0] != "merged" }
+        gem_emodel_full_reg = GEM_Emodel.out[1].filter{ it[0] == "region" || it[0] == "merged" }
+        gem_emodel_full_pos = GEM_Emodel.out[1].filter{ it[0] != "region" && it[0] != "merged" }
+        gem_emodel_jpg_reg = GEM_Emodel.out[2].filter{ it[0] == "region" || it[0] == "merged" }
+        gem_emodel_jpg_pos = GEM_Emodel.out[2].filter{ it[0] != "region" && it[0] != "merged" }
+        gem_emodel_log_reg = GEM_Emodel.out[3].filter{ it[0] == "region" || it[0] == "merged" }
+        gem_emodel_log_pos = GEM_Emodel.out[3].filter{ it[0] != "region" && it[0] != "merged" }
 }
 
 // MAIN WORKFLOW 

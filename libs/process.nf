@@ -136,6 +136,36 @@ process "bedtools_intersect" {
     """  
 } 
 
+// bedGraph_DMRs
+
+// takes the same input as previous process bedtools_intersect (bedGraph_DMRs)
+// filter regions according to bootstrap support values
+process "filter_regions" {
+
+    label "low"
+    label "finish"
+    tag "$type - $context"
+
+    maxForks "${params.fork}".toInteger()
+   
+    input:
+    tuple context, bedGraph, path(methylation), type, path(differential)
+    // eg. [CpG, bedGraph, CpG.bedGraph.bed, DMRs, CpG.DMRs.bed]
+
+    output:
+    tuple context, bedGraph, path(methylation), val("region"), path("filtered.txt")
+     
+    when:    
+    params.input
+
+    script:
+    """
+    awk -F "\\t" 'BEGIN{OFS="\\t"} {count=NF-3; for(i=4; i<=NF; i++) {if(\$i=="NA") {count--}};
+    if(count/(NF-3))>=${params.bootstrap}) {print \$0}}' ${differential} > filtered.txt
+    """  
+} 
+
+// filter_regions.out
 
 // takes the same input as previous process bedtools_intersect (bedGraph_DMRs)
 // merging sub-regions identified by bedtools_unionbedg of DMRs
@@ -152,19 +182,19 @@ process "bedtools_merge" {
     // eg. [CpG, bedGraph, CpG.bedGraph.bed, DMRs, CpG.DMRs.bed]
 
     output:
-    tuple context, bedGraph, path(methylation), val("merged"), path("${context}.${type}.merged.txt")
+    tuple context, bedGraph, path(methylation), val("merged"), path("${context}.merged.txt")
      
     when:    
     params.input && params.merge
 
     script:
     """
-    bedtools merge -i ${differential} | sort -k1,1 -k2,2n > ${context}.${type}.merged.txt
+    bedtools merge -i ${differential} | sort -k1,1 -k2,2n > ${context}.merged.txt
     """  
 } 
 
 
-// average_channel = bedGraph_DMRs.mix(bedtools_merge.out)
+// average_channel = filter_regions.out.mix(bedtools_merge.out)
 // eg. [CpG, bedGraph, methylation.txt, DMPs, differential.txt] 
 
 // takes the same input as previous process bedtools_intersect (bedGraph_DMRs)
@@ -182,7 +212,7 @@ process "average_over_regions" {
     // eg. [CpG, bedGraph, CpG.bedGraph.bed, DMRs, CpG.DMRs.bed]
 
     output:
-    tuple context, val("region"), path("${context}.${type}.bed")
+    tuple context, type, path("${context}.${type}.bed")
 
     when:
     params.input
