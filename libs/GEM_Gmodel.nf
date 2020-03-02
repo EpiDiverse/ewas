@@ -34,7 +34,6 @@ process "bcftools" {
 
     label "low"
     label "finish"
-    tag "$type - $context"
      
     input:
     path samples
@@ -53,7 +52,7 @@ process "bcftools" {
     ${snps.size() > 1 ? "bcftools merge ${snps} -Oz -o output/merged.vcf.gz || exit \$?" : ""}
     bcftools norm -Ov -m-snps ${snps.size() > 1 ? "output/merged.vcf.gz" : "${snps}"} > input/norm.vcf.gz || exit \$?
 
-    bcftools view -S <(cut -f1 ${samples}) input/norm.vcf.gz > output/filtered.vcf.gz || exit \$?
+    bcftools view -S <(cut -f1 ${samples}) input/norm.vcf.gz > input/filtered.vcf.gz || exit \$?
     bcftools query -l input/filtered.vcf.gz > input/samples.txt || exit \$?
 
     total=\$(cat ${samples} | wc -l)
@@ -72,7 +71,6 @@ process "vcftools_missing" {
 
     label "low"
     label "finish"
-    tag "$type - $context"
      
     input:
     path snp
@@ -101,7 +99,6 @@ process "vcftools_extract" {
 
     label "low"
     label "finish"
-    tag "$type - $context"
      
     input:
     path snp
