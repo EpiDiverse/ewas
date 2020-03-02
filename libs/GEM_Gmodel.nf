@@ -79,16 +79,14 @@ process "vcftools_missing" {
     path "missing_stats.log"
     //file("out.imiss")
     //file("out.log")
-    path "out.log"
+    //path "out.log"
 
     when:
     params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel)
 
     script:
     """
-    vcftools --gzvcf ${snp} \\
-    --max-missing ${params.max_missing} \\
-    --out missing_stats 2> out.log
+    vcftools --gzvcf ${snp} --max-missing ${params.max_missing} > missing_stats.log
     """ 
 } 
 
