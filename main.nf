@@ -184,7 +184,7 @@ if ( workflow.profile.tokenize(",").contains("test") ){
     SNP_file = !params.SNPs ? Channel.empty() : 
         Channel
             .fromPath( "${params.SNPs}" )
-            .map { tuple("multi-sample", *it) }
+            .map { tuple("multi-sample", it) }
 
     SNP_dirs = !params.SNPs ? Channel.empty() : 
         Channel
