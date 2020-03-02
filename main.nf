@@ -171,15 +171,18 @@ if ( workflow.profile.tokenize(",").contains("test") ){
             .fromFilePairs( CHH_path_DMRs, size: 1, type: "dir")
             .ifEmpty{ exit 1, "ERROR: No input found for CHH files: ${params.DMRs}\n"}
 
-    /*
     // STAGE SNPs CHANNEL
     globs = ["${params.SNPs}","${params.SNPs}/vcf/*.${params.extension}"]
     SNPs = !params.SNPs ? Channel.empty() : 
         Channel
-            .fromPath( globs )
-            .ifEmpty{ exit 1, "ERROR: No input found for SNP files: ${params.SNPs}/vcf/*.${params.extension}"}
-    */
+            .fromFilePairs( globs, size: 1, type: "file" )
+            .ifEmpty{ exit 1, "ERROR: No input found for SNP files: ${params.SNPs}\n\n \
+            For single-sample vcfs:\n \
+            -Please check files exist: ${params.SNPs}/vcf/*.${params.extension}\n \
+            -Please check sample names match: ${samples}\n \
+            -Please check given file extension: ${params.extension}"}
 
+    /*
     // STAGE SNP CHANNELS
     SNP_file = !params.SNPs ? Channel.empty() : 
         Channel
@@ -197,6 +200,7 @@ if ( workflow.profile.tokenize(",").contains("test") ){
             -Please check files exist: ${params.SNPs}/vcf/*.${params.extension}\n \
             -Please check sample names match: ${samples}\n \
             -Please check given file extension: ${params.extension}"}
+    */
 
 }
 
