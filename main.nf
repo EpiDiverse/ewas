@@ -192,10 +192,10 @@ if ( workflow.profile.tokenize(",").contains("test") ){
             .combine(samples_channel, by: 0)
 
     SNPs = !params.SNPs ? Channel.empty() :
-        SNP_file.mix(SNP_dir).ifEmpty{ exit 1, "ERROR: No input found for SNP files: ${params.SNPs}\n\n
-            For single-sample vcfs:\n
-            -Please check files exist: ${params.SNPs}/vcf/*.${params.extension}\n
-            -Please check sample names match: ${samples}\n
+        SNP_file.mix(SNP_dir).ifEmpty{ exit 1, "ERROR: No input found for SNP files: ${params.SNPs}\n\n \
+            For single-sample vcfs:\n \
+            -Please check files exist: ${params.SNPs}/vcf/*.${params.extension}\n \
+            -Please check sample names match: ${samples}\n \
             -Please check given file extension: ${params.extension}"}
 
 }
