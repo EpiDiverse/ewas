@@ -73,13 +73,19 @@ CpG_path_DMRs = "${params.DMRs}/CpG/metilene/*"
 CHG_path_DMRs = "${params.DMRs}/CHG/metilene/*"
 CHH_path_DMRs = "${params.DMRs}/CHH/metilene/*"
 
-//snp_path_mult = "${params.SNPs}"
-//snp_path = "${params.SNPs}/vcf/*.vcf"
-
 
 // PARAMETER CHECKS
-if( !params.input && (params.DMPs || params.DMRs) ){error "ERROR: "}
+if( !params.input ){error "ERROR: Missing required parameter --input"}
 if( params.noCpG && params.noCHG && params.noCHH ){error "ERROR: please specify at least one methylation context for analysis"}
+if( !params.Emodel && !params.Gmodel && !params.GxE ){
+    Emodel = true
+    Gmodel = true
+    GxE = true
+} else {
+    Emodel = params.Emodel
+    Gmodel = params.Gmodel
+    GxE = params.GxE
+}
 
 
 // PRINT STANDARD LOGGING INFO
@@ -124,15 +130,15 @@ if ( workflow.profile.tokenize(",").contains("test") ){
 } else {
 
     // STAGE INPUT CHANNELS
-    CpG = params.noCpG  ? Channel.empty() : !params.input ? Channel.empty() :
+    CpG = params.noCpG  ? Channel.empty() :
         Channel
             .fromFilePairs( CpG_path, size: 1)
             .ifEmpty{ exit 1, "ERROR: No input found for CpG files: ${params.input}\n"}
-    CHG = params.noCHG  ? Channel.empty() : !params.input ? Channel.empty() :
+    CHG = params.noCHG  ? Channel.empty() :
         Channel
             .fromFilePairs( CHG_path, size: 1)
             .ifEmpty{ exit 1, "ERROR: No input found for CHG files: ${params.input}\n"}
-    CHH = params.noCHH  ? Channel.empty() : !params.input ? Channel.empty() :
+    CHH = params.noCHH  ? Channel.empty() :
         Channel
             .fromFilePairs( CHH_path, size: 1)
             .ifEmpty{ exit 1, "ERROR: No input found for CHH files: ${params.input}\n"}
@@ -165,6 +171,33 @@ if ( workflow.profile.tokenize(",").contains("test") ){
             .fromFilePairs( CHH_path_DMRs, size: 1, type: "dir")
             .ifEmpty{ exit 1, "ERROR: No input found for CHH files: ${params.DMRs}\n"}
 
+    /*
+    // STAGE SNPs CHANNEL
+    globs = ["${params.SNPs}","${params.SNPs}/vcf/*.${params.extension}"]
+    SNPs = !params.SNPs ? Channel.empty() : 
+        Channel
+            .fromPath( globs )
+            .ifEmpty{ exit 1, "ERROR: No input found for SNP files: ${params.SNPs}/vcf/*.${params.extension}"}
+    */
+
+    // STAGE SNP CHANNELS
+    SNP_file = !params.SNPs ? Channel.empty() : 
+        Channel
+            .fromPath( "${params.SNPs}" )
+            .map { tuple("multi-sample", *it) }
+
+    SNP_dirs = !params.SNPs ? Channel.empty() : 
+        Channel
+            .fromFilePairs( "${params.SNPs}/vcf/*.${params.extension}" )
+            .combine(samples_channel, by: 0)
+
+    SNPs = !params.SNPs ? Channel.empty() :
+        SNP_file.mix(SNP_dir).ifEmpty{ exit 1, "ERROR: No input found for SNP files: ${params.SNPs}\n\n
+            For single-sample vcfs:\n
+            -Please check files exist: ${params.SNPs}/vcf/*.${params.extension}\n
+            -Please check sample names match: ${samples}\n
+            -Please check given file extension: ${params.extension}"}
+
 }
 
 // METHYLATION CALLS
@@ -185,7 +218,6 @@ CHG_DMRs_single = CHG_DMRs.map{tuple("CHG", "DMRs", *it)}
 CHH_DMRs_single = CHH_DMRs.map{tuple("CHH", "DMRs", *it)}
 DMRs_channel = CpG_DMRs_single.mix(CHG_DMRs_single,CHH_DMRs_single)
 
-
 // STAGE FINAL INPUTS
 samples = file("${params.samples}", checkIfExists: true)
 input_channel = single_channel.mix(DMPs_channel, DMRs_channel)
@@ -194,8 +226,10 @@ input_channel = single_channel.mix(DMPs_channel, DMRs_channel)
 // BEGIN PIPELINE //
 ////////////////////
 
-// INCLUDES # here you must give the relevant process files from the libs directory 
+// INCLUDES
 include './libs/process.nf' params(params)
+include './libs/GEM_Emodel.nf' params(params)
+include './libs/GEM_Gmodel.nf' params(params)
 
 // SUB-WORKFLOWS
 workflow 'EWAS' {
@@ -204,45 +238,50 @@ workflow 'EWAS' {
     get:
         samples
         input_channel
+        SNPs
 
     // outline workflow
     main:
         // parse the samples.tsv file to get cov.txt and env.txt
         parsing(samples)
 
+        // bedGraphs, DMPs, DMRs
         // perform filtering on individual files
         filtering(input_channel)
-
         // stage channels for downstream processes
         bedGraph_combined = filtering.out.filter{it[1] == "bedGraph"}.groupTuple()
         DMPs_combined = filtering.out.filter{it[1] == "DMPs"}.groupTuple()
         DMRs_combined = filtering.out.filter{it[1] == "DMRs"}.groupTuple()
-
         // bedtools_unionbedg for taking the union set in each context
         bedtools_unionbedg(bedGraph_combined.mix(DMPs_combined, DMRs_combined))
-
         // stage channels for downstream processes
         bedGraph_DMPs = bedtools_unionbedg.out.filter{it[1] == "bedGraph"}.combine(bedtools_unionbedg.out.filter{it[1] == "DMPs"}, by: 0)
         bedGraph_DMRs = bedtools_unionbedg.out.filter{it[1] == "bedGraph"}.combine(bedtools_unionbedg.out.filter{it[1] == "DMRs"}, by: 0)
-
         // bedtools_intersect for intersecting individual methylation info based on DMPs/DMRs
         bedtools_intersect(bedGraph_DMPs.mix(bedGraph_DMRs))
-
         // filter regions based on bootstrap values
         filter_regions(bedGraph_DMRs)
-
         // bedtools_merge for optionally combining filtered sub-regions
         bedtools_merge(filter_regions.out)
-
         // average_over_regions for calculating average methylation over defined regions
         average_over_regions(filter_regions.out.mix(bedtools_merge.out))
+        // stage channels for downstream processes
+        meth_channel = bedtools_unionbedg.out.filter{it[1] == "bedGraph"}.mix(bedtools_intersect.out, average_over_regions.out)
 
-        // run GEM_Emodel on selected combination of inputs
-        emodel_channel = bedtools_unionbedg.out.filter{it[1] == "bedGraph"}.mix(bedtools_intersect.out, average_over_regions.out)
-        GEM_Emodel(emodel_channel, parsing.out[0], parsing.out[1])
+        // SNPs
+        // index individual vcf files, optionally rename header
+        tabix(SNPs)
+        // merge files, normalise, validate sample names in header
+        bcftools(samples, tabix.out[0].collect(), tabix.out[1].collect())
+        // extract missing information
+        vcftools_missing(bcftools.out)
+        // extract snps.txt for GEM_GModel
+        vcftools_extract(bcftools.out)
 
-        // additional steps for further downstream processing 
-        // ..
+        // run GEM on selected combination of inputs
+        GEM_Emodel(meth_channel, parsing.out[0], parsing.out[1])
+        GEM_Gmodel(meth_channel, vcftools_extract.out, parsing.out[1])
+
 
     // emit results
     emit:
@@ -251,6 +290,7 @@ workflow 'EWAS' {
         bedtools_unionbedg_out = bedtools_unionbedg.out
         bedtools_intersect_out = bedtools_intersect.out
         average_over_regions_out = average_over_regions.out
+
         gem_emodel_filtered_reg = GEM_Emodel.out[0].filter{ it[0] == "region" || it[0] == "merged" }
         gem_emodel_filtered_pos = GEM_Emodel.out[0].filter{ it[0] != "region" && it[0] != "merged" }
         gem_emodel_full_reg = GEM_Emodel.out[1].filter{ it[0] == "region" || it[0] == "merged" }
@@ -259,6 +299,15 @@ workflow 'EWAS' {
         gem_emodel_jpg_pos = GEM_Emodel.out[2].filter{ it[0] != "region" && it[0] != "merged" }
         gem_emodel_log_reg = GEM_Emodel.out[3].filter{ it[0] == "region" || it[0] == "merged" }
         gem_emodel_log_pos = GEM_Emodel.out[3].filter{ it[0] != "region" && it[0] != "merged" }
+
+        gem_gmodel_filtered_reg = GEM_Gmodel.out[0].filter{ it[0] == "region" || it[0] == "merged" }
+        gem_gmodel_filtered_pos = GEM_Gmodel.out[0].filter{ it[0] != "region" && it[0] != "merged" }
+        gem_gmodel_full_reg = GEM_Gmodel.out[1].filter{ it[0] == "region" || it[0] == "merged" }
+        gem_gmodel_full_pos = GEM_Gmodel.out[1].filter{ it[0] != "region" && it[0] != "merged" }
+        gem_gmodel_jpg_reg = GEM_Gmodel.out[2].filter{ it[0] == "region" || it[0] == "merged" }
+        gem_gmodel_jpg_pos = GEM_Gmodel.out[2].filter{ it[0] != "region" && it[0] != "merged" }
+        gem_gmodel_log_reg = GEM_Gmodel.out[3].filter{ it[0] == "region" || it[0] == "merged" }
+        gem_gmodel_log_pos = GEM_Gmodel.out[3].filter{ it[0] != "region" && it[0] != "merged" }
 }
 
 // MAIN WORKFLOW 
@@ -266,7 +315,7 @@ workflow {
 
     // call sub-workflows
     main:
-        EWAS(samples, input_channel)
+        EWAS(samples, input_channel, SNPs)
 
     // publish files
     publish:
@@ -275,6 +324,7 @@ workflow {
         EWAS.out.bedtools_unionbedg_out to: "${params.output}/input", mode: 'copy'
         EWAS.out.bedtools_intersect_out to: "${params.output}/positions", mode: 'copy'
         EWAS.out.average_over_regions_out to: "${params.output}/regions", mode: 'copy'
+
         EWAS.out.gem_emodel_filtered_reg to: "${params.output}/regions/Emodel", mode: 'copy'
         EWAS.out.gem_emodel_filtered_pos to: "${params.output}/positions/Emodel", mode: 'copy'
         EWAS.out.gem_emodel_full_reg to: "${params.output}/regions/Emodel", mode: 'copy'
@@ -283,6 +333,15 @@ workflow {
         EWAS.out.gem_emodel_jpg_pos to: "${params.output}/positions/Emodel", mode: 'copy'
         EWAS.out.gem_emodel_log_reg to: "${params.output}/regions/Emodel", mode: 'copy'
         EWAS.out.gem_emodel_log_pos to: "${params.output}/positions/Emodel", mode: 'copy'
+
+        EWAS.out.gem_gmodel_filtered_reg to: "${params.output}/regions/Gmodel", mode: 'copy'
+        EWAS.out.gem_gmodel_filtered_pos to: "${params.output}/positions/Gmodel", mode: 'copy'
+        EWAS.out.gem_gmodel_full_reg to: "${params.output}/regions/Gmodel", mode: 'copy'
+        EWAS.out.gem_gmodel_full_pos to: "${params.output}/positions/Gmodel", mode: 'copy'
+        EWAS.out.gem_gmodel_jpg_reg to: "${params.output}/regions/Gmodel", mode: 'copy'
+        EWAS.out.gem_gmodel_jpg_pos to: "${params.output}/positions/Gmodel", mode: 'copy'
+        EWAS.out.gem_gmodel_log_reg to: "${params.output}/regions/Gmodel", mode: 'copy'
+        EWAS.out.gem_gmodel_log_pos to: "${params.output}/positions/Gmodel", mode: 'copy'
 
 }
 
