@@ -85,7 +85,6 @@ process "vcftools_missing" {
 
     script:
     """
-    mkdir
     vcftools --gzvcf ${snp} \\
     --max-missing ${params.max_missing} \\
     --out missing_stats
