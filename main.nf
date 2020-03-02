@@ -183,12 +183,12 @@ if ( workflow.profile.tokenize(",").contains("test") ){
     // STAGE SNP CHANNELS
     SNP_file = !params.SNPs ? Channel.empty() : 
         Channel
-            .fromPath( "${params.SNPs}" )
+            .fromPath( "${params.SNPs}", type: "file" )
             .map { tuple("multi-sample", it) }
 
     SNP_dirs = !params.SNPs ? Channel.empty() : 
         Channel
-            .fromFilePairs( "${params.SNPs}/vcf/*.${params.extension}" )
+            .fromFilePairs( "${params.SNPs}/vcf/*.${params.extension}", type: "file" )
             .combine(samples_channel, by: 0)
 
     SNPs = !params.SNPs ? Channel.empty() :
