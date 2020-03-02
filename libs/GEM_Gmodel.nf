@@ -50,7 +50,7 @@ process "bcftools" {
     script:
     """
     mkdir input
-    ${snps.length() > 1 ? "bcftools merge ${snps} -Oz -o output/merged.vcf.gz || exit \$?" :}
+    ${snps.length() > 1 ? "bcftools merge ${snps} -Oz -o output/merged.vcf.gz || exit \$?" : ""}
     bcftools norm -Ov -m-snps ${snps.length() > 1 ? "output/merged.vcf.gz" : "${snps}"} > input/norm.vcf.gz || exit \$?
 
     bcftools view -S <(cut -f1 ${samples}) input/norm.vcf.gz > output/filtered.vcf.gz || exit \$?
