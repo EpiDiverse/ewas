@@ -8,7 +8,7 @@ suppressMessages(require(usethis))
 suppressMessages(require(GEM))
 
 ##################################
-GEM_Gmodel <-
+my.GEM_Gmodel <-
     function(snp_file_name, covariate_file_name, methylation_file_name,
              Gmodel_pv, output_file_name, noFDR = FALSE)
     {
@@ -77,7 +77,7 @@ GEM_Gmodel <-
         )
     }
 
-assignInNamespace("GEM_Gmodel", GEM_Gmodel, "GEM")
+assignInNamespace("GEM_Gmodel", my.GEM_Gmodel, "GEM")
 ##################################
 
 
