@@ -308,10 +308,8 @@ workflow 'EWAS' {
         gem_gmodel_filtered_pos = GEM_Gmodel.out[0].filter{ it[0] != "region" && it[0] != "merged" }
         gem_gmodel_full_reg = GEM_Gmodel.out[1].filter{ it[0] == "region" || it[0] == "merged" }
         gem_gmodel_full_pos = GEM_Gmodel.out[1].filter{ it[0] != "region" && it[0] != "merged" }
-        gem_gmodel_jpg_reg = GEM_Gmodel.out[2].filter{ it[0] == "region" || it[0] == "merged" }
-        gem_gmodel_jpg_pos = GEM_Gmodel.out[2].filter{ it[0] != "region" && it[0] != "merged" }
-        gem_gmodel_log_reg = GEM_Gmodel.out[3].filter{ it[0] == "region" || it[0] == "merged" }
-        gem_gmodel_log_pos = GEM_Gmodel.out[3].filter{ it[0] != "region" && it[0] != "merged" }
+        gem_gmodel_log_reg = GEM_Gmodel.out[2].filter{ it[0] == "region" || it[0] == "merged" }
+        gem_gmodel_log_pos = GEM_Gmodel.out[2].filter{ it[0] != "region" && it[0] != "merged" }
 }
 
 // MAIN WORKFLOW 
@@ -342,8 +340,6 @@ workflow {
         EWAS.out.gem_gmodel_filtered_pos to: "${params.output}/positions/Gmodel", mode: 'copy'
         EWAS.out.gem_gmodel_full_reg to: "${params.output}/regions/Gmodel", mode: 'copy'
         EWAS.out.gem_gmodel_full_pos to: "${params.output}/positions/Gmodel", mode: 'copy'
-        EWAS.out.gem_gmodel_jpg_reg to: "${params.output}/regions/Gmodel", mode: 'copy'
-        EWAS.out.gem_gmodel_jpg_pos to: "${params.output}/positions/Gmodel", mode: 'copy'
         EWAS.out.gem_gmodel_log_reg to: "${params.output}/regions/Gmodel", mode: 'copy'
         EWAS.out.gem_gmodel_log_pos to: "${params.output}/positions/Gmodel", mode: 'copy'
 
