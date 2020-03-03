@@ -132,6 +132,32 @@ process "vcftools_extract" {
 // eg. [CpG, DMRs, CpG.bed]
 // eg. [CpG, regions, CpG.avg]
 
+
+// bcftools.out
+// extract required format
+process "split_scaffolds" {
+
+    label "low"
+    label "finish"
+     
+    input:
+    tuple context, type, path(bed)
+    
+    output:
+    path context, type, path("output/*.bed")
+
+    when:
+    params.input
+
+    script:
+    """   
+    mkdir output
+    awk -F "\\t" '{if(NR-1){if(\$1 in arr == 0){arr[\$1]=\$1; print header > "output"/\$1".bed"}; print \$0 >> "output"/\$1".bed"} else {header=\$0}}' ${bed}
+    """ 
+}
+
+//split_scaffolds.out.transpose()
+
 // RUN GEM Gmodel
 process "GEM_Gmodel" {
     
@@ -147,7 +173,6 @@ process "GEM_Gmodel" {
     output:
     tuple type, path("${context}.${type}.filtered_${params.FDR}_FDR.txt")
     tuple type, path("${context}.${type}.txt")
-    tuple type, path("${context}.${type}.jpg")
     tuple type, path("${context}.${type}.log")
    
     when:
@@ -156,7 +181,7 @@ process "GEM_Gmodel" {
     script: 
     """
     awk -F "\\t" '{printf \"%s:%s-%s\",\$1,\$2,\$3; for(i=4; i<=NF; i++) {printf \"\\t%s\",\$i}; print null}' ${meth} > ${context}.txt
-    Rscript ${baseDir}/bin/GEM_Emodel.R ${snps} ${covs} ${context}.txt ${params.Gmodel_pv} ${context}.${type} > ${context}.${type}.log
+    Rscript ${baseDir}/bin/GEM_Gmodel.R ${snps} ${covs} ${context}.txt ${params.Gmodel_pv} ${context}.${type} > ${context}.${type}.log
     sort -V ${context}.${type}.txt |
     awk 'BEGIN{OFS="\\t"; print "cpg\\tsnp\\tbeta\\tstats\\tpvalue\\tFDR"} \$6<=${params.FDR}{print \$1,\$2,\$3,\$4,\$5,\$6}' > ${context}.${type}.filtered_${params.FDR}_FDR.txt
     """

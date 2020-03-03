@@ -7,8 +7,9 @@ suppressMessages(require(devtools))
 suppressMessages(require(usethis))
 suppressMessages(require(GEM))
 
-args <- commandArgs(trailingOnly=T)
 
+args <- commandArgs(trailingOnly=T)
+source(args[6])
 
 snp= paste(".", args[1], sep="/")
 cov= paste(".", args[2], sep="/")
@@ -19,4 +20,4 @@ p= as.numeric(args[4])
 gmodel_txt = paste("./", args[5], ".txt", sep="")
 
 
-GEM_Gmodel(snp, cov, meth, p, gmodel_txt)
+GEM_Gmodel(snp, cov, meth, p, gmodel_txt, noFDR=FALSE)
