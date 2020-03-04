@@ -457,10 +457,10 @@ Matrix_eQTL_engine3 = function(
         status("Creating output file(s)");
         if(noFDRsaveMemory) {
             if( pvOutputThreshold > 0 ) {
-                saver.tra = .OutputSaver_NEW$new();#.OutputSaver_direct$new();
+                saver.tra = .OutputSaver_direct$new();
             }
             if( pvOutputThreshold.cis > 0 ) {
-                saver.cis = .OutputSaver_NEW$new();#.OutputSaver_direct$new();
+                saver.cis = .OutputSaver_direct$new();
             }
         } else {
             if( pvOutputThreshold > 0 ) {
@@ -483,7 +483,7 @@ Matrix_eQTL_engine3 = function(
         if(!is.null(betafun))
             statistic_name = paste("beta\t",statistic_name, sep="");
         if( pvOutputThreshold > 0 )
-            saver.tra$start("/dev/null",     statistic_name, snps, gene, testfun, pvfun);
+            saver.tra$start("temp.txt",     statistic_name, snps, gene, testfun, pvfun);
         if( pvOutputThreshold.cis > 0 )
             saver.cis$start(output_file_name.cis, statistic_name, snps, gene, testfun, pvfun);
         rm( statistic_name );
