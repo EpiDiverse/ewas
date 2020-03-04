@@ -454,22 +454,22 @@ Matrix_eQTL_engine3 = function(
     }
     ################################# Saver class(es) creation ##############################
     {
-        status("Creating output file(s)");
-        if(noFDRsaveMemory) {
-            if( pvOutputThreshold > 0 ) {
-                saver.tra = .OutputSaver_direct$new();
-            }
-            if( pvOutputThreshold.cis > 0 ) {
-                saver.cis = .OutputSaver_direct$new();
-            }
-        } else {
-            if( pvOutputThreshold > 0 ) {
-                saver.tra = .OutputSaver_FRD$new();
-            }
-            if( pvOutputThreshold.cis > 0 ) {
-                saver.cis = .OutputSaver_FRD$new();
-            }
-        }
+        #status("Creating output file(s)");
+        #if(noFDRsaveMemory) {
+            #if( pvOutputThreshold > 0 ) {
+                #saver.tra = .OutputSaver_direct$new();
+            #}
+            #if( pvOutputThreshold.cis > 0 ) {
+                #saver.cis = .OutputSaver_direct$new();
+            #}
+        #} else {
+            #if( pvOutputThreshold > 0 ) {
+                #saver.tra = .OutputSaver_FRD$new();
+            #}
+            #if( pvOutputThreshold.cis > 0 ) {
+                #saver.cis = .OutputSaver_FRD$new();
+            #}
+        #}
         if( pvOutputThreshold > 0 )
             if( pvOutputThreshold * gene$nRows() * snps$nRows() > 1000000 )
                 if(!noFDRsaveMemory)
