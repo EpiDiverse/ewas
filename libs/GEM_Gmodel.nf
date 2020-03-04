@@ -180,6 +180,7 @@ process "GEM_Gmodel" {
     
     script: 
     """
+    mkdir output
     awk -F "\\t" '{printf \"%s:%s-%s\",\$1,\$2,\$3; for(i=4; i<=NF; i++) {printf \"\\t%s\",\$i}; print null}' ${meth} > ${context}.txt
     Rscript ${baseDir}/bin/GEM_Gmodel.R ${baseDir}/bin ${snps} ${covs} ${context}.txt ${params.Gmodel_pv} output/\$(basename ${meth} .bed).txt > output/\$(basename ${meth} .bed).log
     """
