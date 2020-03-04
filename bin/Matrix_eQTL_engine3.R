@@ -457,10 +457,10 @@ Matrix_eQTL_engine3 = function(
         status("Creating output file(s)");
         if(noFDRsaveMemory) {
             if( pvOutputThreshold > 0 ) {
-                saver.tra = .OutputSaver_direct$new();
+                saver.tra = .OutputSaver_NEW$new();#.OutputSaver_direct$new();
             }
             if( pvOutputThreshold.cis > 0 ) {
-                saver.cis = .OutputSaver_direct$new();
+                saver.cis = .OutputSaver_NEW$new();#.OutputSaver_direct$new();
             }
         } else {
             if( pvOutputThreshold > 0 ) {
@@ -769,3 +769,99 @@ Matrix_eQTL_engine3 = function(
     ################################# Results collection ####################################
     return(rez);
 }
+
+
+.OutputSaver_NEW <- setRefClass(".OutputSaver_NEW",
+                                fields = list(
+                                    sdata = ".listBuilder",
+                                    gdata = ".listBuilder",
+                                    cdata = ".listBuilder",
+                                    bdata = ".listBuilder",
+                                    fid = "list",
+                                    testfun1 = "list",
+                                    pvfun1 = "list"
+                                ),
+                                methods = list(
+                                    initialize = function () {
+                                        sdata <<- .listBuilder$new();
+                                        gdata <<- .listBuilder$new();
+                                        cdata <<- .listBuilder$new();
+                                        bdata <<- .listBuilder$new();
+                                        fid <<- list(0);
+                                        testfun1 <<- list(0);
+                                        pvfun1 <<- list(0);
+                                        return(.self);
+                                    },
+                                    start = function(filename, statistic_name, unused1, unused2, testfun, pvfun) {
+                                        testfun1 <<- list(testfun);
+                                        pvfun1 <<- list(pvfun);
+                                        if(length(filename) > 0) {
+                                            if(class(filename) == "character") {
+                                                fid <<- list(file(description = filename, open = "wt", blocking = FALSE, raw = FALSE), TRUE);
+                                            } else {
+                                                fid <<- list(filename, FALSE)
+                                            }
+                                            writeLines( paste("SNP\tgene\t",statistic_name,"\tp-value\tFDR", sep = ""), fid[[1]]);
+                                        } else {
+                                            fid <<- list();
+                                        }
+                                    },
+                                    update = function(spos, gpos, sta, beta = NULL) {
+                                        if(length(sta)>0) {
+                                            sdata$add(spos);
+                                            gdata$add(gpos);
+                                            cdata$add(sta );
+                                            if(!is.null(beta ))
+                                                bdata$add(beta );
+                                        }
+                                        return(.self);
+                                    },
+                                    getResults = function( gene, snps, FDR_total_count) {
+                                        pvalues = NULL;
+                                        if(cdata$n > 0) {
+                                            tests = testfun1[[1]](cdata$unlist());
+                                            cdata <<- .listBuilder$new();
+
+                                            pvalues = pvfun1[[1]](tests);
+                                            ord = order(pvalues);
+
+                                            tests = tests[ord];
+                                            pvalues = pvalues[ord];
+
+                                            snps_names  = rownames(snps)[sdata$unlist()[ord]];
+                                            sdata <<- .listBuilder$new();
+                                            gene_names  = rownames(gene)[gdata$unlist()[ord]];
+                                            gdata <<- .listBuilder$new();
+
+                                            beta = NULL;
+                                            if(bdata$n > 0)
+                                                beta = bdata$unlist()[ord];
+
+                                        } else {
+                                            cat("No significant associations were found.\n", file = if(length(fid)>0){fid[[1]]}else{""});
+                                        }
+                                        if(length(fid)>0)	{
+                                            if(fid[[2]]) {
+                                                close(fid[[1]]);
+                                            }
+                                            fid <<- list();
+                                        }
+
+                                        if(!is.null(pvalues)) {
+                                            eqtls = list( snps = snps_names,
+                                                          gene = gene_names,
+                                                          statistic = tests,
+                                                          pvalue = pvalues);
+                                            if(!is.null(beta))
+                                                eqtls$beta = beta;
+                                        } else {
+                                            eqtls = list( snps = character(),
+                                                          gene = character(),
+                                                          beta = numeric(),
+                                                          statistic = numeric(),
+                                                          pvalue = numeric();
+                                        }
+                                        return(list(eqtls = data.frame(eqtls)));
+                                    }
+                                )
+)
