@@ -38,6 +38,29 @@ process "parsing" {
     """
 }
 
+// GEM_Gmodel.out.map{ tuple( it[0] + "." + it[1], *it) }.groupTuple()
+// process to calculate FDR on combined files after splitting
+process "calculate_FDR" {
+
+    label "low"
+    label "finish"
+     
+    input:
+    tuple key, contexts, types, path("input")
+    
+    output:
+    path context, type, path("output/*.txt")
+
+    when:
+    params.input
+
+    script:
+    """   
+    mkdir output
+    tail -n+2 *.txt > output/${key}.txt
+    Rscript ${baseDir}/bin/FDR.R output/${key}.txt 
+    """ 
+}
 
 <<<<<<< HEAD
 // filter individual bedGraphs for coverage, filter pairwise comparisons for significance

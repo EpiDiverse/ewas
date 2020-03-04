@@ -8,7 +8,6 @@ suppressMessages(require(usethis))
 suppressMessages(require(GEM))
 
 args <- commandArgs(trailingOnly=T)
-source(args[6])
 
 env= paste(".", args[1], sep="/")
 cov= paste(".", args[2], sep="/")

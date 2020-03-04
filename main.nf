@@ -281,10 +281,16 @@ workflow 'EWAS' {
         vcftools_missing(bcftools.out)
         // extract snps.txt for GEM_GModel
         vcftools_extract(bcftools.out)
+        // split data based on scaffolds
+        split_scaffolds(meth_channel)
 
         // run GEM on selected combination of inputs
         GEM_Emodel(meth_channel, parsing.out[0], parsing.out[1])
-        GEM_Gmodel(meth_channel, vcftools_extract.out, parsing.out[1])
+        GEM_Gmodel(split_scaffolds.out.transpose(), vcftools_extract.out, parsing.out[1])
+        
+        // calculate FDR
+        Gmodel_channel = GEM_Gmodel.out.map{ tuple( it[0] + "-" + it[1], *it) }.groupTuple()
+        calculate_FDR(Gmodel_channel)
 
 
     // emit results
