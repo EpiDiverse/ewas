@@ -61,7 +61,7 @@ process "bedtools_unionbedg" {
     params.input
 
     script:
-    if beds.size() > 1
+    if (beds.size() > 1)
         """
         bedtools unionbedg -filler NA -i ${beds} -header -names ${samples.join(" ")} > unsorted.${context}.${types.unique().join("")}.bed || exit \$?
         head -1 unsorted.${context}.${types.unique().join("")}.bed > ${context}.${types.unique().join("")}.bed
