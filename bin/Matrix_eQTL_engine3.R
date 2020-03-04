@@ -45,13 +45,13 @@ Matrix_eQTL_engine3 = function(
         stopifnot(  class(noFDRsaveMemory) == "logical" );
         stopifnot( length(noFDRsaveMemory) == 1 );
 
-        if( pvOutputThreshold > 0 ) {
-            stopifnot( !((length(output_file_name) == 0)) )# && noFDRsaveMemory) )
-            stopifnot( length(output_file_name) <= 1 );
-            if( length(output_file_name) == 1 ) {
-                stopifnot( class(output_file_name) %in% c("character","connection") );
-            }
-        }
+        #if( pvOutputThreshold > 0 ) {
+            #stopifnot( !((length(output_file_name) == 0) && noFDRsaveMemory) )
+            #stopifnot( length(output_file_name) <= 1 );
+            #if( length(output_file_name) == 1 ) {
+                #stopifnot( class(output_file_name) %in% c("character","connection") );
+            #}
+        #}
 
         stopifnot( class(pvOutputThreshold.cis) == "numeric" );
         stopifnot( length(pvOutputThreshold.cis) == 1 );
