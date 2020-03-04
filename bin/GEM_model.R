@@ -147,7 +147,7 @@ my.GEM_Emodel <-
 #' GEM_Gmodel(snp_file, covariate_file, methylation_file, Gmodel_pv, output_file)
 my.GEM_Gmodel <-
     function(snp_file_name, covariate_file_name, methylation_file_name,
-             Gmodel_pv, output_file_name, noFDR = FALSE)
+             Gmodel_pv, outfile, noFDR = FALSE)
     {
 
         errorCovariance = numeric();
@@ -183,7 +183,7 @@ my.GEM_Gmodel <-
             snps = snp,
             gene = cpg,
             cvrt = cvrt,
-            output_file_name = output_file_name,
+            output_file_name = outfile,
             pvOutputThreshold = Gmodel_pv,
             useModel = modelLINEAR,
             errorCovariance = errorCovariance,
