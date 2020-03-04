@@ -171,8 +171,7 @@ process "GEM_Gmodel" {
     path covs
     
     output:
-    tuple type, path("${context}.${type}.filtered_${params.FDR}_FDR.txt")
-    tuple type, path("${context}.${type}.txt")
+    tuple context, type, path("${context}.${type}.txt")
     tuple type, path("${context}.${type}.log")
    
     when:
