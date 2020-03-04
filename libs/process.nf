@@ -49,19 +49,16 @@ process "calculate_FDR" {
     tuple key, contexts, types, path(txt)
     
     output:
-    tuple context, type, path("output/*.txt")
+    tuple val("${context.unique().join("")}"), val("${type.unique().join("")}"), path("output/*.txt")
 
     when:
     params.input
 
     script:
     """
-    echo $key
-    echo $contexts
-    echo $types
-    mkdir output
-    tail -n+2 *.txt > output/${key}.txt
-    Rscript ${baseDir}/bin/FDR.R output/${key}.txt 
+    mkdir input output
+    tail -n+2 *.txt > input/${key}.txt
+    Rscript ${baseDir}/bin/FDR.R input/${key}.txt output/${key}.txt
     """ 
 }
 
