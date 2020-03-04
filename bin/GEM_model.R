@@ -67,7 +67,7 @@ my.GEM_Emodel <-
         cpg$LoadFile(methylation_file_name);
 
         ## Run the analysis
-        Emodel <- Matrix_eQTL_engine3(
+        Emodel <- Matrix_eQTL_engine2(
             snps = env,
             gene = cpg,
             cvrt = cvrt,
@@ -179,7 +179,7 @@ my.GEM_Gmodel <-
 
 
         ## Run the analysis
-        Gmodel = Matrix_eQTL_engine2(
+        Gmodel = Matrix_eQTL_engine3(
             snps = snp,
             gene = cpg,
             cvrt = cvrt,
