@@ -49,7 +49,7 @@ process "calculate_FDR" {
     tuple key, contexts, types, path("input")
     
     output:
-    path context, type, path("output/*.txt")
+    tuple context, type, path("output/*.txt")
 
     when:
     params.input
