@@ -35,7 +35,7 @@
 #' output_file = paste(RESULTDIR, "Result_Emodel.txt", sep = .Platform$file.sep)
 #' qqplot_file = paste(RESULTDIR, "QQplot_Emodel.jpg", sep = .Platform$file.sep)
 #' GEM_Emodel(env_file, covariate_file, methylation_file, Emodel_pv, output_file, qqplot_file)
-GEM_Emodel <-
+my.GEM_Emodel <-
     function(env_file_name, covariate_file_name, methylation_file_name,
              Emodel_pv, output_file_name, qqplot_file_name, noFDR = FALSE, savePlot = TRUE) {
 
@@ -145,7 +145,7 @@ GEM_Emodel <-
 #' Gmodel_pv = 1e-04
 #' output_file = paste(RESULTDIR, "Result_Gmodel.txt", sep = .Platform$file.sep)
 #' GEM_Gmodel(snp_file, covariate_file, methylation_file, Gmodel_pv, output_file)
-GEM_Gmodel <-
+my.GEM_Gmodel <-
     function(snp_file_name, covariate_file_name, methylation_file_name,
              Gmodel_pv, output_file_name, noFDR = FALSE)
     {
@@ -255,7 +255,7 @@ GEM_Gmodel <-
 #' GxEmodel_pv = 1e-4
 #' output_file = paste(RESULTDIR, "Result_GxEmodel.txt", sep = .Platform$file.sep)
 #' GEM_GxEmodel(snp_file, covariate_file, methylation_file, GxEmodel_pv, output_file)
-GEM_GxEmodel <-
+my.GEM_GxEmodel <-
     function(snp_file_name, covariate_file_name, methylation_file_name,
              GxEmodel_pv, output_file_name, topKplot = 10, noFDR = FALSE, savePlot=TRUE)
     {

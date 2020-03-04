@@ -181,7 +181,7 @@ process "GEM_Gmodel" {
     script: 
     """
     awk -F "\\t" '{printf \"%s:%s-%s\",\$1,\$2,\$3; for(i=4; i<=NF; i++) {printf \"\\t%s\",\$i}; print null}' ${meth} > ${context}.txt
-    Rscript ${baseDir}/bin/GEM_Gmodel.R ${snps} ${covs} ${context}.txt ${params.Gmodel_pv} ${context}.${type} ${baseDir}/bin/GEM_model.R > ${context}.${type}.log
+    Rscript ${baseDir}/bin/GEM_Gmodel.R ${baseDir}/bin/GEM_model.R ${snps} ${covs} ${context}.txt ${params.Gmodel_pv} ${context}.${type} > ${context}.${type}.log
     sort -V ${context}.${type}.txt |
     awk 'BEGIN{OFS="\\t"; print "cpg\\tsnp\\tbeta\\tstats\\tpvalue\\tFDR"} \$6<=${params.FDR}{print \$1,\$2,\$3,\$4,\$5,\$6}' > ${context}.${type}.filtered_${params.FDR}_FDR.txt
     """
