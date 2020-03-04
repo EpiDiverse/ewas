@@ -289,8 +289,9 @@ workflow 'EWAS' {
         GEM_Gmodel(split_scaffolds.out.transpose(), vcftools_extract.out, parsing.out[1])
         
         // calculate FDR
-        Gmodel_channel = GEM_Gmodel.out[0].map{ tuple( it[0] + "." + it[1], *it) }.groupTuple()
-        calculate_FDR(Gmodel_channel)
+        Gmodel_channel = GEM_Gmodel.out[0].map{ tuple( it[0] + "." + it[1], *it) }.groupTuple().map{ tuple("Gmodel", *it) }
+        GxE_channel = Channel.empty()
+        calculate_FDR(Gmodel_channel.mix(GxE_channel))
 
 
     // emit results
