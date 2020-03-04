@@ -172,8 +172,8 @@ process "GEM_Gmodel" {
     path covs
     
     output:
-    tuple context, type, path("${context}.${type}.txt")
-    tuple type, path("${context}.${type}.log")
+    tuple context, type, path("output/*.txt")
+    tuple type, path("output/*.log")
    
     when:
     params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel)
@@ -181,8 +181,6 @@ process "GEM_Gmodel" {
     script: 
     """
     awk -F "\\t" '{printf \"%s:%s-%s\",\$1,\$2,\$3; for(i=4; i<=NF; i++) {printf \"\\t%s\",\$i}; print null}' ${meth} > ${context}.txt
-    Rscript ${baseDir}/bin/GEM_Gmodel.R ${baseDir}/bin ${snps} ${covs} ${context}.txt ${params.Gmodel_pv} ${context}.${type} > ${context}.${type}.log
-    sort -V ${context}.${type}.txt |
-    awk 'BEGIN{OFS="\\t"; print "cpg\\tsnp\\tbeta\\tstats\\tpvalue\\tFDR"} \$6<=${params.FDR}{print \$1,\$2,\$3,\$4,\$5,\$6}' > ${context}.${type}.filtered_${params.FDR}_FDR.txt
+    Rscript ${baseDir}/bin/GEM_Gmodel.R ${baseDir}/bin ${snps} ${covs} ${context}.txt ${params.Gmodel_pv} output/\$(basename ${meth} .bed).txt > output/\$(basename ${meth} .bed).log
     """
 }

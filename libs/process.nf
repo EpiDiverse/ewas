@@ -46,7 +46,7 @@ process "calculate_FDR" {
     label "finish"
      
     input:
-    tuple key, contexts, types, path("input")
+    tuple key, contexts, types, path(txt)
     
     output:
     tuple context, type, path("output/*.txt")
@@ -55,7 +55,10 @@ process "calculate_FDR" {
     params.input
 
     script:
-    """   
+    """
+    echo $key
+    echo $contexts
+    echo $types
     mkdir output
     tail -n+2 *.txt > output/${key}.txt
     Rscript ${baseDir}/bin/FDR.R output/${key}.txt 
