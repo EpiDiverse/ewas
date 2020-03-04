@@ -49,7 +49,7 @@ process "calculate_FDR" {
     tuple key, contexts, types, path(txt)
     
     output:
-    tuple val("${context.unique().join("")}"), val("${type.unique().join("")}"), path("output/*.txt")
+    tuple val("${contexts.unique().join("")}"), val("${types.unique().join("")}"), path("output/*.txt")
 
     when:
     params.input
