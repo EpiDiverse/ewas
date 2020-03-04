@@ -5,7 +5,7 @@ process "parsing" {
 
     label "low"
     label "finish"
-    tag "${params.samples}"
+    tag "${params.samples.baseName}"
 
     maxForks "${params.fork}".toInteger()
 
@@ -44,7 +44,7 @@ process "calculate_FDR" {
 
     label "low"
     label "finish"
-    label "${model} - ${key}.txt"
+    tag "${model} - ${key}.txt"
      
     input:
     tuple model, key, contexts, types, path(txt)
