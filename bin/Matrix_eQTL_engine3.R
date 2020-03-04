@@ -859,7 +859,7 @@ Matrix_eQTL_engine3 = function(
                                                           gene = character(),
                                                           beta = numeric(),
                                                           statistic = numeric(),
-                                                          pvalue = numeric();
+                                                          pvalue = numeric());
                                         }
                                         return(list(eqtls = data.frame(eqtls)));
                                     }
