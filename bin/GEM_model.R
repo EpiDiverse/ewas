@@ -194,7 +194,7 @@ my.GEM_Gmodel <-
             addInfo = "methQTL"
         );
 
-        unlink(output_file_name);
+        unlink(out);
         ## Results:
         cat('Analysis done in: ', Gmodel$time.in.sec, ' seconds', '\n');
         #R2 = Gmodel$all$eqtls$statistic ^ 2 / (Gmodel$all$eqtls$statistic ^ 2 + Gmodel$param$dfFull);
