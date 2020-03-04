@@ -144,7 +144,7 @@ process "split_scaffolds" {
     tuple context, type, path(bed)
     
     output:
-    path context, type, path("output/*.bed")
+    tuple context, type, path("output/*.bed")
 
     when:
     params.input
