@@ -38,27 +38,28 @@ process "parsing" {
     """
 }
 
-// GEM_Gmodel.out.map{ tuple( it[0] + "." + it[1], *it) }.groupTuple()
+// GEM_Gmodel.out.map{ tuple( it[0] + "." + it[1], *it) }.groupTuple().map{ tuple("Gmodel", *it) }
 // process to calculate FDR on combined files after splitting
 process "calculate_FDR" {
 
     label "low"
     label "finish"
+    label "${model} - ${key}.txt"
      
     input:
-    tuple key, contexts, types, path(txt)
+    tuple model, key, contexts, types, path(txt)
     
     output:
-    tuple val("${contexts.unique().join("")}"), val("${types.unique().join("")}"), path("output/*.txt")
+    tuple val("${contexts.unique().join("")}"), val("${types.unique().join("")}"), path("${model}/${key}.txt")
 
     when:
     params.input
 
     script:
     """
-    mkdir input output
+    mkdir input ${model}
     tail -q -n+2 *.txt > input/${key}.txt
-    Rscript ${baseDir}/bin/FDR.R input/${key}.txt output/${key}.txt
+    Rscript ${baseDir}/bin/FDR.R input/${key}.txt ${model}/${key}.txt
     """ 
 }
 
