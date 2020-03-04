@@ -198,16 +198,31 @@ my.GEM_Gmodel <-
         ## Results:
         cat('Analysis done in: ', Gmodel$time.in.sec, ' seconds', '\n');
         #R2 = Gmodel$all$eqtls$statistic ^ 2 / (Gmodel$all$eqtls$statistic ^ 2 + Gmodel$param$dfFull);
-        
+
+		if(noFDR){
+
         result_Gmodel <- cbind(
-          as.character(Gmodel$all$eqtls$gene),
-          as.character(Gmodel$all$eqtls$snps),
-          Gmodel$all$eqtls$beta,
-          Gmodel$all$eqtls$statistic,
-          Gmodel$all$eqtls$pvalue,
-          Gmodel$all$eqtls$FDR
+			as.character(Gmodel$all$eqtls$gene),
+			as.character(Gmodel$all$eqtls$snps),
+			Gmodel$all$eqtls$beta,
+			Gmodel$all$eqtls$statistic,
+			Gmodel$all$eqtls$pvalue
+        )
+        colnames(result_Gmodel) <- c("cpg", "snp", "beta", "stats", "pvalue")
+
+		}else{
+
+        result_Gmodel <- cbind(
+			as.character(Gmodel$all$eqtls$gene),
+			as.character(Gmodel$all$eqtls$snps),
+			Gmodel$all$eqtls$beta,
+			Gmodel$all$eqtls$statistic,
+			Gmodel$all$eqtls$pvalue,
+			Gmodel$all$eqtls$FDR
         )
         colnames(result_Gmodel) <- c("cpg", "snp", "beta", "stats", "pvalue", "FDR")
+
+		}
         
         write.table(
             result_Gmodel, output_file_name, sep = "\t", row.names = FALSE, quote = FALSE
@@ -339,19 +354,32 @@ my.GEM_GxEmodel <-
             }
         }
 
-        
-        result_GxEmodel <- cbind (
-          as.character(GxEmodel$all$eqtls$gene),
-          as.character(GxEmodel$all$eqtls$snps),
-          GxEmodel$all$eqtls$beta,
-          GxEmodel$all$eqtls$statistic,
-          GxEmodel$all$eqtls$pvalue,
-          GxEmodel$all$eqtls$FDR
-        )
-        
-        colnames(result_GxEmodel) <- c("cpg", "snp", "beta", "stats", "pvalue", "FDR")
-        
-        
+		if(noFDR){
+
+			result_GxEmodel <- cbind (
+				as.character(GxEmodel$all$eqtls$gene),
+				as.character(GxEmodel$all$eqtls$snps),
+				GxEmodel$all$eqtls$beta,
+				GxEmodel$all$eqtls$statistic,
+				GxEmodel$all$eqtls$pvalue
+			)
+		    
+			colnames(result_GxEmodel) <- c("cpg", "snp", "beta", "stats", "pvalue")
+
+		}else{
+
+			result_GxEmodel <- cbind (
+				as.character(GxEmodel$all$eqtls$gene),
+				as.character(GxEmodel$all$eqtls$snps),
+				GxEmodel$all$eqtls$beta,
+				GxEmodel$all$eqtls$statistic,
+				GxEmodel$all$eqtls$pvalue,
+				GxEmodel$all$eqtls$FDR
+			)
+		    
+			colnames(result_GxEmodel) <- c("cpg", "snp", "beta", "stats", "pvalue", "FDR")
+
+		}
         
         write.table(
             result_GxEmodel, output_file_name, sep = "\t", row.names = FALSE, quote = FALSE

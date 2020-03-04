@@ -22,4 +22,4 @@ p= as.numeric(args[5])
 #main.nf takes p_value as an integer, but GEM process converts it into string. before this, this value be converted into int again. 
 gmodel_txt = paste("./", args[6], ".txt", sep="")
 
-my.GEM_Gmodel(snp, cov, meth, p, gmodel_txt, noFDR=FALSE)
+my.GEM_Gmodel(snp, cov, meth, p, gmodel_txt, noFDR=TRUE)

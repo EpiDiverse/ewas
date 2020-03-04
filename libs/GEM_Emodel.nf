@@ -61,11 +61,17 @@ process "bedtools_unionbedg" {
     params.input
 
     script:
-    """
-    bedtools unionbedg -filler NA -i ${beds} -header -names ${samples.join(" ")} > unsorted.${context}.${types.unique().join("")}.bed || exit \$?
-    head -1 unsorted.${context}.${types.unique().join("")}.bed > ${context}.${types.unique().join("")}.bed
-    tail -n+2 unsorted.${context}.${types.unique().join("")}.bed | sort -k1,1 -k2,2n >> ${context}.${types.unique().join("")}.bed
-    """
+    if beds.size() > 1
+        """
+        bedtools unionbedg -filler NA -i ${beds} -header -names ${samples.join(" ")} > unsorted.${context}.${types.unique().join("")}.bed || exit \$?
+        head -1 unsorted.${context}.${types.unique().join("")}.bed > ${context}.${types.unique().join("")}.bed
+        tail -n+2 unsorted.${context}.${types.unique().join("")}.bed | sort -k1,1 -k2,2n >> ${context}.${types.unique().join("")}.bed
+        """
+    else
+        """
+        echo -e "chrom\\tstart\\tend\\t${samples.join(" ")}" > ${context}.${types.unique().join("")}.bed
+        tail -n+2 ${beds} | sort -k1,1 -k2,2n >> ${context}.${types.unique().join("")}.bed
+        """
 } 
 
 
