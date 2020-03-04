@@ -5,7 +5,7 @@ process "parsing" {
 
     label "low"
     label "finish"
-    tag "${params.samples.baseName}"
+    tag "${params.samples}"
 
     maxForks "${params.fork}".toInteger()
 
