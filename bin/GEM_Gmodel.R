@@ -11,10 +11,7 @@ suppressMessages(require(usethis))
 ##################################
 args <- commandArgs(trailingOnly=T)
 source(paste(args[1],"GEM_model.R",sep="/"))
-source(paste(args[1],"Matrix_eQTL_engine3.R",sep="/"))
 environment(my.GEM_Gmodel) <- asNamespace("GEM")
-environment(Matrix_eQTL_engine3) <- asNamespace("GEM")
-environment(.OutputSaver_NEW) <- asNamespace("GEM")
 ##################################
 
 snp= paste(".", args[2], sep="/")
