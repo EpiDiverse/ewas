@@ -118,8 +118,7 @@ process "vcftools_extract" {
     --extract-FORMAT-info GT \\
     --out splitted_requiredFormat || exit \$?
 
-    awk '{\$1=\$1"_"\$2; \$2=""; print \$0}' splitted_requiredFormat.GT.FORMAT |
-    sed 's/^/SNP_/' |
+    awk '{printf \"%s:%s-%s\",\$1,\$2,\$2-1; for(i=3; i<=NF; i++) {printf \"\\t%s\",\$i}; print null}' splitted_requiredFormat.GT.FORMAT |
     perl -pe 's!0/0!1!g; s!0/1!2!g; s!1/0!2!g; s!1/1!3!g; s!./.!0!g; s/CHROM_POS/ID/g' |
     awk -v OFS="\t" '\$1=\$1' |
     awk 'NR == 1; NR > 1 {print \$0 | "sort -n"}' |
