@@ -57,7 +57,7 @@ process "calculate_FDR" {
     script:
     """
     mkdir input output
-    tail -n+2 *.txt > input/${key}.txt
+    tail -q -n+2 *.txt > input/${key}.txt
     Rscript ${baseDir}/bin/FDR.R input/${key}.txt output/${key}.txt
     """ 
 }
