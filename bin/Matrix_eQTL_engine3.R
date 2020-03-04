@@ -771,6 +771,56 @@ Matrix_eQTL_engine3 = function(
 }
 
 
+.listBuilder_NEW <- setRefClass(".listBuilder_NEW",
+                            fields = list(
+                                dataEnv = "environment",
+                                n = "integer"
+                            ),
+                            methods = list(
+                                initialize = function() {
+                                    dataEnv <<- new.env(hash = TRUE);
+                                    n <<- 0L;
+                                    # 			cumlength <<- 0;
+                                    return(.self);
+                                },
+                                add = function(x) {
+                                    if(length(x) > 0) {
+                                        n <<- n + 1L;
+                                        # 				cumlength <<- cumlength + length(x);
+                                        assign(paste(n), x, dataEnv );
+                                    }
+                                    return(.self);
+                                },
+                                set = function(i,x) {
+                                    i = as.integer(i);
+                                    if(length(x) > 0) {
+                                        if(i>n)
+                                            n <<- i;
+                                        assign(paste(i), x, dataEnv );
+                                    }
+                                    return(.self);
+                                },
+                                get = function(i) {
+                                    return(base::get(paste(i),dataEnv));
+                                },
+                                list = function() {
+                                    if(n==0)	return(list());
+                                    result = vector("list",n);
+                                    for( i in 1:n) {
+                                        result[[i]] = .self$get(i);
+                                    }
+                                    return(result);
+                                },
+                                unlist = function() {
+                                    return(base::unlist(.self$list(), recursive=FALSE, use.names = FALSE));
+                                },
+                                show = function() {
+                                    #cat(".listBuilder object.\nIternal object in MatrixEQTL package.\n");
+                                    #cat("Number of elements:", .self$n, "\n");
+                                }
+                            ))
+
+
 .OutputSaver_NEW <- setRefClass(".OutputSaver_NEW",
                                 fields = list(
                                     sdata = ".listBuilder_NEW",
@@ -865,52 +915,3 @@ Matrix_eQTL_engine3 = function(
                                     }
                                 )
 )
-
-.listBuilder_NEW <- setRefClass(".listBuilder_NEW",
-                            fields = list(
-                                dataEnv = "environment",
-                                n = "integer"
-                            ),
-                            methods = list(
-                                initialize = function() {
-                                    dataEnv <<- new.env(hash = TRUE);
-                                    n <<- 0L;
-                                    # 			cumlength <<- 0;
-                                    return(.self);
-                                },
-                                add = function(x) {
-                                    if(length(x) > 0) {
-                                        n <<- n + 1L;
-                                        # 				cumlength <<- cumlength + length(x);
-                                        assign(paste(n), x, dataEnv );
-                                    }
-                                    return(.self);
-                                },
-                                set = function(i,x) {
-                                    i = as.integer(i);
-                                    if(length(x) > 0) {
-                                        if(i>n)
-                                            n <<- i;
-                                        assign(paste(i), x, dataEnv );
-                                    }
-                                    return(.self);
-                                },
-                                get = function(i) {
-                                    return(base::get(paste(i),dataEnv));
-                                },
-                                list = function() {
-                                    if(n==0)	return(list());
-                                    result = vector("list",n);
-                                    for( i in 1:n) {
-                                        result[[i]] = .self$get(i);
-                                    }
-                                    return(result);
-                                },
-                                unlist = function() {
-                                    return(base::unlist(.self$list(), recursive=FALSE, use.names = FALSE));
-                                },
-                                show = function() {
-                                    #cat(".listBuilder object.\nIternal object in MatrixEQTL package.\n");
-                                    #cat("Number of elements:", .self$n, "\n");
-                                }
-                            ))
