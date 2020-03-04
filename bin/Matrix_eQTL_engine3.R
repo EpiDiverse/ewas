@@ -773,20 +773,20 @@ Matrix_eQTL_engine3 = function(
 
 .OutputSaver_NEW <- setRefClass(".OutputSaver_NEW",
                                 fields = list(
-                                    sdata = ".listBuilder",
-                                    gdata = ".listBuilder",
-                                    cdata = ".listBuilder",
-                                    bdata = ".listBuilder",
+                                    sdata = ".listBuilder_NEW",
+                                    gdata = ".listBuilder_NEW",
+                                    cdata = ".listBuilder_NEW",
+                                    bdata = ".listBuilder_NEW",
                                     fid = "list",
                                     testfun1 = "list",
                                     pvfun1 = "list"
                                 ),
                                 methods = list(
                                     initialize = function () {
-                                        sdata <<- .listBuilder$new();
-                                        gdata <<- .listBuilder$new();
-                                        cdata <<- .listBuilder$new();
-                                        bdata <<- .listBuilder$new();
+                                        sdata <<- .listBuilder_NEW$new();
+                                        gdata <<- .listBuilder_NEW$new();
+                                        cdata <<- .listBuilder_NEW$new();
+                                        bdata <<- .listBuilder_NEW$new();
                                         fid <<- list(0);
                                         testfun1 <<- list(0);
                                         pvfun1 <<- list(0);
@@ -820,7 +820,7 @@ Matrix_eQTL_engine3 = function(
                                         pvalues = NULL;
                                         if(cdata$n > 0) {
                                             tests = testfun1[[1]](cdata$unlist());
-                                            cdata <<- .listBuilder$new();
+                                            cdata <<- .listBuilder_NEW$new();
 
                                             pvalues = pvfun1[[1]](tests);
                                             ord = order(pvalues);
@@ -829,9 +829,9 @@ Matrix_eQTL_engine3 = function(
                                             pvalues = pvalues[ord];
 
                                             snps_names  = rownames(snps)[sdata$unlist()[ord]];
-                                            sdata <<- .listBuilder$new();
+                                            sdata <<- .listBuilder_NEW$new();
                                             gene_names  = rownames(gene)[gdata$unlist()[ord]];
-                                            gdata <<- .listBuilder$new();
+                                            gdata <<- .listBuilder_NEW$new();
 
                                             beta = NULL;
                                             if(bdata$n > 0)
@@ -865,3 +865,52 @@ Matrix_eQTL_engine3 = function(
                                     }
                                 )
 )
+
+.listBuilder_NEW <- setRefClass(".listBuilder_NEW",
+                            fields = list(
+                                dataEnv = "environment",
+                                n = "integer"
+                            ),
+                            methods = list(
+                                initialize = function() {
+                                    dataEnv <<- new.env(hash = TRUE);
+                                    n <<- 0L;
+                                    # 			cumlength <<- 0;
+                                    return(.self);
+                                },
+                                add = function(x) {
+                                    if(length(x) > 0) {
+                                        n <<- n + 1L;
+                                        # 				cumlength <<- cumlength + length(x);
+                                        assign(paste(n), x, dataEnv );
+                                    }
+                                    return(.self);
+                                },
+                                set = function(i,x) {
+                                    i = as.integer(i);
+                                    if(length(x) > 0) {
+                                        if(i>n)
+                                            n <<- i;
+                                        assign(paste(i), x, dataEnv );
+                                    }
+                                    return(.self);
+                                },
+                                get = function(i) {
+                                    return(base::get(paste(i),dataEnv));
+                                },
+                                list = function() {
+                                    if(n==0)	return(list());
+                                    result = vector("list",n);
+                                    for( i in 1:n) {
+                                        result[[i]] = .self$get(i);
+                                    }
+                                    return(result);
+                                },
+                                unlist = function() {
+                                    return(base::unlist(.self$list(), recursive=FALSE, use.names = FALSE));
+                                },
+                                show = function() {
+                                    #cat(".listBuilder object.\nIternal object in MatrixEQTL package.\n");
+                                    #cat("Number of elements:", .self$n, "\n");
+                                }
+                            ))
