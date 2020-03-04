@@ -346,8 +346,8 @@ workflow {
         //EWAS.out.gem_gmodel_filtered_pos to: "${params.output}/positions/Gmodel", mode: 'copy'
         //EWAS.out.gem_gmodel_full_reg to: "${params.output}/regions/Gmodel", mode: 'copy'
         //EWAS.out.gem_gmodel_full_pos to: "${params.output}/positions/Gmodel", mode: 'copy'
-        EWAS.out.gem_gmodel_log_reg to: "${params.output}/regions/Gmodel", mode: 'copy'
-        EWAS.out.gem_gmodel_log_pos to: "${params.output}/positions/Gmodel", mode: 'copy'
+        //EWAS.out.gem_gmodel_log_reg to: "${params.output}/regions/Gmodel", mode: 'copy'
+        //EWAS.out.gem_gmodel_log_pos to: "${params.output}/positions/Gmodel", mode: 'copy'
 
 }
 
