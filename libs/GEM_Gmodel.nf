@@ -139,6 +139,7 @@ process "split_scaffolds" {
 
     label "low"
     label "finish"
+    tag "$type - $context"
      
     input:
     tuple context, type, path(bed)
@@ -152,7 +153,7 @@ process "split_scaffolds" {
     script:
     """   
     mkdir output
-    awk -F "\\t" '{if(NR-1){if(\$1 in arr == 0){arr[\$1]=\$1; print header > "output"/\$1".bed"}; print \$0 >> "output"/\$1".bed"} else {header=\$0}}' ${bed}
+    awk -F "\\t" '{if(NR-1){if(\$1 in arr == 0){arr[\$1]=\$1; print header > "output/"\$1".bed"}; print \$0 >> "output/"\$1".bed"} else {header=\$0}}' ${bed}
     """ 
 }
 
@@ -163,7 +164,7 @@ process "GEM_Gmodel" {
     
     label "low"
     label "finish"
-    tag "$type - $context"
+    tag "$type - $context - ${meth.baseName}"
 
     input:
     tuple context, type, path(meth)
