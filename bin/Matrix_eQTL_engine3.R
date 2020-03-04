@@ -454,22 +454,22 @@ Matrix_eQTL_engine3 = function(
     }
     ################################# Saver class(es) creation ##############################
     {
-        #status("Creating output file(s)");
-        #if(noFDRsaveMemory) {
-            #if( pvOutputThreshold > 0 ) {
-                #saver.tra = .OutputSaver_direct$new();
-            #}
-            #if( pvOutputThreshold.cis > 0 ) {
-                #saver.cis = .OutputSaver_direct$new();
-            #}
-        #} else {
-            #if( pvOutputThreshold > 0 ) {
-                #saver.tra = .OutputSaver_FRD$new();
-            #}
-            #if( pvOutputThreshold.cis > 0 ) {
-                #saver.cis = .OutputSaver_FRD$new();
-            #}
-        #}
+        status("Creating output file(s)");
+        if(noFDRsaveMemory) {
+            if( pvOutputThreshold > 0 ) {
+                saver.tra = .OutputSaver_direct$new();
+            }
+            if( pvOutputThreshold.cis > 0 ) {
+                saver.cis = .OutputSaver_direct$new();
+            }
+        } else {
+            if( pvOutputThreshold > 0 ) {
+                saver.tra = .OutputSaver_FRD$new();
+            }
+            if( pvOutputThreshold.cis > 0 ) {
+                saver.cis = .OutputSaver_FRD$new();
+            }
+        }
         if( pvOutputThreshold > 0 )
             if( pvOutputThreshold * gene$nRows() * snps$nRows() > 1000000 )
                 if(!noFDRsaveMemory)
@@ -482,10 +482,10 @@ Matrix_eQTL_engine3 = function(
         }
         if(!is.null(betafun))
             statistic_name = paste("beta\t",statistic_name, sep="");
-        if( pvOutputThreshold > 0 )
-            saver.tra$start(output_file_name,     statistic_name, snps, gene, testfun, pvfun);
-        if( pvOutputThreshold.cis > 0 )
-            saver.cis$start(output_file_name.cis, statistic_name, snps, gene, testfun, pvfun);
+        #if( pvOutputThreshold > 0 )
+            #saver.tra$start(output_file_name,     statistic_name, snps, gene, testfun, pvfun);
+        #if( pvOutputThreshold.cis > 0 )
+            #saver.cis$start(output_file_name.cis, statistic_name, snps, gene, testfun, pvfun);
         rm( statistic_name );
     }
     ################################# Some useful functions #################################
@@ -690,10 +690,10 @@ Matrix_eQTL_engine3 = function(
                     if(!is.null(betafun))
                         beta = betafun(mat[[length(mat)]][select.tra.raw], ss, gg, select.tra);
 
-                    saver.tra$update( snps_offset + select.tra[ , 2],
-                                      gene_offset + select.tra[ , 1],
-                                      statistic[select.tra.raw],
-                                      beta);
+                    #saver.tra$update( snps_offset + select.tra[ , 2],
+                                      #gene_offset + select.tra[ , 1],
+                                      #statistic[select.tra.raw],
+                                      #beta);
 
                     if( min.pv.by.genesnp )
                         minpv.tra$update(ss, gg, astatistic)
