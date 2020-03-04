@@ -23,7 +23,7 @@ e_model_qq = paste("./", args[5], ".jpg", sep="")
 #meth= paste(args[1], "methylation.txt", sep = .Platform$file.sep)
 #Emodel_result= paste(args[1], "Result_Emodel.txt", sep = .Platform$file.sep)
 #Emodel_result_qqplot= paste(args[1], "QQplot_Emodel.png", sep = .Platform$file.sep)
-GEM_Emodel(env, cov, meth, p , emodel_txt, e_model_qq, noFDR=FALSE, savePlot=TRUE)
+GEM_Emodel(env, cov, meth, p , emodel_txt, e_model_qq, savePlot=TRUE)
 
 #write.table(cov,"cov.txt", quote=FALSE, row.names = FALSE, sep = "\t")
 #write.table(covar,"covar.txt", quote=FALSE, row.names = FALSE, sep = "\t")
