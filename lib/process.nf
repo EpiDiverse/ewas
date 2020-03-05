@@ -448,7 +448,7 @@ process "topKplots" {
     script:
     """
     mkdir ${model} ${model}/${key}
-    head -1 txt > ${model}/${key}.txt
+    head -qn 1 txt* | uniq > ${model}/${key}.txt
     tail -q -n+2 txt* >> ${model}/${key}.txt || exit \$?
 
     head -1 ${result} > ${model}/${key}/${result}
