@@ -277,7 +277,7 @@ workflow 'EWAS' {
         calculate_FDR(Gmodel_channel.mix(GxE_channel))
 
         // visualisation
-        topKplots(calculate_FDR.out.filter{ it[0] == "GxE" }, vcftools_extract.out, parsing.out[2])
+        topKplots(calculate_FDR.out[0].filter{ it[0] == "GxE" }, vcftools_extract.out, parsing.out[2])
 
 
     // emit results
