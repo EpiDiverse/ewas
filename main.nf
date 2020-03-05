@@ -281,7 +281,7 @@ workflow 'EWAS' {
     emit:
         parsing_env = parsing.out[0]
         parsing_cov = parsing.out[1]
-        parsing_gxe = GxE ? params.parsing.out[2] : Channel.empty()
+        parsing_gxe = GxE ? parsing.out[2] : Channel.empty()
         bedtools_unionbedg_out = bedtools_unionbedg.out
         bedtools_intersect_out = bedtools_intersect.out
         average_over_regions_out = average_over_regions.out
