@@ -20,8 +20,8 @@ if(!is.null(topKplot) && is.numeric(topKplot) && topKplot > 0){
     if(topKplot > length(model$pvalue))
         topKplot <- length(model$pvalue)
     for(i in 1:topKplot){
-        snpiname <- model$snp[i]
-        cpginame <- model$cpg[i]
+        snpiname <- as.character(model$snp[i])
+        cpginame <- as.character(model$cpg[i])
 
         snpi <- snp[snp[,1] == snpiname,2:ncol(snp)]
         cpgi <- cpg[cpg[,1] == cpginame,2:ncol(snp)]
