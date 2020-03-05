@@ -454,6 +454,6 @@ process "topKplots" {
     head -1 ${result} > ${model}/${key}/${result}
     tail -n+2 ${result} | sort -gk6 | head -${params.kplots} >> ${model}/${key}/${result} || exit \$?
 
-    Rscript ${baseDir}/bin/Kplot.R ${model}/${key}/${result} input/${key}.txt ${snp} ${gxe}
+    Rscript ${baseDir}/bin/Kplot.R ${model}/${key}/${result} ${model}/${key}.txt ${snp} ${gxe}
     """ 
 }
