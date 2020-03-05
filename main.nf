@@ -276,6 +276,9 @@ workflow 'EWAS' {
         GxE_channel = GEM_Gmodel.out[0].map{ tuple( it[0] + "." + it[1], *it) }.groupTuple().map{ tuple("GxE", *it) }
         calculate_FDR(Gmodel_channel.mix(GxE_channel))
 
+        // visualisation
+        topKplots(calculate_FDR.out.filter{ it[0] == "GxE" }, vcftools_extract.out, parsing.out[2])
+
 
     // emit results
     emit:
@@ -295,10 +298,11 @@ workflow 'EWAS' {
         gem_emodel_log_reg = GEM_Emodel.out[3].filter{ it[0] == "region" || it[0] == "merged" }
         gem_emodel_log_pos = GEM_Emodel.out[3].filter{ it[0] != "region" && it[0] != "merged" }
 
-        calculate_FDR_full_reg = calculate_FDR.out[0].filter{ it[2] == "region" || it[2] == "merged" }
-        calculate_FDR_full_pos = calculate_FDR.out[0].filter{ it[2] != "region" && it[2] != "merged" }
-        calculate_FDR_filt_reg = calculate_FDR.out[1].filter{ it[2] == "region" || it[2] == "merged" }
-        calculate_FDR_filt_pos = calculate_FDR.out[1].filter{ it[2] != "region" && it[2] != "merged" }
+        calculate_FDR_reg = calculate_FDR.out[1].filter{ it[0] == "region" || it[0] == "merged" }
+        calculate_FDR_pos = calculate_FDR.out[1].filter{ it[0] != "region" && it[0] != "merged" }
+
+        topKplots_png_reg = topKplots.out.filter{ it[0] == "region" || it[0] == "merged" }
+        topKplots_png_pos = topKplots.out.filter{ it[0] != "region" && it[0] != "merged" }
 
 }
 
@@ -328,10 +332,13 @@ workflow {
         EWAS.out.gem_emodel_log_reg to: "${params.output}/regions/Emodel", mode: 'copy'
         EWAS.out.gem_emodel_log_pos to: "${params.output}/positions/Emodel", mode: 'copy'
 
-        EWAS.out.calculate_FDR_full_reg to: "${params.output}/regions", mode: 'copy'
-        EWAS.out.calculate_FDR_full_pos to: "${params.output}/positions", mode: 'copy'
-        EWAS.out.calculate_FDR_filt_reg to: "${params.output}/regions", mode: 'copy'
-        EWAS.out.calculate_FDR_filt_pos to: "${params.output}/positions", mode: 'copy'
+        EWAS.out.calculate_FDR_reg to: "${params.output}/regions", mode: 'copy'
+        EWAS.out.calculate_FDR_pos to: "${params.output}/positions", mode: 'copy'
+
+        EWAS.out.topKplots_png_reg to: "${params.output}/regions", mode: 'copy'
+        EWAS.out.topKplots_png_pos to: "${params.output}/positions", mode: 'copy'
+
+
 
 }
 

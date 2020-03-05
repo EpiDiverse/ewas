@@ -51,11 +51,11 @@ process "calculate_FDR" {
     tag "${model} - ${key}.txt"
      
     input:
-    tuple model, key, contexts, types, path(txt)
+    tuple model, key, contexts, types, path(txt), path(results)
     
     output:
-    tuple model, val("${contexts.unique().join("")}"), val("${types.unique().join("")}"), path("${model}/${key}.txt")
-    path "${model}/${key}.filtered_${params.output_FDR}_FDR.txt"
+    tuple model, key, val("${types.unique().join("")}"), path(txt), path("${model}/${key}.txt")
+    tuple val("${contexts.unique().join("")}"), path("${model}/*.txt")
 
     when:
     params.input
@@ -63,13 +63,12 @@ process "calculate_FDR" {
     script:
     """
     mkdir input ${model}
-    tail -q -n+2 *.txt > input/${key}.txt
+    tail -q -n+2 ${results} > input/${key}.txt
     Rscript ${baseDir}/bin/FDR.R input/${key}.txt ${model}/${key}.txt
     awk '{if(NR==1){print} else {if(\$6<=${params.output_FDR}){print}}}' ${model}/${key}.txt > ${model}/${key}.filtered_${params.output_FDR}_FDR.txt
     """ 
 }
 
-<<<<<<< HEAD
 // filter individual bedGraphs for coverage, filter pairwise comparisons for significance
 process "filtering" {
 
@@ -422,8 +421,39 @@ process "process3" {
         samtools fastq -c 6 -0 /dev/null ${bam} > ${sample}.${type}.fastq.gz
         """
 }
-<<<<<<< HEAD
-=======
 
 
 */
+=======
+
+// calculate_FDR.out.filter{ it[0] == "GxEmodel" }
+// process to generate top X plots from GxEmodel based on number provided by --kplots
+process "topKplots" {
+
+    label "low"
+    label "finish"
+    tag "${model} - ${key}.txt"
+     
+    input:
+    tuple model, key, type, path("txt"), path(result)
+    path snp
+    path gxe
+    
+    output:
+    tuple type, path("${model}/${key}/*.png")
+
+    when:
+    params.kplots > 0
+
+    script:
+    """
+    mkdir ${model} ${model}/${key}
+    head -1 txt > ${model}/${key}.txt
+    tail -q -n+2 txt* >> ${model}/${key}.txt || exit \$?
+
+    head -1 ${result} > ${model}/${key}/${result}
+    tail -n+2 ${result} | sort -gk6 | head -${params.kplots} >> ${model}/${key}/${result} || exit \$?
+
+    Rscript ${baseDir}/bin/kplot.R ${model}/${key}/${result} input/${key}.txt ${snp} ${gxe}
+    """ 
+}

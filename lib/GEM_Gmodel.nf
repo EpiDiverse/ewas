@@ -171,7 +171,7 @@ process "GEM_Gmodel" {
     path covs
     
     output:
-    tuple context, type, path("output/*.txt")
+    tuple context, type, path("${context}.txt"), path("output/*.txt")
    
     when:
     params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel)
@@ -198,7 +198,7 @@ process "GEM_GxEmodel" {
     path gxe
     
     output:
-    tuple context, type, path("output/*.txt")
+    tuple context, type, path("${context}.txt"), path("output/*.txt")
    
     when:
     params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE)
