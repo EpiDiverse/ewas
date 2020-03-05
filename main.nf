@@ -59,6 +59,8 @@ if(params.version){
     exit 0
 }
 
+// VALIDATE PARAMETERS
+ParameterChecks.checkParams(params)
 
 // DEFINE PATHS
 CpG_path = "${params.input}/*/bedGraph/*_CpG.bedGraph"
@@ -75,8 +77,8 @@ CHH_path_DMRs = "${params.DMRs}/CHH/metilene/*"
 
 
 // PARAMETER CHECKS
-if( !params.input ){error "ERROR: Missing required parameter --input"}
-if( params.noCpG && params.noCHG && params.noCHH ){error "ERROR: please specify at least one methylation context for analysis"}
+//if( !params.input ){error "ERROR: Missing required parameter --input"}
+//if( params.noCpG && params.noCHG && params.noCHH ){error "ERROR: please specify at least one methylation context for analysis"}
 if( !params.Emodel && !params.Gmodel && !params.GxE ){
     Emodel = true
     Gmodel = true
@@ -124,7 +126,7 @@ samples_channel = Channel
 // STAGE BAM FILES FROM TEST PROFILE # this establishes the test data to use with -profile test
 if ( workflow.profile.tokenize(",").contains("test") ){
 
-        include check_test_data from './libs/functions.nf' params(BAMPaths: params.BAMPaths)
+        include check_test_data from './lib/functions.nf' params(BAMPaths: params.BAMPaths)
         BAM = check_test_data(params.BAMPaths)
 
 } else {
@@ -182,26 +184,6 @@ if ( workflow.profile.tokenize(",").contains("test") ){
             -Please check sample names match: ${samples}\n \
             -Please check given file extension: ${params.extension}"}
 
-    /*
-    // STAGE SNP CHANNELS
-    SNP_file = !params.SNPs ? Channel.empty() : 
-        Channel
-            .fromPath( "${params.SNPs}", type: "file" )
-            .map { tuple("multi-sample", it) }
-
-    SNP_dirs = !params.SNPs ? Channel.empty() : 
-        Channel
-            .fromFilePairs( "${params.SNPs}/vcf/*.${params.extension}", type: "file" )
-            .combine(samples_channel, by: 0)
-
-    SNPs = !params.SNPs ? Channel.empty() :
-        SNP_file.mix(SNP_dirs).ifEmpty{ exit 1, "ERROR: No input found for SNP files: ${params.SNPs}\n\n \
-            For single-sample vcfs:\n \
-            -Please check files exist: ${params.SNPs}/vcf/*.${params.extension}\n \
-            -Please check sample names match: ${samples}\n \
-            -Please check given file extension: ${params.extension}"}
-    */
-
 }
 
 // METHYLATION CALLS
@@ -231,9 +213,9 @@ input_channel = single_channel.mix(DMPs_channel, DMRs_channel)
 ////////////////////
 
 // INCLUDES
-include './libs/process.nf' params(params)
-include './libs/GEM_Emodel.nf' params(params)
-include './libs/GEM_Gmodel.nf' params(params)
+include './lib/process.nf' params(params)
+include './lib/GEM_Emodel.nf' params(params)
+include './lib/GEM_Gmodel.nf' params(params)
 
 // SUB-WORKFLOWS
 workflow 'EWAS' {
@@ -287,10 +269,11 @@ workflow 'EWAS' {
         // run GEM on selected combination of inputs
         GEM_Emodel(meth_channel, parsing.out[0], parsing.out[1])
         GEM_Gmodel(split_scaffolds.out.transpose(), vcftools_extract.out, parsing.out[1])
+        GEM_GxEmodel(split_scaffolds.out.transpose(), vcftools_extract.out, parsing.out[2])
         
         // calculate FDR
         Gmodel_channel = GEM_Gmodel.out[0].map{ tuple( it[0] + "." + it[1], *it) }.groupTuple().map{ tuple("Gmodel", *it) }
-        GxE_channel = Channel.empty()
+        GxE_channel = GEM_Gmodel.out[0].map{ tuple( it[0] + "." + it[1], *it) }.groupTuple().map{ tuple("GxE", *it) }
         calculate_FDR(Gmodel_channel.mix(GxE_channel))
 
 
@@ -298,6 +281,7 @@ workflow 'EWAS' {
     emit:
         parsing_env = parsing.out[0]
         parsing_cov = parsing.out[1]
+        parsing_gxe = GxE ? params.parsing.out[2] : Channel.empty()
         bedtools_unionbedg_out = bedtools_unionbedg.out
         bedtools_intersect_out = bedtools_intersect.out
         average_over_regions_out = average_over_regions.out
@@ -311,12 +295,9 @@ workflow 'EWAS' {
         gem_emodel_log_reg = GEM_Emodel.out[3].filter{ it[0] == "region" || it[0] == "merged" }
         gem_emodel_log_pos = GEM_Emodel.out[3].filter{ it[0] != "region" && it[0] != "merged" }
 
-        //gem_gmodel_filtered_reg = GEM_Gmodel.out[0].filter{ it[0] == "region" || it[0] == "merged" }
-        //gem_gmodel_filtered_pos = GEM_Gmodel.out[0].filter{ it[0] != "region" && it[0] != "merged" }
-        //gem_gmodel_full_reg = GEM_Gmodel.out[1].filter{ it[0] == "region" || it[0] == "merged" }
-        //gem_gmodel_full_pos = GEM_Gmodel.out[1].filter{ it[0] != "region" && it[0] != "merged" }
-        //gem_gmodel_log_reg = GEM_Gmodel.out[1].filter{ it[0] == "region" || it[0] == "merged" }
-        //gem_gmodel_log_pos = GEM_Gmodel.out[1].filter{ it[0] != "region" && it[0] != "merged" }
+        calculate_FDR_reg = calculate_FDR.out.filter{ it[0] == "region" || it[0] == "merged" }
+        calculate_FDR_pos = calculate_FDR.out.filter{ it[0] != "region" && it[0] != "merged" }
+
 }
 
 // MAIN WORKFLOW 
@@ -330,6 +311,8 @@ workflow {
     publish:
         EWAS.out.parsing_env to: "${params.output}", mode: 'copy'
         EWAS.out.parsing_cov to: "${params.output}", mode: 'copy'
+        EWAS.out.parsing_gxe to: "${params.output}", mode: 'copy'
+
         EWAS.out.bedtools_unionbedg_out to: "${params.output}/input", mode: 'copy'
         EWAS.out.bedtools_intersect_out to: "${params.output}/positions", mode: 'copy'
         EWAS.out.average_over_regions_out to: "${params.output}/regions", mode: 'copy'
@@ -343,12 +326,8 @@ workflow {
         EWAS.out.gem_emodel_log_reg to: "${params.output}/regions/Emodel", mode: 'copy'
         EWAS.out.gem_emodel_log_pos to: "${params.output}/positions/Emodel", mode: 'copy'
 
-        //EWAS.out.gem_gmodel_filtered_reg to: "${params.output}/regions/Gmodel", mode: 'copy'
-        //EWAS.out.gem_gmodel_filtered_pos to: "${params.output}/positions/Gmodel", mode: 'copy'
-        //EWAS.out.gem_gmodel_full_reg to: "${params.output}/regions/Gmodel", mode: 'copy'
-        //EWAS.out.gem_gmodel_full_pos to: "${params.output}/positions/Gmodel", mode: 'copy'
-        //EWAS.out.gem_gmodel_log_reg to: "${params.output}/regions/Gmodel", mode: 'copy'
-        //EWAS.out.gem_gmodel_log_pos to: "${params.output}/positions/Gmodel", mode: 'copy'
+        EWAS.out.calculate_FDR_reg to: "${params.output}/regions", mode: 'copy'
+        EWAS.out.calculate_FDR_pos to: "${params.output}/positions", mode: 'copy'
 
 }
 

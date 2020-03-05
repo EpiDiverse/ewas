@@ -15,7 +15,7 @@ process "tabix" {
     path "output/*.tbi"
     
     when:
-    params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel)
+    params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel || params.GxE)
 
     script:
     """
@@ -44,7 +44,7 @@ process "bcftools" {
     path "input/filtered.vcf.gz"
 
     when:
-    params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel)
+    params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel || params.GxE)
 
     script:
     """
@@ -82,7 +82,7 @@ process "vcftools_missing" {
     //path "out.log"
 
     when:
-    params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel)
+    params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel || params.GxE)
 
     script:
     """
@@ -107,7 +107,7 @@ process "vcftools_extract" {
     //file("out.log")
 
     when:
-    params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel)
+    params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel || params.GxE)
 
     script:
     """   
@@ -147,7 +147,7 @@ process "split_scaffolds" {
     tuple context, type, path("output/*.bed")
 
     when:
-    params.input
+    params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel || params.GxE)
 
     script:
     """   
@@ -172,7 +172,6 @@ process "GEM_Gmodel" {
     
     output:
     tuple context, type, path("output/*.txt")
-    tuple type, path("output/*.log")
    
     when:
     params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel)
@@ -181,6 +180,33 @@ process "GEM_Gmodel" {
     """
     mkdir output
     awk -F "\\t" '{printf \"%s:%s-%s\",\$1,\$2,\$3; for(i=4; i<=NF; i++) {printf \"\\t%s\",\$i}; print null}' ${meth} > ${context}.txt
-    Rscript ${baseDir}/bin/GEM_Gmodel.R ${baseDir}/bin ${snps} ${covs} ${context}.txt ${params.Gmodel_pv} output/\$(basename ${meth} .bed) > output/\$(basename ${meth} .bed).log
+    Rscript ${baseDir}/bin/GEM_Gmodel.R ${baseDir}/bin ${snps} ${covs} ${context}.txt ${params.Gmodel_pv} output/\$(basename ${meth} .bed)
+    """
+}
+
+
+// RUN GEM Gmodel
+process "GEM_GxEmodel" {
+    
+    label "low"
+    label "finish"
+    tag "$type - $context - ${meth.baseName}"
+
+    input:
+    tuple context, type, path(meth)
+    path snps
+    path gxe
+    
+    output:
+    tuple context, type, path("output/*.txt")
+   
+    when:
+    params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE)
+    
+    script: 
+    """
+    mkdir output
+    awk -F "\\t" '{printf \"%s:%s-%s\",\$1,\$2,\$3; for(i=4; i<=NF; i++) {printf \"\\t%s\",\$i}; print null}' ${meth} > ${context}.txt
+    Rscript ${baseDir}/bin/GEM_GxE.R ${baseDir}/bin ${snps} ${gxe} ${context}.txt ${params.GxE_pv} output/\$(basename ${meth} .bed)
     """
 }

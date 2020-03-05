@@ -15,6 +15,7 @@ process "parsing" {
     output:
     path "env.txt"
     path "cov.txt"
+    path "gxe.txt"
 
     when:
     params.input
@@ -35,8 +36,11 @@ process "parsing" {
     paste header.txt pre_cov.txt > 2pre_cov.txt
     awk 'NR==1{printf "ID"; for(i=1; i<=NF-1; i++) h=h OFS "cov" i; print h}1' OFS='\\t' 2pre_cov.txt > 3pre_cov.txt
     cat 3pre_cov.txt | datamash transpose | tr -d "\\r" > cov.txt
+
+    cat cov.txt <(tail -1 env.txt) > gxe.txt
     """
 }
+
 
 // GEM_Gmodel.out.map{ tuple( it[0] + "." + it[1], *it) }.groupTuple().map{ tuple("Gmodel", *it) }
 // process to calculate FDR on combined files after splitting
@@ -51,6 +55,7 @@ process "calculate_FDR" {
     
     output:
     tuple model, val("${contexts.unique().join("")}"), val("${types.unique().join("")}"), path("${model}/${key}.txt")
+    path "${model}/${key}.filtered_${params.output_FDR}_FDR.txt"
 
     when:
     params.input
@@ -60,6 +65,7 @@ process "calculate_FDR" {
     mkdir input ${model}
     tail -q -n+2 *.txt > input/${key}.txt
     Rscript ${baseDir}/bin/FDR.R input/${key}.txt ${model}/${key}.txt
+    awk '{if(NR==1){print} else {if(\$6<=${params.output_FDR}){print}}' > ${model}/${key}.filtered_${params.output_FDR}_FDR.txt
     """ 
 }
 

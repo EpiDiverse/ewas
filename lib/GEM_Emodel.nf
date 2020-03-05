@@ -29,7 +29,7 @@ process "filtering" {
         """  
     else
         """
-        awk 'BEGIN{OFS=\"\\t\"} \$4<=${params.sig}{printf \"%s\\t%s\\t%s\\t%1.3f\\n\", \$1,\$2,\$3,\$4}' ${bed}/${bed}.bed |
+        awk 'BEGIN{OFS=\"\\t\"} \$4<=${params.input_FDR}{printf \"%s\\t%s\\t%s\\t%1.3f\\n\", \$1,\$2,\$3,\$4}' ${bed}/${bed}.bed |
         sort -k1,1 -k2,2n > ${sample}.bed
         """  
 } 
@@ -131,7 +131,7 @@ process "filter_regions" {
     script:
     """
     awk -F "\\t" 'BEGIN{OFS="\\t"} {count=NF-3; for(i=4; i<=NF; i++) {if(\$i=="NA") {count--}};
-    if((count/(NF-3))>=${params.bootstrap}) {print \$0}}' ${differential} > filtered.txt
+    if((count/(NF-3))>=${params.proportion}) {print \$0}}' ${differential} > filtered.txt
     """  
 } 
 
@@ -213,7 +213,7 @@ process "GEM_Emodel" {
     path covs
     
     output:
-    tuple type, path("${context}.${type}.filtered_${params.FDR}_FDR.txt")
+    tuple type, path("${context}.${type}.filtered_${params.output_FDR}_FDR.txt")
     tuple type, path("${context}.${type}.txt")
     tuple type, path("${context}.${type}.jpg")
     tuple type, path("${context}.${type}.log")
@@ -226,6 +226,6 @@ process "GEM_Emodel" {
     awk -F "\\t" '{printf \"%s:%s-%s\",\$1,\$2,\$3; for(i=4; i<=NF; i++) {printf \"\\t%s\",\$i}; print null}' ${meth} > ${context}.txt
     Rscript ${baseDir}/bin/GEM_Emodel.R ${envs} ${covs} ${context}.txt ${params.Emodel_pv} ${context}.${type} > ${context}.${type}.log
     sort -V ${context}.${type}.txt |
-    awk 'BEGIN{OFS="\\t"; print "cpg\\tbeta\\tstats\\tpvalue\\tFDR"} \$5<=${params.FDR}{print \$1,\$2,\$3,\$4,\$5}' > ${context}.${type}.filtered_${params.FDR}_FDR.txt
+    awk 'BEGIN{OFS="\\t"; print "cpg\\tbeta\\tstats\\tpvalue\\tFDR"} \$5<=${params.output_FDR}{print \$1,\$2,\$3,\$4,\$5}' > ${context}.${type}.filtered_${params.output_FDR}_FDR.txt
     """
 }
