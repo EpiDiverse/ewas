@@ -51,7 +51,7 @@ process "calculate_FDR" {
     tag "${model} - ${key}.txt"
      
     input:
-    tuple model, key, contexts, types, path(txt), path(results)
+    tuple model, key, contexts, types, path("txt"), path(results)
     
     output:
     tuple model, key, val("${types.unique().join("")}"), path(txt), path("${model}/${key}.txt")
