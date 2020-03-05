@@ -65,7 +65,7 @@ process "calculate_FDR" {
     mkdir input ${model}
     tail -q -n+2 *.txt > input/${key}.txt
     Rscript ${baseDir}/bin/FDR.R input/${key}.txt ${model}/${key}.txt
-    awk '{if(NR==1){print} else {if(\$6<=${params.output_FDR}){print}}}' > ${model}/${key}.filtered_${params.output_FDR}_FDR.txt
+    awk '{if(NR==1){print} else {if(\$6<=${params.output_FDR}){print}}}' ${model}/${key}.txt > ${model}/${key}.filtered_${params.output_FDR}_FDR.txt
     """ 
 }
 
