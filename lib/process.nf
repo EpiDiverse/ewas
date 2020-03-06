@@ -455,7 +455,7 @@ process "dotPlot" {
     {if(NR!=1 && \$6<=${params.output_FDR}) {split(\$1,cpg,":"); split(\$2,snp,":"); split(cpg[2],cpos,"-"); split(snp[2],spos,"-");
     c=(cpos[1]+cpos[2])/2; s=(spos[1]+spos[2])/2;
     if(cpg[1]!=snp[1]){d="trans"} else {if(abs(c-s)>${params.distance}){d="trans"} else {d="cis"}};
-    print cpg[1],c,snp[1],s,distance}' ${key}.txt > ${model}/${key}.txt
+    print cpg[1],c,snp[1],s,d}}' ${key}.txt > ${model}/${key}.txt
     touch ${model}/${key}.png
     
     #Rscript ${baseDir}/bin/Kplot.R ${model}/${key}/${result} ${model}/${key}.txt
