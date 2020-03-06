@@ -449,7 +449,7 @@ process "manhattan" {
     awk -F "\\t" 'BEGIN{print "SNP","CHR","BP","P"} NR!=1{split(\$1,cpg,":"); split(cpg[2],cpos,"-"); pos=(cpos[1]+cpos[2])/2;
     print \$1,cpg[1],pos,\$5}' ${txt} > manhattan.txt
     
-    Rscript ${baseDir}/bin/manhattan.R manhattan.txt \$(basename ${txt} .txt)
+    Rscript ${baseDir}/bin/manhattan.R manhattan.txt \$(basename ${txt} .txt) ${params.Emodel_pv}
     """ 
 }
 

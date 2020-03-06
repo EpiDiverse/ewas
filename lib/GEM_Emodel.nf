@@ -224,7 +224,7 @@ process "GEM_Emodel" {
     script: 
     """
     awk -F "\\t" '{printf \"%s:%s-%s\",\$1,\$2,\$3; for(i=4; i<=NF; i++) {printf \"\\t%s\",\$i}; print null}' ${meth} > ${context}.txt
-    Rscript ${baseDir}/bin/GEM_Emodel.R ${envs} ${covs} ${context}.txt ${params.Emodel_pv} ${context}.${type} > ${context}.${type}.log
+    Rscript ${baseDir}/bin/GEM_Emodel.R ${envs} ${covs} ${context}.txt 1 ${context}.${type} > ${context}.${type}.log
     sort -V ${context}.${type}.txt |
     awk 'BEGIN{OFS="\\t"; print "cpg\\tbeta\\tstats\\tpvalue\\tFDR"} \$5<=${params.output_FDR}{print \$1,\$2,\$3,\$4,\$5}' > ${context}.${type}.filtered_${params.output_FDR}_FDR.txt
     """

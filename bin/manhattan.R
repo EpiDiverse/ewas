@@ -8,6 +8,10 @@ suppressMessages(require(RColorBrewer))
 
 args <- commandArgs(trailingOnly=T)
 
+# args[1]   path to input data
+# args[2]   path to output data
+# args[3]   significance threshold
+
 gg.manhattan <- function(df, threshold, hlight, col, ylims, title){
 
 	# format df
@@ -77,8 +81,12 @@ gg.manhattan <- function(df, threshold, hlight, col, ylims, title){
 	ggsave(paste0(args[2], ".png"), p, width=12, height=7)
 }
 
-sig = 5e-8 # significant threshold line
-sugg = 1e-6 # suggestive threshold line
+sig = as.numeric(args[3]) # 5e-8 # significant threshold line
+sugg = sig*100 # 1e-6 # suggestive threshold line
+
+if(sugg>1){
+	sugg = 1
+}
 
 mypalette <- c("#E2709A", "#CB4577", "#BD215B", "#970F42", "#75002B",
                "#FF817E", "#E9534F", "#D92B26", "#AE1612", "#870300",
