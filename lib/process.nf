@@ -452,7 +452,7 @@ process "dotPlot" {
     """
     mkdir ${model}
     awk -F "\\t" 'function abs(x){return ((x < 0.0) ? -x : x)}
-    {if(NR!=1 && \$6<=${params.FDR_output}) {split(\$1,cpg,":"); split(\$2,snp,":"); split(cpg[2],cpos,"-"); split(snp[2],spos,"-");
+    {if(NR!=1 && \$6<=${params.output_FDR}) {split(\$1,cpg,":"); split(\$2,snp,":"); split(cpg[2],cpos,"-"); split(snp[2],spos,"-");
     c=(cpos[1]+cpos[2])/2; s=(spos[1]+spos[2])/2;
     if(cpg[1]!=snp[1]){d="trans"} else {if(abs(c-s)>${params.distance}){d="trans"} else {d="cis"}};
     print cpg[1],c,snp[1],s,distance}' ${key}.txt > ${model}/${key}.txt
