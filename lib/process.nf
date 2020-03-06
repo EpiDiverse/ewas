@@ -458,7 +458,7 @@ process "dotPlot" {
     print cpg[1],c,snp[1],s,distance}' ${key}.txt > ${model}/${key}.txt
     touch ${model}/${key}.png
     
-    #Rscript ${baseDir}/bin/Kplot.R ${model}/${key}/${result} ${model}/${key}.txt ${snp} ${gxe}
+    #Rscript ${baseDir}/bin/Kplot.R ${model}/${key}/${result} ${model}/${key}.txt
     """ 
 }
 
