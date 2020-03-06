@@ -37,7 +37,7 @@ gg.manhattan <- function(df, threshold, hlight, col, ylims, title){
 	# get chromosome center positions for x-axis
 	axisdf <- df.tmp %>% group_by(CHR) %>% summarize(center=( max(BPcum) + min(BPcum) ) / 2 )
 	
-	ggplot(df.tmp, aes(x=BPcum, y=-log10(P))) +
+	p <- ggplot(df.tmp, aes(x=BPcum, y=-log10(P))) +
 		# Show all points
 		geom_point(aes(color=as.factor(CHR)), alpha=0.8, size=2) +
 		scale_color_manual(values = rep(col, 22 )) +
@@ -73,6 +73,8 @@ gg.manhattan <- function(df, threshold, hlight, col, ylims, title){
 				axis.text.x=element_blank(),
 				axis.ticks.x=element_blank()
 		)
+
+	ggsave(paste0(args[2], ".png"), p, width=12, height=7)
 }
 
 sig = 5e-8 # significant threshold line
@@ -88,5 +90,5 @@ mypalette <- c("#E2709A", "#CB4577", "#BD215B", "#970F42", "#75002B",
                "#A7E672", "#85D047", "#6AC122", "#4F9B10", "#367800",
                "#A6C965", "#7B9F34", "#567714", "#375201", "#203000")
 
-gmodel= args[1]
-gg.manhattan(gmodel, threshold = 1e-6, hlight = NA, ylims=c(0,10),col=mypalette, title="Manhattan Plot")
+gmodel <- read.table(args[1],header=T)
+gg.manhattan(gmodel, threshold= 1e-6, hlight= NA, ylims=c(0,10),col=mypalette, title="Manhattan Plot")
