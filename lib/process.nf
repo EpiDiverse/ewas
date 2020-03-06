@@ -59,7 +59,7 @@ process "calculate_FDR" {
     tuple model, key, contexts, types, path("txt"), path(results)
     
     output:
-    tuple model, key, val("${contexts.unique().join("")}"), path("${model}/*.txt")
+    tuple model, key, val("${types.unique().join("")}"), path("${model}/*.txt")
     tuple model, key, val("${types.unique().join("")}"), path(txt), path("${model}/${key}.txt")
 
     when:
@@ -440,7 +440,7 @@ process "dotPlot" {
     tag "${model} - ${key}.txt"
      
     input:
-    tuple model, key, context, path(result)
+    tuple model, key, type, path(result)
     
     output:
     tuple type, path("${model}/${key}/*.png")
