@@ -287,6 +287,7 @@ workflow 'EWAS' {
         parsing_env = parsing.out[0]
         parsing_cov = parsing.out[1]
         parsing_gxe = GxE ? parsing.out[2] : Channel.empty()
+        
         bedtools_unionbedg_out = bedtools_unionbedg.out
         bedtools_intersect_out = bedtools_intersect.out
         average_over_regions_out = average_over_regions.out
@@ -303,8 +304,8 @@ workflow 'EWAS' {
         calculate_FDR_reg = calculate_FDR.out[0].filter{ it[2] == "region" || it[2] == "merged" }
         calculate_FDR_pos = calculate_FDR.out[0].filter{ it[2] != "region" && it[2] != "merged" }
 
-
-
+        dotPlot_png_reg = dotPlot.out.filter{ it[0] == "region" || it[0] == "merged" }
+        dotPlot_png_pos = dotPlot.out.filter{ it[0] != "region" && it[0] != "merged" }
         topKplots_png_reg = topKplots.out.filter{ it[0] == "region" || it[0] == "merged" }
         topKplots_png_pos = topKplots.out.filter{ it[0] != "region" && it[0] != "merged" }
 
@@ -339,8 +340,8 @@ workflow {
         EWAS.out.calculate_FDR_reg to: "${params.output}/regions", mode: 'copy'
         EWAS.out.calculate_FDR_pos to: "${params.output}/positions", mode: 'copy'
 
-
-
+        EWAS.out.dotPlot_png_reg to: "${params.output}/regions", mode: 'copy'
+        EWAS.out.dotPlot_png_pos to: "${params.output}/positions", mode: 'copy'
         EWAS.out.topKplots_png_reg to: "${params.output}/regions", mode: 'copy'
         EWAS.out.topKplots_png_pos to: "${params.output}/positions", mode: 'copy'
 
