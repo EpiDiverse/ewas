@@ -42,11 +42,6 @@ process "parsing" {
 }
 
 
-
-
-
-
-
 // GEM_Gmodel.out.map{ tuple( it[0] + "." + it[1], *it) }.groupTuple().map{ tuple("Gmodel", *it) }
 // process to calculate FDR on combined files after splitting
 process "calculate_FDR" {
@@ -430,6 +425,35 @@ process "process3" {
 
 */
 =======
+
+
+// GEM_Emodel.out[0]
+// process to generate top X plots from GxEmodel based on number provided by --kplots
+process "manhattan" {
+
+    label "low"
+    label "finish"
+    tag "${type}"
+     
+    input:
+    tuple type, path(txt)
+    
+    output:
+    tuple type, path("*.pdf")
+
+    when:
+    params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel)
+
+    script:
+    """
+    awk -F "\\t" 'BEGIN{print "SNP","CHR","BP","P"} NR!=1{split(\$1,cpg,":"); split(cpg[2],cpos,"-"); pos=(cpos[1]+cpos[2])/2;
+    print \$1,cpg[1],pos,\$5}' ${txt} > manhattan.txt
+    
+    Rscript ${baseDir}/bin/manhattan.R manhattan.txt > \$(basename ${txt} .filtered_${params.output_FDR}_FDR.txt).pdf
+    """ 
+}
+
+
 
 // calculate_FDR.out[0].filter{ it[0] == "Gmodel" }
 // process to generate top X plots from GxEmodel based on number provided by --kplots
