@@ -277,7 +277,9 @@ workflow 'EWAS' {
         calculate_FDR(Gmodel_channel.mix(GxE_channel))
 
         // visualisation
-        topKplots(calculate_FDR.out[0].filter{ it[0] == "GxE" }, vcftools_extract.out, parsing.out[2])
+        manhattan(Channel.empty())
+        dotplot(Channel.empty())
+        topKplots(calculate_FDR.out[1].filter{ it[0] == "GxE" }, vcftools_extract.out, parsing.out[2])
 
 
     // emit results
@@ -298,8 +300,10 @@ workflow 'EWAS' {
         gem_emodel_log_reg = GEM_Emodel.out[3].filter{ it[0] == "region" || it[0] == "merged" }
         gem_emodel_log_pos = GEM_Emodel.out[3].filter{ it[0] != "region" && it[0] != "merged" }
 
-        calculate_FDR_reg = calculate_FDR.out[1].filter{ it[0] == "region" || it[0] == "merged" }
-        calculate_FDR_pos = calculate_FDR.out[1].filter{ it[0] != "region" && it[0] != "merged" }
+        calculate_FDR_reg = calculate_FDR.out[0].filter{ it[2] == "region" || it[2] == "merged" }
+        calculate_FDR_pos = calculate_FDR.out[0].filter{ it[2] != "region" && it[2] != "merged" }
+
+
 
         topKplots_png_reg = topKplots.out.filter{ it[0] == "region" || it[0] == "merged" }
         topKplots_png_pos = topKplots.out.filter{ it[0] != "region" && it[0] != "merged" }
@@ -334,6 +338,8 @@ workflow {
 
         EWAS.out.calculate_FDR_reg to: "${params.output}/regions", mode: 'copy'
         EWAS.out.calculate_FDR_pos to: "${params.output}/positions", mode: 'copy'
+
+
 
         EWAS.out.topKplots_png_reg to: "${params.output}/regions", mode: 'copy'
         EWAS.out.topKplots_png_pos to: "${params.output}/positions", mode: 'copy'
