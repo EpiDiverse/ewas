@@ -213,7 +213,7 @@ process "GEM_Emodel" {
     path covs
     
     output:
-    tuple type, path("${context}.${type}.filtered_${params.output_FDR}_FDR.txt")
+    tuple context, type, path("${context}.${type}.filtered_${params.output_FDR}_FDR.txt")
     tuple type, path("${context}.${type}.txt")
     tuple type, path("${context}.${type}.jpg")
     tuple type, path("${context}.${type}.log")

@@ -433,10 +433,10 @@ process "manhattan" {
 
     label "low"
     label "finish"
-    tag "${type}"
+    tag "${context} - ${type}"
      
     input:
-    tuple type, path(txt)
+    tuple context, type, path(txt)
     
     output:
     tuple type, path("*.pdf")
@@ -449,7 +449,7 @@ process "manhattan" {
     awk -F "\\t" 'BEGIN{print "SNP","CHR","BP","P"} NR!=1{split(\$1,cpg,":"); split(cpg[2],cpos,"-"); pos=(cpos[1]+cpos[2])/2;
     print \$1,cpg[1],pos,\$5}' ${txt} > manhattan.txt
     
-    Rscript ${baseDir}/bin/manhattan.R manhattan.txt > \$(basename ${txt} .filtered_${params.output_FDR}_FDR.txt).pdf
+    Rscript ${baseDir}/bin/manhattan.R manhattan.txt > ${context}.${type}.pdf
     """ 
 }
 
@@ -461,7 +461,7 @@ process "dotPlot" {
 
     label "low"
     label "finish"
-    tag "${model} - ${key}.txt"
+    tag "${key}.txt"
      
     input:
     tuple model, key, type, path(result)
@@ -493,7 +493,7 @@ process "topKplots" {
 
     label "low"
     label "finish"
-    tag "${model} - ${key}.txt"
+    tag "${key}.txt"
      
     input:
     tuple model, key, type, path("txt"), path(result)

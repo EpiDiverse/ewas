@@ -292,8 +292,8 @@ workflow 'EWAS' {
         bedtools_intersect_out = bedtools_intersect.out
         average_over_regions_out = average_over_regions.out
 
-        gem_emodel_filtered_reg = GEM_Emodel.out[0].filter{ it[0] == "region" || it[0] == "merged" }
-        gem_emodel_filtered_pos = GEM_Emodel.out[0].filter{ it[0] != "region" && it[0] != "merged" }
+        gem_emodel_filtered_reg = GEM_Emodel.out[0].filter{ it[1] == "region" || it[1] == "merged" }
+        gem_emodel_filtered_pos = GEM_Emodel.out[0].filter{ it[1] != "region" && it[1] != "merged" }
         gem_emodel_full_reg = GEM_Emodel.out[1].filter{ it[0] == "region" || it[0] == "merged" }
         gem_emodel_full_pos = GEM_Emodel.out[1].filter{ it[0] != "region" && it[0] != "merged" }
         gem_emodel_jpg_reg = GEM_Emodel.out[2].filter{ it[0] == "region" || it[0] == "merged" }
