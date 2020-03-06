@@ -278,7 +278,7 @@ workflow 'EWAS' {
 
         // visualisation
         //manhattan(Channel.empty())
-        dotplot(Channel.empty())
+        dotPlot(Channel.empty())
         topKplots(calculate_FDR.out[1].filter{ it[0] == "GxE" }, vcftools_extract.out, parsing.out[2])
 
 
