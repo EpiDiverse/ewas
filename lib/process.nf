@@ -443,7 +443,7 @@ process "dotPlot" {
     tuple model, key, type, path(result)
     
     output:
-    tuple type, path("${model}/${key}/*.png")
+    tuple type, path("${model}/${key}.png")
 
     when:
     params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel)
