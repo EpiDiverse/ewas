@@ -457,7 +457,7 @@ process "dotPlot" {
     if(cpg[1]!=snp[1]){d="trans"} else {if(abs(c-s)>${params.distance}){d="trans"} else {d="cis"}};
     print cpg[1],c,snp[1],s,d}}' ${key}.txt > ${model}/${key}.txt
     
-    Rscript ${baseDir}/bin/Kplot.R ${model}/${key}.txt 10 ${model}/${key}.png
+    Rscript ${baseDir}/bin/Kplot.R ${model}/${key}.txt 10 ${model}/${key}
     """ 
 }
 
