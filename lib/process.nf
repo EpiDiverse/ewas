@@ -439,7 +439,7 @@ process "manhattan" {
     tuple context, type, path(txt)
     
     output:
-    tuple type, path("*.png")
+    tuple type, path("*.png") optional true
 
     when:
     params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel)
@@ -467,7 +467,7 @@ process "dotPlot" {
     tuple model, key, type, path(result)
     
     output:
-    tuple type, path("${model}/${key}.png")
+    tuple type, path("${model}/${key}.png") optional true
 
     when:
     params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel)

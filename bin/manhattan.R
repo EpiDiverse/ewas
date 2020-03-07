@@ -99,4 +99,9 @@ mypalette <- c("#E2709A", "#CB4577", "#BD215B", "#970F42", "#75002B",
                "#A6C965", "#7B9F34", "#567714", "#375201", "#203000")
 
 gmodel <- read.table(args[1],header=T)
-gg.manhattan(gmodel, threshold= 1e-6, hlight= NA, ylims=c(0,10),col=mypalette, title="Manhattan Plot")
+if(nrow(gmodel) > 0){
+	gg.manhattan(gmodel, threshold= 1e-6, hlight= NA, ylims=c(0,10),col=mypalette, title="Manhattan Plot")
+}else{
+	write(paste0(args[2], " resulted in zero rows"), stderr())
+}
+
