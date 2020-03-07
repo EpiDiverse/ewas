@@ -287,6 +287,7 @@ workflow 'EWAS' {
         parsing_env = parsing.out[0]
         parsing_cov = parsing.out[1]
         parsing_gxe = GxE ? parsing.out[2] : Channel.empty()
+        vcftools_extract_out = vcftools_extract.out
 
         bedtools_unionbedg_out = bedtools_unionbedg.out
         bedtools_intersect_out = bedtools_intersect.out
@@ -322,11 +323,12 @@ workflow {
 
     // publish files
     publish:
-        EWAS.out.parsing_env to: "${params.output}", mode: 'copy'
-        EWAS.out.parsing_cov to: "${params.output}", mode: 'copy'
-        EWAS.out.parsing_gxe to: "${params.output}", mode: 'copy'
+        EWAS.out.parsing_env to: "${params.output}/input", mode: 'copy'
+        EWAS.out.parsing_cov to: "${params.output}/input", mode: 'copy'
+        EWAS.out.parsing_gxe to: "${params.output}/input", mode: 'copy'
+        EWAS.out.vcftools_extract_out to: "${params.output}/input", mode: 'copy'
 
-        EWAS.out.bedtools_unionbedg_out to: "${params.output}/input", mode: 'copy'
+        EWAS.out.bedtools_unionbedg_out to: "${params.output}/input/bed", mode: 'copy'
         EWAS.out.bedtools_intersect_out to: "${params.output}/positions", mode: 'copy'
         EWAS.out.average_over_regions_out to: "${params.output}/regions", mode: 'copy'
 
@@ -342,8 +344,8 @@ workflow {
         EWAS.out.calculate_FDR_reg to: "${params.output}/regions", mode: 'copy'
         EWAS.out.calculate_FDR_pos to: "${params.output}/positions", mode: 'copy'
 
-        EWAS.out.manhattan_pdf_reg to: "${params.output}/Emodel/regions", mode: 'copy'
-        EWAS.out.manhattan_pdf_pos to: "${params.output}/Emodel/positions", mode: 'copy'
+        EWAS.out.manhattan_pdf_reg to: "${params.output}/regions/Emodel", mode: 'copy'
+        EWAS.out.manhattan_pdf_pos to: "${params.output}/positions/Emodel", mode: 'copy'
         EWAS.out.dotPlot_png_reg to: "${params.output}/regions", mode: 'copy'
         EWAS.out.dotPlot_png_pos to: "${params.output}/positions", mode: 'copy'
         EWAS.out.topKplots_png_reg to: "${params.output}/regions", mode: 'copy'
