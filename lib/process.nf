@@ -439,7 +439,7 @@ process "manhattan" {
     tuple context, type, path(txt)
     
     output:
-    tuple type, path("*.pdf")
+    tuple type, path("*.png")
 
     when:
     params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel)
