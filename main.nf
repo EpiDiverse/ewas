@@ -13,34 +13,117 @@ if(params.help){
          ~ version ${workflow.manifest.version}
 
          Usage: 
-              nextflow run epidiverse/template [OPTIONS]...
+              nextflow run epidiverse/ewas [OPTIONS]...
 
          Options: GENERAL
-              --input [path/to/input/dir]     [REQUIRED] Write a line about the input file(s) format
+              --input [path/to/input/dir]     [REQUIRED] Specify input path for the directory containing outputs from the WGBS pipeline.
+                                                The pipeline searches for bedGraph files in '*/bedGraph/{sample_name}_{context}.bedGraph'
+                                                format, where sample names must correspond to the samplesheet and context can be either
+                                                "CpG", "CHG", or "CHH".
 
-              --reference [path/to/ref.fa]    [REQUIRED] Write a line aboue the reference file(s) format
+              --samples [path/to/samples.tsv] [REQUIRED] Specify the path to the samplesheet file containing information regarding
+                                                sample names and corresponding environment and covariate values. The file must contain
+                                                at least three tab-separated columns: 1) sample names, 2) environment value, 3) covariate
+                                                values, with further columns optional for additional covariates.
 
-              --output [STR]                  A string that can be given to name the output directory [default: output]
+              --DMPs [path/to/DMPs/dir]       Specify path to the DMR pipeline output directory to run EWAS analyses in addition with
+                                                methylated positions filtered by significant DMPs. The pipeline searches for bed files in
+                                                '*/{context}/metilene/*/*.bed' format where context can be either "CpG", "CHG", or "CHH".
+         
+              --DMRs [path/to/DMRs/dir]       Specify path to the DMR pipeline output directory to run EWAS analyses in addition with
+                                                methylated positions filtered by significant DMRs. In addition, the pipeline will call
+                                                the union of all significant regions and attempt to run EWAS with whole regions as markers.
+                                                The pipeline searches for bed files in '*/{context}/metilene/*/*.bed' format where context
+                                                can be either "CpG", "CHG", or "CHH".
+
+              --SNPs [path/to/vcf/dir]        Specify path to the SNP pipeline output directory to enable EWAS analyses Gmodel and GxEmodel
+                                                which attempt to create a genome-wide methQTL map. ONLY SUITABLE FOR DIPLOID ORGANISMS.
+                                                The pipeline searches for VCF files in '*/vcf/{sample_name}.{extension}' where sample names
+                                                must correspond to the samplesheet and the extension can be any standard vcf extension
+                                                readable by 'bcftools' and defined with --extension parameter. Alternatively, the path to a
+                                                single multi-sample VCF file can be provided.
+
+              --extension <STR>               Specify the extension to use when searching for VCF files [default: vcf.gz]
+
+              --output <STR>                  A string that can be given to name the output directory [default: ewas]
 
 
-         Options: MODIFIERS
-              --process1                      A boolean (true/false) parameter which alters the default behaviour [default: off]
+         Options: MODEL DECISION
+              --Emodel                        Run analysis with "E model". Disables other models unless they are also specified. If no
+                                                individual model is specified then all that are possible with the provided inputs will run
+                                                in parallel [default: off]
 
-              --process2                      Another boolean parameter. Note: default boolean params must always be false [default: off]
+              --Gmodel                        Run analysis with "G model". Disables other models unless they are also specified. If no
+                                                individual model is specified then all that are possible with the provided inputs will run
+                                                in parallel [default: off]
 
-              --paired                        Enable paired-end mode. Another boolean parameter. [default: off]
+              --GxE                           Run analysis with "GxE model". Disables other models unless they are also specified. If no
+                                                individual model is specified then all that are possible with the provided inputs will run
+                                                in parallel [default: off]
+            
+              --noCpG                         Disables EWAS analysis in CpG context. Note: at least one methylation context is required
+                                                for analysis. [default: off]
 
-         Options: ADDITIONAL
+              --noCHG                         Disables EWAS analysis in CHG context. Note: at least one methylation context is required
+                                                for analysis. [default: off]
+
+              --noCHH                         Disables EWAS analysis in CHH context. Note: at least one methylation context is required
+                                                for analysis. [default: off]
+
+
+         Options: INPUT FILTERING
+              --coverage <INT>                Specify the minimum coverage threshold to filter individual methylated positions from the
+                                                --input directory before running analyses [default: 0] 
+            
+              --input_FDR <FLOAT>             Specify the minimum FDR significance threshold to include DMPs and/or DMRs from the respective
+                                                --DMPs and --DMRs directories [default: 0.05]          
+                
+              --proportion <FLOAT>            Minimum proportion of samples that must share a DMP and/or DMR for it to be considered in the
+                                                analsis [default: 0.2]
+
+              --merge                         When running EWAS using the union set of DMRs as markers, specify to merge adjacent sub-regions
+                                                into larger regions prior to methylation averaging and subsequent analysis [default: off]
+
+
+         Options: SNP FILTERING
+              --max_missing <FLOAT>           Variants that were successfully genotyped in given proportion of individuals. It can take
+                                                values from 0 to 1, where 1 means no missing data allowed [default: 0.5]
+
+              --mac <INT>                     Minor allele count [default: 3]
+
+
+              --minQ <INT>                    Minimum quality score [default: 30]
+
+
+         Options: OUTPUT FILTERING       
+              --Emodel_pv <FLOAT>             Set the p-value to run "E model". Note: this filter is hardcoded as "1" for Q-Q plot 
+                                                generation and the user-given value is applied retroactively [default: 0.0001]
+
+              --Gmodel_pv <FLOAT>             Set the p-value to run "G model". [default: 0.0001]
+
+              --GxE_pv <FLOAT>                Set the p-value to run "GxE model". [default: 0.0001]
+
+              --output_FDR <FLOAT>            Specify the maximum FDR threshold for filtering EWAS post-analysis [default: 0.05]
+
+
+         Options: VISUALISATION
+              --kplots <INT>                  Specify the number of plots to generate for the top k significant results in "GxE model"  
+                                                [default: 10]
+
+              --distance <INT>                Specify the distance threshold to define cis and trans methQTLs in the dotplot generated
+                                                for "G model" output [default: 5000]
+
+         Options: ADDITIONAL PARAMS
               --help                          Display this help information and exit
               --version                       Display the current pipeline version and exit
               --debug                         Run the pipeline in debug mode    
 
 
          Example: 
-              nextflow run epidiverse/template \
-              --input /path/to/input/dir/or/file \
-              --reference /path/to/ref.fa
-              --output output
+              nextflow run epidiverse/ewas \
+              --input /path/to/input/dir \
+              --samples /path/to/samples.tsv
+              --output ewas
 
     """
     ["bash", "${baseDir}/bin/clean.sh", "${workflow.sessionId}"].execute()
@@ -101,9 +184,50 @@ else {
 log.info "         ==================================================" }
 log.info "         ~ version ${workflow.manifest.version}"
 log.info ""
-log.info "         input dir    : ${params.input}"
-log.info "         output dir   : ${params.output}"
+log.info "         input dir                       : ${params.input}"
+log.info "         samplesheet                     : ${params.samples}"
+log.info "         DMPs dir                        : ${params.DMPs ? "$params.DMPs" : ""}"
+log.info "         DMRs dir                        : ${params.DMRs ? "$params.DMRs" : ""}"
+log.info "         VCF(s)                          : ${params.SNPs ? "$params.SNPs" : ""}"
+log.info "         output dir                      : ${params.output}"
 log.info ""
+log.info "         Analysis Configuration"
+log.info "         =================================================="
+log.info "         GEM model(s)                    : ${Emodel ? "Emodel " : ""}${Gmodel ? "Gmodel : ""}${GxE ? "GxE" : ""}"
+log.info "         Methylation context(s)          : ${params.noCpG ? "" : "CpG "}${params.noCHH ? "" : "CHH "}${params.noCHG ? "" : "CHG"}"
+if(Emodel){
+log.info "         Emodel p-value                  : ${params.Emodel_pv}" }
+if(Gmodel){
+log.info "         Gmodel p-value                  : ${params.Gmodel_pv}" }
+if(GxE){
+log.info "         GxE p-value                     : ${params.GxE_pv}" }
+log.info ""
+log.info "         Input Filtering"
+log.info "         =================================================="
+log.info "         coverage                        : ${params.coverage}"
+if(params.DMPs || params.DMRs){
+log.info "         input FDR                       : ${params.input_FDR}"
+log.info "         overlap proportion              : ${params.proportion}" }
+if(params.DMRs){
+log.info "         merge regions?                  : ${params.merge ? "True" : "False"}" }
+log.info ""
+if(params.SNPs){
+log.info "         =================================================="
+log.info "         SNP Filtering"
+log.info "         =================================================="
+log.info "         maximum missing                 : ${params.max_missing}"
+log.info "         minor allele count              : ${params.mac}"
+log.info "         minimum quality score           : ${params.minQ}"
+log.info "" }
+log.info "         =================================================="
+log.info "         Output"
+log.info "         =================================================="
+log.info "         output FDR                      : ${params.output_FDR}"
+if(Gmodel){
+log.info "         methQTL distance                : ${params.distance}" }
+if(GxE){
+log.info "         number of kplots                : ${params.kplots}" }
+log.info ""    
 log.info "         =================================================="
 log.info "         RUN NAME: ${workflow.runName}"
 log.info ""
