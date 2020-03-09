@@ -2,8 +2,6 @@
 [<img width="200" align="right" src="docs/images/epidiverse-logo.jpg">](https://epidiverse.eu)
 [![Nextflow](https://img.shields.io/badge/nextflow-%E2%89%A519.09.0-brightgreen.svg)](https://www.nextflow.io/)
 [![install with bioconda](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg)](http://bioconda.github.io/)
-[![Docker](https://img.shields.io/docker/automated/epidiverse/snp.svg)](https://hub.docker.com/r/epidiverse/snp)
-=======
 [![Docker](https://img.shields.io/docker/automated/epidiverse/ewas.svg)](https://hub.docker.com/r/epidiverse/ewas)
 
 EpiDiverse-EWAS Pipeline

@@ -5,10 +5,4 @@ LABEL authors="Adam Nunn" \
 
 COPY environment.yml /
 RUN conda env create -f /environment.yml && conda clean -a
-<<<<<<< HEAD
-
-# you only need to change <template> in this line:
-ENV PATH /opt/conda/envs/<template>/bin:$PATH:
-=======
 ENV PATH /opt/conda/envs/ewas/bin:$PATH:
->>>>>>> refactor for DSL2 changes
