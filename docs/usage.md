@@ -103,11 +103,11 @@ Specify path to the DMR pipeline output directory to run EWAS analyses in additi
 ### `--SNPs <ARG>`
 ONLY SUITABLE FOR DIPLOID ORGANISMS. Specify path to the SNP pipeline output directory to enable EWAS analyses Gmodel and GxEmodel which attempt to create a genome-wide methQTL map. The pipeline searches for VCF files in '*/vcf/{sample_name}.{extension}' where sample names must correspond to the samplesheet and the extension can be any standard vcf extension readable by 'bcftools' and defined with --extension parameter. Alternatively, the path to a single multi-sample VCF file can be provided.
 
-### `--extension`
-Specify the extension to use when searching for VCF files eg. \*.vcf \*.bcf or \*.vcf.gz [default: '*.vcf.gz']
+### `--extension <ARG>`
+Specify the extension to use when searching for VCF files eg. \*.vcf \*.bcf or \*.vcf.gz [default: *.vcf.gz]
 
 ### `--output <ARG>`
-A string that will be used as the name for the output results directory, which will be generated in the working directory. [default: 'ewas']
+A string that will be used as the name for the output results directory, which will be generated in the working directory. [default: ewas]
 
 
 ## Model Decision
@@ -140,7 +140,7 @@ Specify the minimum coverage threshold to filter individual methylated positions
 Specify the minimum FDR significance threshold to include DMPs and/or DMRs from the respective --DMPs and --DMRs directories [default: 0.05]          
                 
 ### `--proportion <ARG>`
-Minimum proportion of samples that must share a DMP and/or DMR for it to be considered in the analsis [default: 0.2]
+Minimum proportion of samples that must share a DMP and/or DMR for it to be considered in the analysis [default: 0.2]
 
 ### `--merge`
 When running EWAS using the union set of DMRs as markers, specify to merge adjacent sub-regions into larger regions prior to methylation averaging and subsequent analysis [default: off]

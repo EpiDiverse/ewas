@@ -79,7 +79,7 @@ if(params.help){
                                                 --DMPs and --DMRs directories [default: 0.05]          
                 
               --proportion <FLOAT>            Minimum proportion of samples that must share a DMP and/or DMR for it to be considered in the
-                                                analsis [default: 0.2]
+                                                analysis [default: 0.2]
 
               --merge                         When running EWAS using the union set of DMRs as markers, specify to merge adjacent sub-regions
                                                 into larger regions prior to methylation averaging and subsequent analysis [default: off]

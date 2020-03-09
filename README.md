@@ -2,19 +2,16 @@
 [<img width="200" align="right" src="docs/images/epidiverse-logo.jpg">](https://epidiverse.eu)
 [![Nextflow](https://img.shields.io/badge/nextflow-%E2%89%A519.09.0-brightgreen.svg)](https://www.nextflow.io/)
 [![install with bioconda](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg)](http://bioconda.github.io/)
-
-**EpiDiverse/ewas** is a bioinformatics analysis pipeline for aligning performing epigenome wide association studies (EWAS)for non-model plant species.
-
-The workflow processes three input types, one is methylation calls from EpiDiverse WGBS pipeline ([WGBS] https://github.com/EpiDiverse/wgbs), others are Differentially Methylated Regions (DMRs) and Differentially Methylated Position (DMPs) from ([DMR] https://github.com/EpiDiverse/dmr) pipeline. EWAS analysis is performed by ([GEM] https://rdrr.io/bioc/GEM/man/GEM-package.html).
-=======
 [![Docker](https://img.shields.io/docker/automated/epidiverse/snp.svg)](https://hub.docker.com/r/epidiverse/snp)
+=======
+[![Docker](https://img.shields.io/docker/automated/epidiverse/ewas.svg)](https://hub.docker.com/r/epidiverse/ewas)
 
-EpiDiverse-template Pipeline
+EpiDiverse-EWAS Pipeline
 ========================
 
-**EpiDiverse/template** is a bioinformatics analysis pipeline for XXX with YYY data and this is a brief summary of the pipeline.
+**EpiDiverse/ewas** is a bioinformatics analysis pipeline for performing epigenome-wide association studies from methylated positions and/or regions, with optional analysis of methQTLs for diploid organisms from variant call data.
 
-The workflow processes a collection of AAA files from the [Tool1](https://link/to/tool/1) pipeline using [Tool2](https://link/to/tool/2), then BBB and CCC. This paragraph gives a more involved description of the step-by-step processes that make up the pipeline. Finally the main output is described here which is performed using [Tool3](https://link/to/tool/3) and/or [Tool4](https://link/to/tool/4).
+The workflow processes a population of sample bed files, usually derived from the [EpiDiverse-WGBS](https://github.org/epidiverse/wgbs) pipeline, and formats them with [bedtools](https://github.com/arq5x/bedtools2) for analysis with the R package [GEM](https://github.com/fastGEM/GEM). Output in the form of DMPs or DMRs from the [EpiDiverse-DMR](https://github.org/epidiverse/dmr) pipeline can also be given to pre-filter the number of positions and reduce multiple comparisons. In addition, the union set of DMRs can themselves be used as independent markers within EWAS in place of individual positions. Sample variants, usually derived from the [EpiDiverse-SNP](https://github.org/epidiverse/snp) pipeline can additionally be provided to test the association of methylation-SNP pairs as methQTLs. The pipeline provides visualisation in the form of QQ plots and Manhattan plots for Emodel, sequence dotplots for Gmodel, and genotype interaction plots for GxE model, each with [ggplot2](https://github.com/tidyverse/ggplot2).
 
 > See the [output documentation](docs/output.md) for more details of the results.
 
@@ -29,13 +26,14 @@ ii. Install one of [`docker`](https://docs.docker.com/engine/installation/), [`s
 iii. Download the pipeline and test it on a minimal dataset with a single command
 
 ```bash
-nextflow run epidiverse/template -profile test,<docker|singularity|conda>
+nextflow run epidiverse/ewas -profile test,<docker|singularity|conda>
 ```
 
 iv. Start running your own analysis!
 
 ```bash
-nextflow run epidiverse/template -profile <docker|singularity|conda> --input /path/to/wgbs/directory
+nextflow run epidiverse/ewas -profile <docker|singularity|conda> \
+--input /path/to/wgbs/directory --samples /path/to/sample.tsv
 ```
 
 > See the [usage documentation](docs/usage.md) for all of the available options when running the pipeline.
@@ -55,11 +53,11 @@ The EpiDiverse/template pipeline is part of the [EpiDiverse Toolkit](https://app
 
 ### Credits
 
-These scripts were originally written for use by the [EpiDiverse European Training Network](https://epidiverse.eu/), by Firstname Surname ([@username](https://github.com/link-to-user-profile)).
+These scripts were originally written for use by the [EpiDiverse European Training Network](https://epidiverse.eu/), by Adam Nunn ([@bio15anu](https://github.com/bio15anu)) and Nilay Can ([@nilaycan](https://github.com/nilaycan)).
 
 This project has received funding from the European Union’s Horizon 2020 research and innovation
 programme under the Marie Skłodowska-Curie grant agreement No 764965
 
 ## Citation
 
-If you use epidiverse/template for your analysis, please cite it using the following doi: <placeholder>
+If you use epidiverse/ewas for your analysis, please cite it using the following doi: <placeholder>
