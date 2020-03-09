@@ -33,7 +33,7 @@ iv. Start running your own analysis!
 
 ```bash
 nextflow run epidiverse/ewas -profile <docker|singularity|conda> \
---input /path/to/wgbs/directory --samples /path/to/sample.tsv
+--input /path/to/wgbs/directory --samples /path/to/samples.tsv
 ```
 
 > See the [usage documentation](docs/usage.md) for all of the available options when running the pipeline.
