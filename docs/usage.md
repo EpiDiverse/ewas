@@ -98,7 +98,7 @@ There can be multiple covariate columns but environment factor can only have one
 Specify path to the DMR pipeline output directory to run EWAS analyses in addition with methylated positions filtered by significant DMPs. The pipeline searches for bed files in '\*/{context}/metilene/\*/\*.bed' format where context can be either "CpG", "CHG", or "CHH".
 
 ### `--DMRs <ARG>`
-Specify path to the DMR pipeline output directory to run EWAS analyses in addition with methylated positions filtered by significant DMRs. In addition, the pipeline will call the union of all significant regions and attempt to run EWAS with whole regions as markers. The pipeline searches for bed files in '*/{context}/metilene/*/*.bed' format where context can be either "CpG", "CHG", or "CHH".
+Specify path to the DMR pipeline output directory to run EWAS analyses in addition with methylated positions filtered by significant DMRs. In addition, the pipeline will call the union of all significant regions and attempt to run EWAS with whole regions as markers. The pipeline searches for bed files in '\*/{context}/metilene/\*/\*.bed' format where context can be either "CpG", "CHG", or "CHH".
 
 ### `--SNPs <ARG>`
 ONLY SUITABLE FOR DIPLOID ORGANISMS. Specify path to the SNP pipeline output directory to enable EWAS analyses Gmodel and GxEmodel which attempt to create a genome-wide methQTL map. The pipeline searches for VCF files in '*/vcf/{sample_name}.{extension}' where sample names must correspond to the samplesheet and the extension can be any standard vcf extension readable by 'bcftools' and defined with --extension parameter. Alternatively, the path to a single multi-sample VCF file can be provided.
@@ -162,7 +162,7 @@ Minimum quality score  [default: 30]
 ## Output Filtering
    
 ### `--Emodel_pv <ARG>`
-Set the p-value to run "E model". Note: this filter is hardcoded as "1" for Q-Q plot generation and the user-given value is applied retroactively [default: 0.0001]
+Set the p-value to run "E model". Note: this filter is hardcoded as "1" for Q-Q plot generation and the user-given value is applied to Manhattan plots [default: 0.0001]
 
 ### `--Gmodel_pv <ARG>`
 Set the p-value to run "G model". [default: 0.0001]
@@ -211,10 +211,10 @@ Profiles available with the pipeline are:
     * Builds a conda environment from the environment.yml file provided by the pipeline
     * Requires conda to be installed on your system.
 * `docker`
-    * Launches a docker image pulled from epidiverse/dmr
+    * Launches a docker image pulled from epidiverse/ewas
     * Requires docker to be installed on your system. 
 * `singularity`
-    * Launches a singularity image pulled from epidiverse/dmr
+    * Launches a singularity image pulled from epidiverse/ewas
     * Requires singularity to be installed on your system.
 * `epi|diverse`
     * Designed to be used on the [EpiDiverse](http://epidiverse.eu/) clusters `epi` or `diverse`

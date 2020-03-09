@@ -35,8 +35,7 @@ gg.manhattan <- function(df, threshold, hlight, col, ylims, title){
 		# Add highlight and annotation information
 		mutate( is_highlight=ifelse(SNP %in% hlight, "yes", "no")) %>%
 		mutate( is_annotate=ifelse(P < threshold, "yes", "no"))
-
-	
+		mutate( P=ifelse(P < 1e-10, 1e-10, P))
 	
 	# get chromosome center positions for x-axis
 	axisdf <- df.tmp %>% group_by(CHR) %>% summarize(center=( max(BPcum) + min(BPcum) ) / 2 )
@@ -81,12 +80,8 @@ gg.manhattan <- function(df, threshold, hlight, col, ylims, title){
 	ggsave(paste0(args[2], ".png"), p, width=12, height=7)
 }
 
-sig = as.numeric(args[3]) # 5e-8 # significant threshold line
-sugg = sig*100 # 1e-6 # suggestive threshold line
-
-if(sugg>1){
-	sugg = 1
-}
+sig <- as.numeric(args[3]) # 5e-8 # significant threshold line
+sugg <- ifelse(sig*100>1, 1, sig*100) # 1e-6 # suggestive threshold line
 
 mypalette <- c("#E2709A", "#CB4577", "#BD215B", "#970F42", "#75002B",
                "#FF817E", "#E9534F", "#D92B26", "#AE1612", "#870300",
@@ -100,7 +95,7 @@ mypalette <- c("#E2709A", "#CB4577", "#BD215B", "#970F42", "#75002B",
 
 gmodel <- read.table(args[1],header=T)
 if(nrow(gmodel) > 0){
-	gg.manhattan(gmodel, threshold= 1e-6, hlight= NA, ylims=c(0,10),col=mypalette, title="Manhattan Plot")
+	gg.manhattan(gmodel, threshold= sugg, hlight= NA, ylims=c(0,10), col=mypalette, title="Manhattan Plot")
 }else{
 	write(paste0(args[2], " resulted in zero rows"), stderr())
 }
