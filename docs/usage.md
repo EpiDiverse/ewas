@@ -4,39 +4,37 @@ This document describes the parameter options used by the pipeline.
 * [Running the pipeline](#running-the-pipeline)
 * [Inputs and outputs](#inputs-and-outputs)
     * [`--input`](#--input-arg-required)
-    * [`--output`](#--output-arg)
     * [`--samples`](#--samples-arg-required)
-    * [`--SNPs`](#--SNPs-arg-required-for-G-and-GXE-models)
-    * [`--DMPs`](#--DMPs-arg)
-    * [`--DMRs`](#--DMRs-arg)
-    * [`--kplots`](#--kplots-arg-optional-for-GXE-model)
+    * [`--DMPs`](#--dmps-arg)
+    * [`--DMRs`](#--dmrs-arg)
+    * [`--SNPs`](#--snps-arg)
+    * [`--extension`](#--extension-arg)  
+    * [`--output`](#--output-arg)
+* [Model Decision](#model-decision)
+    * [`--Emodel`](#--mmodel)
+    * [`--Gmodel`](#--gmodel)
+    * [`--GxE`](#--gxe) 
+    * [`--noCpG`](#--nocpg)
+    * [`--noCHG`](#--nochg)
+    * [`--noCHH`](#--nochh)
 * [Inputs Filtering](#input-filtering)
-    * [`--coverage`](#--coverage)
-    * [`--input_FDR`](#--input_FDR)
-    * [`--proportion`](#--proportion)
-* [Model Decision](#Model-Decision)
-    * [`--GEM_Emodel`](#--GEM_Emodel-arg-to-run-only-the-E-model)
-    * [`--GEM_Gmodel`](#--GEM_Gmodel-arg-to-run-only-the-G-model)
-    * [`--GEM_GXEmodel`](#--GEM_GXEmodel-arg-to-run-only-the-GXE-model) 
-    * [`--GEM_Emodel --GEM_Gmodel`](#--GEM_Emodel--GEM_Gmodel-args-to-run-both-the-E-and-G-models)
-    * [`--GEM_Emodel--GEM_GXEmodel`](#--GEM_Emodel--GEM_GXEmodel-args-to-run-both-the-E-and-GXE-models)
-    * [`--GEM_Gmodel--GEM_GXEmodel`](#--GEM_Gmodel--GEM_GXEmodel-args-to-run-both-the-G-and-GXE-models)
-    * [`--GEM_Emodel--GEM_Gmodel--GEM_GXEmodel`](#--GEM_Emodel--GEM_Gmodel--GEM_GXEmodel-args-to-run-all-models)
+    * [`--coverage`](#--coverage-arg)
+    * [`--input_FDR`](#--input-fdr-arg)
+    * [`--proportion`](#--proportion-arg)
+    * [`--merge`](#--merge)
 * [SNP Filtering](#--SNP-Filtering) 
-    * [`--max_missing`](#--max_missing)
+    * [`--max_missing`](#--max-missing)
     * [`--mac`](#--mac)
     * [`--minQ`](#--minQ)
-* [Output Filtering](#--Output-Filtering)
-    * [`--output_FDR`](#--output_FDR)
+* [Output Filtering](#--output-filtering)
+    * [`--output_FDR`](#--output-fdr-arg)
+    * [`--Emodel_pv`](#--emodel-pv-arg)
+    * [`--Gmodel_pv`](#--gmodel-pv-arg)
+    * [`--GxE_pv`](#--gxe-pv-arg)  
+* [Visualisation](#--visualisation)
+    * [`--kplots`](#--kplots-arg)
+    * [`--distance`](#--distance-arg)
 * [Additional Parameters](#Additional-Parameters)
-    * [`--noCpG`](#--noCpG)
-    * [`--noCHG`](#--noCHG)
-    * [`--noCHH`](#--noCHH)
-    * [`--distance`](#--distance)
-    * [`--extension`](#--extension)
-    * [`--Emodel_pv`](#--extension)
-    * [`--Gmodel_pv`](#--extension)
-    * [`--GxEmodel_pv`](#--extension)    
     * [`--debug`](#--debug)
     * [`--version`](#--version)
     * [`--help`](#--help)
@@ -44,150 +42,84 @@ This document describes the parameter options used by the pipeline.
     * [`-profile`](#-profile)
     * [`-with-conda`](#-with-conda)
     * [`-with-docker`](#-with-docker)
-    * [`-with-singularity`](#-with-singularity)    
+    * [`-with-singularity`](#-with-singularity)
+* [Other command line parameters](#other-command-line-parameters)
+    * [`-work-dir`](#-work-dir)
+    * [`-params-file`](#-params-file)
+    * [`-config`](#-config)
+    * [`-resume`](#-resume)
+    * [`-name`](#-name)
+
 ## Workflow
 
 ![EpiDiverse/ewas Workflow](/docs/images/ewas_input.png)
 
-## Inputs and Outputs
-
-### `--input <ARG>` [REQUIRED]
-Specify the path to the DIRECTORY containing each sample output from the WGBS pipeline to be taken forward for analysis. All the subdirectories must correspond to sample names in the provided samples.tsv file, and contain bedGraph directories with files in '*.bedGraph' format.
-
-### `--output <ARG>`
-A string that will be used as the name for the output results directory, which will be generated in the working directory. This directory will contain sub-directories for each set of reads analysed during the pipeline. [default: 'ewas']
-
-### `--samples <ARG>` [REQUIRED]
-Specify the path to the "samples.tsv" file containing information regarding sample names and corresponding groupings/replicates. The file must contain three tab-separated columns: 1) sample names, corresponding to subdirectories in the input directory, 1) sample names, 2) environment values and 3) covariate values
-
-Example `*samples.tsv` file:
+## Running the pipeline
+The main command for running the pipeline is as follows:
 
 ```bash
-#sample_identifier          env   cov1   cov2  . . . . .    covn
-FV_CZ_02_05_R1_GG0_M2_1	    34	  1      1
-FV_CZ_02_05_R1_GG0_Y3_1	    42	  1      1  
-FV_IT_01_06_R1_GG0_M2_1	    21	  1      2  
-FV_IT_01_06_R1_GG0_Y3_1	    56	  1      2         
-FV_IT_04_08_R1_GG0_M1_1	    76	  2      3
-FV_IT_04_08_R1_GG0_Y2_1	    65	  2      3
-FV_NO_01_06_R1_GG0_M2_1	    11	  2      4 
-FV_NO_01_06_R1_GG0_Y3_1	    22	  2      4
-...
-```
-Covariate data can contain multiple covariates but environment factor can only have one column.
-
-### `--SNPs <ARG>` [required-for-G-and-GXE-models]
-Specify the path to the DIRECTORY contaninig multiple .vcf (.bcf) outputs from the SNP pipeline. It is also possible to work with multi-sample merged vcf file. Pipeline can analyze both input types. The main aim is to convert genotypes to 1,2,3 matrix values for major allele homozygote (AA), heterozygote (AB) and minor allele homozygote (BB).
-
-### `--DMPs <ARG>`
-Specify the path to the DIRECTORY containing each sample output from the DMR pipeline to be taken forward for analysis with DMPs. All the subdirectories must correspond to sample names in the provided samples.tsv file, and contain bed file in '*.bed' format. It disables DMR run if it is used alone.
-
-### `--DMRs <ARG>`
-Specify the path to the DIRECTORY containing each sample output from the DMR pipeline to be taken forward for analysis with DMRs. All the subdirectories must correspond to sample names in the provided samples.tsv file, and contain bed file in '*.bed' format. It disables DMP run if it is used alone.
-
-### `--kplots <ARG>` [optional-for-GXE-model]
-Number of scatter plot to display ten top **significant** methylation corresponding to the environment in different genotype groups. AA, AB and BB are used for major allele homozygote, heterozygote and minor allele homozygote. Phenotypic values are visible on the x-axis, and methylation value in percentage on the y-axis. User can provide any number greater than zero. If any other methylations rather than significant ones want to be plotted, user should extract data manually and run it locally [default: 10]
-
-## Input Filtering
-
-### `--coverage`
-Specify the minimum coverage threshold to filter methylated positions before running the EWAS analyses with all input types  [default: 0]
-
-### `--input_FDR`
-Specify the minimum coverage threshold to filter DMPs and/or DMR files  [default: 0.05]
-
-### `--proportion`
-Minimum proportion of samples that must share a DMP or DMR for it to be considered   [default: 0.20]
-
-
-## Model Decision
-
-### `--GEM_Emodel <ARG>` [to-run-only-the-E-model]
-
-```bash
-nextflow run epidiverse/ewas -profile <docker|singularity|conda> \
---input /path/to/reads/directory --samples /path/to/samples --GEM_Emodel
-```
-
-### `--GEM_Gmodel <ARG>` [to-run-only-the-G-model]
-
-
-```bash
-nextflow run epidiverse/ewas -profile <docker|singularity|conda> \
---input /path/to/reads/directory --samples /path/to/samples --SNPs /path/to/vcf/file(s) --GEM_Gmodel
-```
-
-### `--GEM_GXEmodel <ARG>` [to-run-only-the-GXE-model]
-
-```bash
-nextflow run epidiverse/ewas -profile <docker|singularity|conda> \
---input /path/to/reads/directory --samples /path/to/samples --SNPs /path/to/vcf/file(s) --GEM_Gmodel 
-```
-
-### `--GEM_Emodel--GEM_Gmodel <ARGS>` [to-run-both-the-E-and-G-models]
-
-```bash
-nextflow run epidiverse/ewas -profile <docker|singularity|conda> \
---input /path/to/reads/directory --samples /path/to/samples --SNPs /path/to/vcf/file(s) --GEM_Gmodel --GEM_Emodel
-```
-
-### `--GEM_Emodel--GEM_GXEmodel <ARGS>` [to-run-both-the-E-and-GXE-models]
-
-```bash
-nextflow run epidiverse/ewas -profile <docker|singularity|conda> \
---input /path/to/reads/directory --samples /path/to/samples --SNPs /path/to/vcf/file(s) --GEM_Emodel --GEM_GXEmodel
-```
-
-### `--GEM_Gmodel--GEM_GXEmodel <ARGS>` [to-run-both-the-G-and-GXE-models]
-
-```bash
-nextflow run epidiverse/ewas -profile <docker|singularity|conda> \
---input /path/to/reads/directory --samples /path/to/samples --SNPs /path/to/vcf/file(s) --GEM_Gmodel --GEM_GXEmodel
-```
-
-### `--GEM_Emodel--GEM_Gmodel--GEM_GXEmodel  <ARGS>` [--GEM_Emodel--GEM_Gmodel--GEM_GXEmodel-args-to-run-all-models] 
-
-```bash
-nextflow run epidiverse/ewas -profile <docker|singularity|conda> \
---input /path/to/reads/directory --samples /path/to/samples --SNPs /path/to/vcf/file(s) --GEM_Emodel --GEM_Gmodel --GEM_GXEmodel
-```
-or
-
-```bash
-nextflow run epidiverse/ewas -profile <docker|singularity|conda> \
---input /path/to/reads/directory --samples /path/to/samples --SNPs /path/to/vcf/file(s) 
+nextflow run epidiverse/ewas [OPTIONS]
 ```
 
 Note that the pipeline will create files in your working directory:
 
 ```bash
 work/           # Directory containing the nextflow working files
-dmrs/           # Finished results (configurable, see below)
+ewas/           # Finished results (configurable, see below)
 .nextflow.log   # Log file from Nextflow
 .nextflow/      # Nextflow cache and history information
 ```
 
+## Inputs and Outputs
 
-## SNP Filtering 
-It is possible when user run the pipeline with --GEM_Gmodel parameter. Please Check this link for more details about fiiltering: http://www.ddocent.com/filtering/
+### `--input <ARG>` [REQUIRED]
+Specify input path for the directory containing outputs from the WGBS pipeline. The pipeline searches for bedGraph files in '\*/bedGraph/{sample_name}_{context}.bedGraph' format, where sample names must correspond to the samplesheet and context can be either "CpG", "CHG", or "CHH".
 
-### `--max_missing`
-Variants that were successfully genotyped in given %[max missing] of individuals  [default: 0.5]. It can take values from 0 to 1, where 1 means no missing data allowed.
+### `--samples <ARG>` [REQUIRED]
+Specify the path to the samplesheet file containing information regarding sample names and corresponding environment and covariate values. The file must contain at least three tab-separated columns: 1) sample names, 2) environment value, 3) covariate values, with further columns optional for additional covariates.
 
-### `--mac`
-Minor allele count [default: 3]
+Example `samples.tsv` file:
 
-### `--minQ`
-Minimum quality score  [default: 30]
+```bash
+#ID        env   cov1   cov2  . . . . .    covn
+sample1	    34	  1      1
+sample2	    42	  1      1  
+sample3	    21	  1      2  
+sample4	    56	  1      2         
+sample5	    76	  2      3
+sample6	    65	  2      3
+sample7	    11	  2      4 
+sample8	    22	  2      4
+...
+```
+There can be multiple covariate columns but environment factor can only have one.
+
+### `--DMPs <ARG>`
+Specify path to the DMR pipeline output directory to run EWAS analyses in addition with methylated positions filtered by significant DMPs. The pipeline searches for bed files in '\*/{context}/metilene/\*/\*.bed' format where context can be either "CpG", "CHG", or "CHH".
+
+### `--DMRs <ARG>`
+Specify path to the DMR pipeline output directory to run EWAS analyses in addition with methylated positions filtered by significant DMRs. In addition, the pipeline will call the union of all significant regions and attempt to run EWAS with whole regions as markers. The pipeline searches for bed files in '*/{context}/metilene/*/*.bed' format where context can be either "CpG", "CHG", or "CHH".
+
+### `--SNPs <ARG>`
+ONLY SUITABLE FOR DIPLOID ORGANISMS. Specify path to the SNP pipeline output directory to enable EWAS analyses Gmodel and GxEmodel which attempt to create a genome-wide methQTL map. The pipeline searches for VCF files in '*/vcf/{sample_name}.{extension}' where sample names must correspond to the samplesheet and the extension can be any standard vcf extension readable by 'bcftools' and defined with --extension parameter. Alternatively, the path to a single multi-sample VCF file can be provided.
+
+### `--extension`
+Specify the extension to use when searching for VCF files eg. \*.vcf \*.bcf or \*.vcf.gz [default: '*.vcf.gz']
+
+### `--output <ARG>`
+A string that will be used as the name for the output results directory, which will be generated in the working directory. [default: 'ewas']
 
 
-## Output Filtering
+## Model Decision
 
+### `--Emodel`
+Run analysis with "E model". Disables other models unless they are also specified. If no individual model is specified then all that are possible with the provided inputs will run in parallel [default: off]
 
-### `--out_FDR`
-Specify the maximum FDR threshold for filtering EWAS post-analysis.  [default: 0.05]
+### `--Gmodel`
+Run analysis with "G model". Disables other models unless they are also specified. If no individual model is specified then all that are possible with the provided inputs will run in parallel [default: off]
 
-## Additional Parameters
+### `--GxE`
+Run analysis with "GxE model". Disables other models unless they are also specified. If no individual model is specified then all that are possible with the provided inputs will run in parallel [default: off]
 
 ### `--noCpG`
 Disables EWAS analysis in CpG context. Note: at least one methylation context is required for analysis. [default: off]
@@ -198,23 +130,60 @@ Disables EWAS analysis in CHG context. Note: at least one methylation context is
 ### `--noCHH`
 Disables EWAS analysis in CHH context. Note: at least one methylation context is required for analysis. [default: off]
 
-### `--distance`
-User can specify what defines cis and trans regions in the dotplot with Gmodel output. [default: 5000]
 
-### `--extension`
-User can use the pipeline with different input to the SNP pipeline can submit a directory with eg. .vcf .bcf or *.vcf.gz.
+## Input Filtering
 
-### `--Emodel_pv`
-User can set the p-value to change blue and red line positions in Manhattan plot from Emodel run. [Default: 0.0001]
-It is hardcoded as "1" for the Q-Q plot generation to use all p-values.
+### `--coverage <ARG>`
+Specify the minimum coverage threshold to filter individual methylated positions from the --input directory before running analyses [default: 0] 
+            
+### `--input_FDR <ARG>`
+Specify the minimum FDR significance threshold to include DMPs and/or DMRs from the respective --DMPs and --DMRs directories [default: 0.05]          
+                
+### `--proportion <ARG>`
+Minimum proportion of samples that must share a DMP and/or DMR for it to be considered in the analsis [default: 0.2]
 
-### `--Gmodel_pv`
-User can set the p-value to run Gmodel. [Default: 0.0001]
-
-### `--GxE_pv`
-User can set the p-value to run GxEmodel. [Default: 0.0001]
+### `--merge`
+When running EWAS using the union set of DMRs as markers, specify to merge adjacent sub-regions into larger regions prior to methylation averaging and subsequent analysis [default: off]
 
 
+## SNP Filtering 
+NB: PROVIDING VARIANTS ONLY SUITABLE FOR DIPLOID ORGANISMS.
+
+### `--max_missing <ARG>`
+Variants that were successfully genotyped in given proportion of individuals. It can take values from 0 to 1, where 1 means no missing data allowed [default: 0.5]
+
+### `--mac <ARG>`
+Minor allele count [default: 3]
+
+### `--minQ <ARG>`
+Minimum quality score  [default: 30]
+
+
+## Output Filtering
+   
+### `--Emodel_pv <ARG>`
+Set the p-value to run "E model". Note: this filter is hardcoded as "1" for Q-Q plot generation and the user-given value is applied retroactively [default: 0.0001]
+
+### `--Gmodel_pv <ARG>`
+Set the p-value to run "G model". [default: 0.0001]
+
+### `--GxE_pv <ARG>`
+Set the p-value to run "GxE model". [default: 0.0001]
+
+### `--output_FDR <ARG>`
+Specify the maximum FDR threshold for filtering EWAS post-analysis [default: 0.05]
+
+
+## Visualisation
+
+### `--kplots <ARG>`
+Specify the number of plots to generate for the top k significant results in "GxE model" [default: 10]
+
+### `--distance <ARG>`
+Specify the distance threshold to define cis and trans methQTLs in the dotplot generated for "G model" output [default: 5000]
+
+
+## Additional Parameters
 
 ### `--debug`
 Specify in order to prevent Nextflow from clearing the work dir cache following a successful pipeline completion. [default: off]
