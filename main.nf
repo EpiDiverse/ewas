@@ -193,7 +193,7 @@ log.info "         output dir                      : ${params.output}"
 log.info ""
 log.info "         Analysis Configuration"
 log.info "         =================================================="
-log.info "         GEM model(s)                    : ${Emodel ? "Emodel " : ""}${Gmodel ? "Gmodel : ""}${GxE ? "GxE" : ""}"
+log.info "         GEM model(s)                    : ${Emodel ? "Emodel" : ""}${Gmodel ? "Gmodel" : ""}${GxE ? "GxE" : ""}"
 log.info "         Methylation context(s)          : ${params.noCpG ? "" : "CpG "}${params.noCHH ? "" : "CHH "}${params.noCHG ? "" : "CHG"}"
 if(Emodel){
 log.info "         Emodel p-value                  : ${params.Emodel_pv}" }
