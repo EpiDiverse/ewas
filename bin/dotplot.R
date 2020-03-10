@@ -19,10 +19,10 @@ chr$x0 <- chr$x1 - chr$x
 chr.nrow <- nrow(chr)
 
 # set the number of grids to draw
-if(chr.nrow < as.numeric(args[2])){
+if(chr.nrow < as.numeric(args[3])){
     grids <- chr.nrow
 } else {
-    grids <- as.numeric(args[2])
+    grids <- as.numeric(args[3])
 }
 
 chr$mid <- chr$x1 - (chr$x/2)
@@ -49,4 +49,4 @@ p <- ggplot(df, aes(cpos,spos,color=dist)) +
     xlab("SNP position / bp") +
     ylab("Meth. position / bp")
 
-ggsave(paste0(args[3], ".png"), p, width=12, height=7)
+ggsave(paste0(args[2], ".png"), p, width=12, height=7)

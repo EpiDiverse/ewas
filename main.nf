@@ -70,6 +70,10 @@ if(params.help){
               --noCHH                         Disables EWAS analysis in CHH context. Note: at least one methylation context is required
                                                 for analysis. [default: off]
 
+              --all                           If --DMPs and/or --DMRs are provided to the pipeline then raw un-intersected bedGraphs are
+                                                not carried forward for analysis. Enable this parameter to process them alongside the 
+                                                DMP / DMR intersections in parallel [default: off]
+
 
          Options: INPUT FILTERING
               --coverage <INT>                Specify the minimum coverage threshold to filter individual methylated positions from the
@@ -96,14 +100,17 @@ if(params.help){
 
 
          Options: OUTPUT FILTERING       
-              --Emodel_pv <FLOAT>             Set the p-value to run "E model". Note: this filter is hardcoded as "1" for Q-Q plot 
-                                                generation and the user-given value is applied retroactively [default: 0.0001]
-
-              --Gmodel_pv <FLOAT>             Set the p-value to run "G model". [default: 0.0001]
-
-              --GxE_pv <FLOAT>                Set the p-value to run "GxE model". [default: 0.0001]
-
               --output_FDR <FLOAT>            Specify the maximum FDR threshold for filtering EWAS post-analysis [default: 0.05]
+
+              --Emodel_pv <FLOAT>             Set the p-value to run "E model". Note: this filter is applied prior to FDR calculation
+                                                and should be used cautiously [default: 1]
+
+              --Gmodel_pv <FLOAT>             Set the p-value to run "G model". Note: this filter is applied prior to FDR calculation
+                                                and should be used cautiously [default: 1]
+
+              --GxE_pv <FLOAT>                Set the p-value to run "GxE model". Note: this filter is applied prior to FDR calculation
+                                                and should be used cautiously [default: 1]
+
 
 
          Options: VISUALISATION
@@ -376,7 +383,8 @@ workflow 'EWAS' {
         // average_over_regions for calculating average methylation over defined regions
         average_over_regions(filter_regions.out.mix(bedtools_merge.out))
         // stage channels for downstream processes
-        meth_channel = bedtools_unionbedg.out.filter{it[1] == "bedGraph"}.mix(bedtools_intersect.out, average_over_regions.out)
+        bedGraph_channel = params.all || (!params.DMPs && !params.DMRs) ? bedtools_unionbedg.out.filter{it[1] == "bedGraph"} : Channel.empty()
+        meth_channel = bedGraph_channel.mix(bedtools_intersect.out, average_over_regions.out)
 
         // SNPs
         // index individual vcf files, optionally rename header

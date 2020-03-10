@@ -81,7 +81,7 @@ gg.manhattan <- function(df, threshold, hlight, col, ylims, title){
 }
 
 sig <- as.numeric(args[3]) # 5e-8 # significant threshold line
-sugg <- ifelse(sig*100>1, 1, sig*100) # 1e-6 # suggestive threshold line
+sugg <- ifelse(sig*1000>1, 1, sig*1000) # 1e-6 # suggestive threshold line
 
 mypalette <- c("#E2709A", "#CB4577", "#BD215B", "#970F42", "#75002B",
                "#FF817E", "#E9534F", "#D92B26", "#AE1612", "#870300",

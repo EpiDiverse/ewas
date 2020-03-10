@@ -55,7 +55,7 @@ process "calculate_FDR" {
     
     output:
     tuple model, key, val("${types.unique().join("")}"), path("${model}/*.txt")
-    tuple model, key, val("${types.unique().join("")}"), path(txt), path("${model}/${key}.txt")
+    tuple model, key, val("${types.unique().join("")}"), path(txt), path("${model}/${key}.filtered_${params.output_FDR}_FDR.txt")
 
     when:
     params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel || params.GxE)
@@ -98,7 +98,7 @@ process "manhattan" {
     awk -F "\\t" 'BEGIN{print "SNP","CHR","BP","P"} NR!=1{split(\$1,cpg,":"); split(cpg[2],cpos,"-"); pos=(cpos[1]+cpos[2])/2;
     print \$1,cpg[1],pos,\$5}' ${txt} > manhattan.txt
     
-    Rscript ${baseDir}/bin/manhattan.R manhattan.txt \$(basename ${txt} .txt) ${params.Emodel_pv}
+    Rscript ${baseDir}/bin/manhattan.R manhattan.txt \$(basename ${txt} .txt) 0.000001
     """ 
 }
 
@@ -116,7 +116,7 @@ process "dotPlot" {
     tuple model, key, type, path(result)
     
     output:
-    tuple type, path("${model}/${key}.png") optional true
+    tuple type, path("${model}/*.png") optional true
 
     when:
     params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel)
@@ -128,9 +128,9 @@ process "dotPlot" {
     {if(NR!=1 && \$6<=${params.output_FDR}) {split(\$1,cpg,":"); split(\$2,snp,":"); split(cpg[2],cpos,"-"); split(snp[2],spos,"-");
     c=(cpos[1]+cpos[2])/2; s=(spos[1]+spos[2])/2;
     if(cpg[1]!=snp[1]){d="trans"} else {if(abs(c-s)>${params.distance}){d="trans"} else {d="cis"}};
-    print cpg[1],c,snp[1],s,d}}' ${key}.txt > ${model}/${key}.txt
+    print cpg[1],c,snp[1],s,d}}' ${key}.filtered_${params.output_FDR}_FDR.txt > ${model}/${key}.txt
     
-    Rscript ${baseDir}/bin/dotplot.R ${model}/${key}.txt 10 ${model}/${key}
+    Rscript ${baseDir}/bin/dotplot.R ${model}/${key}.txt ${model}/${key}.filtered_${params.output_FDR}_FDR 10
     """ 
 }
 
