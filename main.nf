@@ -397,7 +397,7 @@ workflow 'EWAS' {
         
         // calculate FDR
         Gmodel_channel = GEM_Gmodel.out[0].map{ tuple( it[0] + "." + it[1], *it) }.groupTuple().map{ tuple("Gmodel", *it) }
-        GxE_channel = GEM_Gmodel.out[0].map{ tuple( it[0] + "." + it[1], *it) }.groupTuple().map{ tuple("GxE", *it) }
+        GxE_channel = GEM_GxEmodel.out[0].map{ tuple( it[0] + "." + it[1], *it) }.groupTuple().map{ tuple("GxE", *it) }
         calculate_FDR(Gmodel_channel.mix(GxE_channel))
 
         // visualisation
