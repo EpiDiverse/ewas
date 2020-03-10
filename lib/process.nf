@@ -64,8 +64,13 @@ process "calculate_FDR" {
     """
     mkdir input ${model}
     tail -q -n+2 ${results} > input/${key}.txt
-    Rscript ${baseDir}/bin/FDR.R input/${key}.txt ${model}/${key}.txt
+
+    if [[ \$(cat input/${key}.txt | wc -l) == 0 ]]; then
+    echo "No findings with ${model == "Gmodel" ? "--Gmodel_pv ${params.Gmodel_pv}" : "--GxE_pv ${params.GxE_pv}"}" > ${model}/${key}.txt
+    else
+    Rscript ${baseDir}/bin/FDR.R input/${key}.txt ${model}/${key}.txt || exit \$?
     awk '{if(NR==1){print} else {if(\$6<=${params.output_FDR}){print}}}' ${model}/${key}.txt > ${model}/${key}.filtered_${params.output_FDR}_FDR.txt
+    fi
     """ 
 }
 
@@ -76,7 +81,7 @@ process "calculate_FDR" {
 process "manhattan" {
 
     label "low"
-    label "finish"
+    label "ignore"
     tag "${context} - ${type}"
      
     input:
@@ -104,7 +109,7 @@ process "manhattan" {
 process "dotPlot" {
 
     label "low"
-    label "finish"
+    label "ignore"
     tag "${key}.txt"
      
     input:
@@ -136,7 +141,7 @@ process "dotPlot" {
 process "topKplots" {
 
     label "low"
-    label "finish"
+    label "ignore"
     tag "${key}.txt"
      
     input:

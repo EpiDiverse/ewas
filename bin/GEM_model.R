@@ -78,7 +78,7 @@ my.GEM_Gmodel <-
             useModel = modelLINEAR,
             errorCovariance = errorCovariance,
             verbose = FALSE,
-            pvalue.hist = "qqplot",
+            pvalue.hist = FALSE,
             min.pv.by.genesnp = FALSE,
             noFDRsaveMemory = noFDR,
             addInfo = "methQTL"
@@ -174,7 +174,7 @@ my.GEM_GxEmodel <-
             useModel = modelLINEAR_CROSS,
             errorCovariance = errorCovariance,
             verbose = FALSE,
-            pvalue.hist = "qqplot",
+            pvalue.hist = FALSE,
             min.pv.by.genesnp = FALSE,
             noFDRsaveMemory = noFDR,
             addInfo = "cpg-snp pairs"
