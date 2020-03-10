@@ -2,13 +2,31 @@
 // This file for loading custom functions into the main.nf script (separated for portability)
 
 // FUNCTION TO LOAD DATASETS IN TEST PROFILE
-def check_test_data(BAMPaths) {
+def check_test_data(CpGPaths, CHGPaths, CpGPaths_DMRs, CHGPaths_DMRs, SNPPaths) {
 
-    // Set BAM testdata
-    BAM = Channel.from(BAMPaths)
+    // STAGE INPUT CHANNELS
+    CpG = Channel.from(CpGPaths)
         .map { row -> [ row[0], file(row[1]) ] }
-        .ifEmpty { exit 1, "test profile BAMPaths was empty - no input files supplied" }
+        .ifEmpty { exit 1, "test profile CpGPaths was empty - no input files supplied" }
 
-    // Return BAM channel
-    return BAM
+    CHG = Channel.from(CHGPaths)
+        .map { row -> [ row[0], file(row[1]) ] }
+        .ifEmpty { exit 1, "test profile CHGPaths was empty - no input files supplied" }
+
+    // STAGE DMR CHANNELS
+    CpG_DMRs = Channel.from(CpGPaths_DMRs)
+        .map { row -> [ row[0], file(row[1]).getParent() ] }
+        .ifEmpty { exit 1, "test profile CpGPaths_DMRs was empty - no input files supplied" }
+
+    CHG_DMRs = Channel.from(CHGPaths_DMRs)
+        .map { row -> [ row[0], file(row[1]).getParent() ] }
+        .ifEmpty { exit 1, "test profile CHGPaths_DMRs was empty - no input files supplied" }
+
+    // STAGE SNPs CHANNEL
+    SNPs = Channel.from(SNPPaths)
+        .map { row -> [ row[0], file(row[1]) ] }
+        .ifEmpty { exit 1, "test profile SNPPaths was empty - no input files supplied" }
+
+    // Return channels
+    return CpG, CHG, CpG_DMRs, CHG_DMRs, SNPs
 }

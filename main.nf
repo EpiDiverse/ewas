@@ -254,11 +254,18 @@ samples_channel = Channel
         return tuple(field[0].replaceAll("\\s",""))}
 
 
-// STAGE BAM FILES FROM TEST PROFILE # this establishes the test data to use with -profile test
+// STAGE TEST PROFILE 
 if ( workflow.profile.tokenize(",").contains("test") ){
 
-        include check_test_data from './lib/functions.nf' params(BAMPaths: params.BAMPaths)
-        BAM = check_test_data(params.BAMPaths)
+        include check_test_data from './lib/functions.nf' params(CpGPaths: params.CpGPaths, CHGPaths: params.CHGPaths, CpGPaths_DMRs: params.CpGPaths_DMRs, CHGPaths: params.CHGPaths_DMRs, SNPPaths: params.SNPPaths)
+        CpG, CHG, CpG_DMRs, CHG_DMRs, SNPs = check_test_data(params.CpGPaths, params.CHGPaths, params.CpGPaths_DMRs, params.CHGPaths_DMRs, params.SNPPaths)
+
+        CpG_DMPs = CpG_DMRs
+        CHG_DMPs = CHG_DMRs
+        
+        CHH = Channel.empty()
+        CHH_DMPs = Channel.empty()
+        CHH_DMRs = Channel.empty()
 
 } else {
 
