@@ -34,7 +34,7 @@ gg.manhattan <- function(df, threshold, hlight, col, ylims, title){
 		
 		# Add highlight and annotation information
 		mutate( is_highlight=ifelse(SNP %in% hlight, "yes", "no")) %>%
-		mutate( is_annotate=ifelse(P < threshold, "yes", "no"))
+		mutate( is_annotate=ifelse(P < threshold, "yes", "no")) %>%
 		mutate( P=ifelse(P < 1e-10, 1e-10, P))
 	
 	# get chromosome center positions for x-axis

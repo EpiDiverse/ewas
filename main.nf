@@ -193,13 +193,13 @@ log.info "         output dir                      : ${params.output}"
 log.info ""
 log.info "         Analysis Configuration"
 log.info "         =================================================="
-log.info "         GEM model(s)                    : ${Emodel ? "Emodel" : ""}${Gmodel ? "Gmodel" : ""}${GxE ? "GxE" : ""}"
+log.info "         GEM model(s)                    : ${Emodel ? "Emodel " : ""}${Gmodel ? "Gmodel " : ""}${GxE ? "GxE" : ""}"
 log.info "         Methylation context(s)          : ${params.noCpG ? "" : "CpG "}${params.noCHH ? "" : "CHH "}${params.noCHG ? "" : "CHG"}"
 if(Emodel){
 log.info "         Emodel p-value                  : ${params.Emodel_pv}" }
-if(Gmodel){
+if(params.SNPs && Gmodel){
 log.info "         Gmodel p-value                  : ${params.Gmodel_pv}" }
-if(GxE){
+if(params.SNPs && GxE){
 log.info "         GxE p-value                     : ${params.GxE_pv}" }
 log.info ""
 log.info "         Input Filtering"
@@ -223,9 +223,9 @@ log.info "         =================================================="
 log.info "         Output"
 log.info "         =================================================="
 log.info "         output FDR                      : ${params.output_FDR}"
-if(Gmodel){
+if(params.SNPs && Gmodel){
 log.info "         methQTL distance                : ${params.distance}" }
-if(GxE){
+if(params.SNPs && GxE){
 log.info "         number of kplots                : ${params.kplots}" }
 log.info ""    
 log.info "         =================================================="
