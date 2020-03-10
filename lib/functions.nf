@@ -15,11 +15,11 @@ def check_test_data(CpGPaths, CHGPaths, CpGPaths_DMRs, CHGPaths_DMRs, SNPPaths) 
 
     // STAGE DMR CHANNELS
     CpG_DMRs = Channel.from(CpGPaths_DMRs)
-        .map { row -> [ row[0], file(row[1]) ] }
+        .map { row -> [ row[0], file(row[1]).getParent() ] }
         .ifEmpty { exit 1, "test profile CpGPaths_DMRs was empty - no input files supplied" }
 
     CHG_DMRs = Channel.from(CHGPaths_DMRs)
-        .map { row -> [ row[0], file(row[1]) ] }
+        .map { row -> [ row[0], file(row[1]).getParent() ] }
         .ifEmpty { exit 1, "test profile CHGPaths_DMRs was empty - no input files supplied" }
 
     // STAGE SNPs CHANNEL
