@@ -29,7 +29,8 @@ process "filtering" {
         """  
     else
         """
-        awk 'BEGIN{OFS=\"\\t\"} \$4<=${params.input_FDR}{printf \"%s\\t%s\\t%s\\t%1.3f\\n\", \$1,\$2,\$3,\$4}' ${bed}/${bed}.bed |
+        file=${workflow.profile.contains("test") ? "${bed}" : "${bed}/${bed}.bed"}
+        awk 'BEGIN{OFS=\"\\t\"} \$4<=${params.input_FDR}{printf \"%s\\t%s\\t%s\\t%1.3f\\n\", \$1,\$2,\$3,\$4}' \$file |
         sort -k1,1 -k2,2n > ${sample}.bed
         """  
 } 
