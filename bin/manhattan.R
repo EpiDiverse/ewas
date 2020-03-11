@@ -101,7 +101,7 @@ sugg <- 1e-3 # 1e-6 # suggestive threshold line
 mypalette <- c("#FF817E", "#E9534F", "#D92B26", "#AE1612", "#870300")
 
 emodel <- read.table(args[1],header=T)
-if(nrow(gmodel) > 0){
+if(nrow(emodel) > 0){
 	gg.manhattan(emodel, threshold= sig, hlight= NA, ylims=c(0,12), col=mypalette, title=args[2])
 }else{
 	write(paste0(args[2], " resulted in zero rows"), stderr())
