@@ -14,7 +14,7 @@ process "filtering" {
     // eg. [CpG, DMPs, sample, /path/to/CpG.bedGraph]
 
     output:
-    tuple context, type, sample, path("${sample}.bed")
+    tuple context, type, sample, path("${sample}.filtered.bed")
     // eg. [CpG, DMPs, sample, sample.txt]
 
     when:
@@ -25,13 +25,13 @@ process "filtering" {
         """
         tail -n+2 ${bed} |
         awk 'BEGIN{OFS=\"\\t\"} {if((\$5+\$6)>=${params.coverage}) {printf \"%s\\t%s\\t%s\\t%1.2f\\n\", \$1,\$2,\$3,(\$4/100)}}' |
-        sort -k1,1 -k2,2n > ${sample}.bed
+        sort -k1,1 -k2,2n > ${sample}.filtered.bed
         """  
     else
         """
         file=${workflow.profile.contains("test") ? "${bed}" : "${bed}/${bed}.bed"}
         awk 'BEGIN{OFS=\"\\t\"} \$4<=${params.input_FDR}{printf \"%s\\t%s\\t%s\\t%1.3f\\n\", \$1,\$2,\$3,\$4}' \$file |
-        sort -k1,1 -k2,2n > ${sample}.bed
+        sort -k1,1 -k2,2n > ${sample}.filtered.bed
         """  
 } 
 

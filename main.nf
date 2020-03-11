@@ -191,22 +191,22 @@ else {
 log.info "         ==================================================" }
 log.info "         ~ version ${workflow.manifest.version}"
 log.info ""
-log.info "         input dir                       : ${params.input}"
 log.info "         samplesheet                     : ${params.samples}"
-log.info "         DMPs dir                        : ${params.DMPs ? "$params.DMPs" : ""}"
-log.info "         DMRs dir                        : ${params.DMRs ? "$params.DMRs" : ""}"
-log.info "         VCF(s)                          : ${params.SNPs ? "$params.SNPs" : ""}"
+log.info "         input dir                       : ${params.input}"
+log.info "         DMPs dir                        : ${params.DMPs ? "$params.DMPs" : "-"}"
+log.info "         DMRs dir                        : ${params.DMRs ? "$params.DMRs" : "-"}"
+log.info "         VCF(s)                          : ${params.SNPs ? "$params.SNPs" : "-"}"
 log.info "         output dir                      : ${params.output}"
 log.info ""
 log.info "         Analysis Configuration"
 log.info "         =================================================="
 log.info "         GEM model(s)                    : ${Emodel ? "Emodel " : ""}${Gmodel ? "Gmodel " : ""}${GxE ? "GxE" : ""}"
 log.info "         Methylation context(s)          : ${params.noCpG ? "" : "CpG "}${params.noCHH ? "" : "CHH "}${params.noCHG ? "" : "CHG"}"
-if(Emodel){
+if(Emodel && params.Emodel_pv.toInteger() < 1){
 log.info "         Emodel p-value                  : ${params.Emodel_pv}" }
-if(params.SNPs && Gmodel){
+if(params.SNPs && Gmodel && params.Gmodel_pv.toInteger() < 1){
 log.info "         Gmodel p-value                  : ${params.Gmodel_pv}" }
-if(params.SNPs && GxE){
+if(params.SNPs && GxE && params.GxE_pv.toInteger() < 1){
 log.info "         GxE p-value                     : ${params.GxE_pv}" }
 log.info ""
 log.info "         Input Filtering"
