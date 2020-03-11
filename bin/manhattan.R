@@ -49,7 +49,7 @@ gg.manhattan <- function(df, threshold, hlight, col, ylims, title){
 	p <- ggplot(df.tmp, aes(x=BPcum, y=-log10(P), text=as.factor(SNP))) +
 		# Show all points
 		geom_point(aes(color=factor(CHR, levels=chr.ord)), alpha=0.8, size=1) +
-		scale_color_manual(values = rep(col, chr.len)) )) +
+		scale_color_manual(values = rep(col, chr.len)) +
 		
 		# custom X axis:
 		scale_x_continuous( label = levels(axisdf$CHR), breaks= axisdf$center ) +
