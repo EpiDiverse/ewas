@@ -57,7 +57,6 @@ gg.manhattan <- function(df, threshold, hlight, col, ylims, title){
 		
 		# add plot and axis titles
 		ggtitle(paste0(title)) +
-		
 		labs(x = "Scaffold") +
 		
 		# add genome-wide sig and sugg lines
@@ -68,7 +67,7 @@ gg.manhattan <- function(df, threshold, hlight, col, ylims, title){
 		#geom_point(data=subset(df.tmp, is_highlight=="yes"), color="orange", size=2) +
 		
 		# Add label using ggrepel to avoid overlapping
-		geom_label_repel(data=df.tmp[df.tmp$is_annotate=="yes",], aes(label=as.factor(SNP), alpha=0.7), size=2, force=5) +
+		geom_text_repel(data=df.tmp[df.tmp$is_annotate=="yes",], aes(label=as.factor(SNP), alpha=0.7), size=2, force=5) +
 		
 		# Custom the theme:
 		theme_bw(base_size = 15) +
@@ -84,15 +83,15 @@ gg.manhattan <- function(df, threshold, hlight, col, ylims, title){
 		)
 
 	# save plot image
-	p.png <- paste0(args[2], ".png")
+	p.png <- paste0(title, ".png")
 	ggsave(p.png, p, width=12, height=7)
 
 	# save interactive plot
 	p <- ggplotly(p,tooltip=c("y","text"))
-	p.html <- paste0(args[2], ".html")
-	p.zip <- paste0(args[2], ".zip")
-	htmlwidgets::saveWidget(p, p.html, selfcontained=F, libdir=args[2])
-	zip::zipr(p.zip, c(p.html,args[2]))
+	p.html <- paste0(title, ".html")
+	p.zip <- paste0(title, ".zip")
+	htmlwidgets::saveWidget(p, p.html, selfcontained=F, libdir=title, title=title)
+	zip::zipr(p.zip, c(p.html,title))
 
 }
 
@@ -103,7 +102,7 @@ mypalette <- c("#FF817E", "#E9534F", "#D92B26", "#AE1612", "#870300")
 
 emodel <- read.table(args[1],header=T)
 if(nrow(gmodel) > 0){
-	gg.manhattan(emodel, threshold= sig, hlight= NA, ylims=c(0,12), col=mypalette, title="Manhattan Plot")
+	gg.manhattan(emodel, threshold= sig, hlight= NA, ylims=c(0,12), col=mypalette, title=args[2])
 }else{
 	write(paste0(args[2], " resulted in zero rows"), stderr())
 }

@@ -118,6 +118,7 @@ process "dotPlot" {
     
     output:
     tuple type, path("${model}/*.png") optional true
+    tuple type, path("${model}/*.zip") optional true
 
     when:
     params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel)

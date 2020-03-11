@@ -448,8 +448,10 @@ workflow 'EWAS' {
         manhattan_png_pos = manhattan.out[0].filter{ it[0] != "region" && it[0] != "merged" }
         manhattan_zip_reg = manhattan.out[1].filter{ it[0] == "region" || it[0] == "merged" }
         manhattan_zip_pos = manhattan.out[1].filter{ it[0] != "region" && it[0] != "merged" }
-        dotPlot_png_reg = dotPlot.out.filter{ it[0] == "region" || it[0] == "merged" }
-        dotPlot_png_pos = dotPlot.out.filter{ it[0] != "region" && it[0] != "merged" }
+        dotPlot_png_reg = dotPlot.out[0].filter{ it[0] == "region" || it[0] == "merged" }
+        dotPlot_png_pos = dotPlot.out[0].filter{ it[0] != "region" && it[0] != "merged" }
+        dotPlot_zip_reg = dotPlot.out[1].filter{ it[0] == "region" || it[0] == "merged" }
+        dotPlot_zip_pos = dotPlot.out[1].filter{ it[0] != "region" && it[0] != "merged" }
         topKplots_png_reg = topKplots.out.filter{ it[0] == "region" || it[0] == "merged" }
         topKplots_png_pos = topKplots.out.filter{ it[0] != "region" && it[0] != "merged" }
 
@@ -491,6 +493,8 @@ workflow {
         EWAS.out.manhattan_zip_pos to: "${params.output}/positions/Emodel", mode: 'copy'
         EWAS.out.dotPlot_png_reg to: "${params.output}/regions", mode: 'copy'
         EWAS.out.dotPlot_png_pos to: "${params.output}/positions", mode: 'copy'
+        EWAS.out.dotPlot_zip_reg to: "${params.output}/regions", mode: 'copy'
+        EWAS.out.dotPlot_zip_pos to: "${params.output}/positions", mode: 'copy'
         EWAS.out.topKplots_png_reg to: "${params.output}/regions", mode: 'copy'
         EWAS.out.topKplots_png_pos to: "${params.output}/positions", mode: 'copy'
 
