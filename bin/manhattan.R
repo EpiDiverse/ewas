@@ -5,6 +5,7 @@ suppressMessages(require(ggrepel))
 suppressMessages(require(ggplot2))
 suppressMessages(require(dplyr))
 suppressMessages(require(RColorBrewer))
+suppressMessages(require(plotly))
 
 args <- commandArgs(trailingOnly=T)
 
@@ -20,6 +21,7 @@ gg.manhattan <- function(df, threshold, hlight, col, ylims, title){
 		# Compute chromosome size
 		group_by(CHR) %>% 
 		summarise(chr_len=max(BP)) %>% 
+		arrange(desc(chr_len)) %>%
 		
 		# Calculate cumulative position of each chromosome
 		mutate(tot=cumsum(chr_len)-chr_len) %>%
@@ -31,6 +33,7 @@ gg.manhattan <- function(df, threshold, hlight, col, ylims, title){
 		# Add a cumulative position of each SNP
 		arrange(CHR, BP) %>%
 		mutate( BPcum=BP+tot) %>%
+		arrange(BPcum) %>%
 		
 		# Add highlight and annotation information
 		mutate( is_highlight=ifelse(SNP %in% hlight, "yes", "no")) %>%
@@ -40,13 +43,16 @@ gg.manhattan <- function(df, threshold, hlight, col, ylims, title){
 	# get chromosome center positions for x-axis
 	axisdf <- df.tmp %>% group_by(CHR) %>% summarize(center=( max(BPcum) + min(BPcum) ) / 2 )
 	
-	p <- ggplot(df.tmp, aes(x=BPcum, y=-log10(P))) +
+	chr.ord <- unique(df.tmp$CHR)
+	chr.len <- length(chr.ord)
+
+	p <- ggplot(df.tmp, aes(x=BPcum, y=-log10(P), text=as.factor(SNP))) +
 		# Show all points
-		geom_point(aes(color=as.factor(CHR)), alpha=0.8, size=2) +
-		scale_color_manual(values = rep(col, 22 )) +
+		geom_point(aes(color=factor(CHR, levels=chr.ord)), alpha=0.8, size=1) +
+		scale_color_manual(values = rep(col, chr.len)) )) +
 		
 		# custom X axis:
-		scale_x_continuous( label = axisdf$CHR, breaks= axisdf$center ) +
+		scale_x_continuous( label = levels(axisdf$CHR), breaks= axisdf$center ) +
 		scale_y_continuous(expand = c(0, 0), limits = ylims) + # expand=c(0,0)removes space between plot area and x axis 
 		
 		# add plot and axis titles
@@ -62,7 +68,7 @@ gg.manhattan <- function(df, threshold, hlight, col, ylims, title){
 		#geom_point(data=subset(df.tmp, is_highlight=="yes"), color="orange", size=2) +
 		
 		# Add label using ggrepel to avoid overlapping
-		geom_label_repel(data=df.tmp[df.tmp$is_annotate=="yes",], aes(label=as.factor(SNP), alpha=0.7), size=5, force=1.3) +
+		geom_label_repel(data=df.tmp[df.tmp$is_annotate=="yes",], aes(label=as.factor(SNP), alpha=0.7), size=2, force=5) +
 		
 		# Custom the theme:
 		theme_bw(base_size = 15) +
@@ -77,25 +83,27 @@ gg.manhattan <- function(df, threshold, hlight, col, ylims, title){
 				axis.ticks.x=element_blank()
 		)
 
-	ggsave(paste0(args[2], ".png"), p, width=12, height=7)
+	# save plot image
+	p.png <- paste0(args[2], ".png")
+	ggsave(p.png, p, width=12, height=7)
+
+	# save interactive plot
+	p <- ggplotly(p,tooltip=c("y","text"))
+	p.html <- paste0(args[2], ".html")
+	p.zip <- paste0(args[2], ".zip")
+	htmlwidgets::saveWidget(p, p.html, selfcontained=F, libdir=args[2])
+	zip::zipr(p.zip, c(p.html,args[2]))
+
 }
 
 sig <- as.numeric(args[3]) # 5e-8 # significant threshold line
-sugg <- ifelse(sig*1000>1, 1, sig*1000) # 1e-6 # suggestive threshold line
+sugg <- 1e-3 # 1e-6 # suggestive threshold line
 
-mypalette <- c("#E2709A", "#CB4577", "#BD215B", "#970F42", "#75002B",
-               "#FF817E", "#E9534F", "#D92B26", "#AE1612", "#870300",
-               "#E2709A", "#CB4577", "#BD215B", "#970F42", "#75002B",
-               "#4EAFAF", "#2C9696", "#0F8F8F", "#057272", "#005A5A",
-               "#5D82BB", "#3B64A5", "#1E4F9E", "#103B7E", "#082B64",
-               "#6E65C2", "#4D43AE", "#3226A6", "#211785", "#150D69",
-               "#DDF67A", "#C2E04C", "#ADD024", "#88A711", "#678100",
-               "#A7E672", "#85D047", "#6AC122", "#4F9B10", "#367800",
-               "#A6C965", "#7B9F34", "#567714", "#375201", "#203000")
+mypalette <- c("#FF817E", "#E9534F", "#D92B26", "#AE1612", "#870300")
 
-gmodel <- read.table(args[1],header=T)
+emodel <- read.table(args[1],header=T)
 if(nrow(gmodel) > 0){
-	gg.manhattan(gmodel, threshold= sugg, hlight= NA, ylims=c(0,10), col=mypalette, title="Manhattan Plot")
+	gg.manhattan(emodel, threshold= sig, hlight= NA, ylims=c(0,12), col=mypalette, title="Manhattan Plot")
 }else{
 	write(paste0(args[2], " resulted in zero rows"), stderr())
 }

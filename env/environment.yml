@@ -73,6 +73,7 @@ dependencies:
   - r-assertthat=0.2.1=r36h6115d3f_1
   - r-backports=1.1.5=r36hcdcec82_0
   - r-base=3.6.2=h3a67422_0
+  - r-base64enc=0.1_3=r36hcdcec82_1003
   - r-bh=1.69.0_1=r36h6115d3f_0
   - r-brew=1.0_6=r36h6115d3f_1002
   - r-callr=3.4.1=r36h6115d3f_0
@@ -85,6 +86,7 @@ dependencies:
   - r-crayon=1.3.4=r36h6115d3f_1002
   - r-crosstalk=1.0.0=r36h6115d3f_1002
   - r-curl=4.3=r36hcdcec82_0
+  - r-data.table=1.12.8=r36hcdcec82_0
   - r-desc=1.2.0=r36h6115d3f_1002
   - r-devtools=2.2.1=r36h6115d3f_0
   - r-digest=0.6.23=r36h0357c0b_0
@@ -102,6 +104,7 @@ dependencies:
   - r-git2r=0.26.1=r36h5ca76e2_1
   - r-glue=1.3.1=r36hcdcec82_1
   - r-gtable=0.3.0=r36h6115d3f_2
+  - r-hexbin=1.28.1=r36h9bbef5b_0
   - r-hms=0.5.3=r36h6115d3f_0
   - r-htmltools=0.4.0=r36h0357c0b_0
   - r-htmlwidgets=1.5.1=r36h6115d3f_0
@@ -128,6 +131,7 @@ dependencies:
   - r-pkgconfig=2.0.3=r36h6115d3f_0
   - r-pkgload=1.0.2=r36h0357c0b_1001
   - r-plogr=0.2.0=r36h6115d3f_0
+  - r-plotly=4.9.2=r36h6115d3f_0
   - r-plyr=1.8.5=r36h0357c0b_0
   - r-praise=1.0.0=r36h6115d3f_1003
   - r-prettyunits=1.1.1=r36h6115d3f_0
@@ -157,6 +161,7 @@ dependencies:
   - r-sys=3.3=r36hcdcec82_0
   - r-testthat=2.3.1=r36h0357c0b_0
   - r-tibble=2.1.3=r36hcdcec82_1
+  - r-tidyr=0.8.3=r36h0357c0b_1
   - r-tidyselect=0.2.5=r36h29659fb_0
   - r-usethis=1.5.1=r36h6115d3f_1
   - r-utf8=1.1.4=r36hcdcec82_1001
@@ -169,6 +174,7 @@ dependencies:
   - r-xtable=1.8_4=r36h6115d3f_2
   - r-yaml=2.2.1=r36hcdcec82_0
   - r-zeallot=0.1.0=r36h6115d3f_1001
+  - r-zip=2.0.4=r36hcdcec82_0
   - readline=8.0=hf8c457e_0
   - sed=4.7=h1bed415_1000
   - tabix=0.2.6=ha92aebf_0

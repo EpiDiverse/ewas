@@ -77,7 +77,7 @@ process "calculate_FDR" {
 
 
 // GEM_Emodel.out[0]
-// process to generate top X plots from GxEmodel based on number provided by --kplots
+// process to generate manhattan plots from Emodel
 process "manhattan" {
 
     label "low"
@@ -89,6 +89,7 @@ process "manhattan" {
     
     output:
     tuple type, path("*.png") optional true
+    tuple type, path("*.zip") optional true
 
     when:
     params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel)
@@ -98,14 +99,14 @@ process "manhattan" {
     awk -F "\\t" 'BEGIN{print "SNP","CHR","BP","P"} NR!=1{split(\$1,cpg,":"); split(cpg[2],cpos,"-"); pos=(cpos[1]+cpos[2])/2;
     print \$1,cpg[1],pos,\$5}' ${txt} > manhattan.txt
     
-    Rscript ${baseDir}/bin/manhattan.R manhattan.txt \$(basename ${txt} .txt) 0.000001
+    Rscript ${baseDir}/bin/manhattan.R manhattan.txt \$(basename ${txt} .txt) 0.00000001
     """ 
 }
 
 
 
 // calculate_FDR.out[0].filter{ it[0] == "Gmodel" }
-// process to generate top X plots from GxEmodel based on number provided by --kplots
+// process to generate dotplots from Gmodel
 process "dotPlot" {
 
     label "low"
