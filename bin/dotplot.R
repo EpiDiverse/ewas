@@ -80,11 +80,12 @@ gg.dotplot <- function(df, title, contigs){
 
 }
 
-df <- read.table(args[1],header=F)
-colnames(df)= c("cpg","cpos","snp","spos","dist")
 
-if(nrow(df) > 0){
-    gg.dotplot(df, args[2], args[3])
-}else{
+df <- try(read.table(args[1],header=F))
+
+if(inherits(df, "try-error")){
     write("Input data contains zero rows!", stderr())
+}else{
+    colnames(df)= c("cpg","cpos","snp","spos","dist")
+    gg.dotplot(df, args[2], args[3])
 }
