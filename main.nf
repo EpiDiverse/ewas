@@ -444,8 +444,10 @@ workflow 'EWAS' {
         calculate_FDR_reg = calculate_FDR.out[0].filter{ it[2] == "region" || it[2] == "merged" }
         calculate_FDR_pos = calculate_FDR.out[0].filter{ it[2] != "region" && it[2] != "merged" }
 
-        manhattan_pdf_reg = manhattan.out.filter{ it[0] == "region" || it[0] == "merged" }
-        manhattan_pdf_pos = manhattan.out.filter{ it[0] != "region" && it[0] != "merged" }
+        manhattan_png_reg = manhattan.out[0].filter{ it[0] == "region" || it[0] == "merged" }
+        manhattan_png_pos = manhattan.out[0].filter{ it[0] != "region" && it[0] != "merged" }
+        manhattan_zip_reg = manhattan.out[1].filter{ it[0] == "region" || it[0] == "merged" }
+        manhattan_zip_pos = manhattan.out[1].filter{ it[0] != "region" && it[0] != "merged" }
         dotPlot_png_reg = dotPlot.out.filter{ it[0] == "region" || it[0] == "merged" }
         dotPlot_png_pos = dotPlot.out.filter{ it[0] != "region" && it[0] != "merged" }
         topKplots_png_reg = topKplots.out.filter{ it[0] == "region" || it[0] == "merged" }
@@ -483,14 +485,14 @@ workflow {
         EWAS.out.calculate_FDR_reg to: "${params.output}/regions", mode: 'copy'
         EWAS.out.calculate_FDR_pos to: "${params.output}/positions", mode: 'copy'
 
-        EWAS.out.manhattan_pdf_reg to: "${params.output}/regions/Emodel", mode: 'copy'
-        EWAS.out.manhattan_pdf_pos to: "${params.output}/positions/Emodel", mode: 'copy'
+        EWAS.out.manhattan_png_reg to: "${params.output}/regions/Emodel", mode: 'copy'
+        EWAS.out.manhattan_png_pos to: "${params.output}/positions/Emodel", mode: 'copy'
+        EWAS.out.manhattan_zip_reg to: "${params.output}/regions/Emodel", mode: 'copy'
+        EWAS.out.manhattan_zip_pos to: "${params.output}/positions/Emodel", mode: 'copy'
         EWAS.out.dotPlot_png_reg to: "${params.output}/regions", mode: 'copy'
         EWAS.out.dotPlot_png_pos to: "${params.output}/positions", mode: 'copy'
         EWAS.out.topKplots_png_reg to: "${params.output}/regions", mode: 'copy'
         EWAS.out.topKplots_png_pos to: "${params.output}/positions", mode: 'copy'
-
-
 
 }
 
