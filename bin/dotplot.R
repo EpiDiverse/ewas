@@ -74,7 +74,7 @@ ggsave(p.png, p, width=12, height=7)
 
 # save interactive plot
 p <- ggplotly(p, tooltip="text")
-p.html <- paste0(args[2], ".html")
+p.html <- paste0(basename(args[2]), ".html")
 p.zip <- paste0(args[2], ".zip")
-htmlwidgets::saveWidget(p, p.html, selfcontained=F, libdir=args[2], title=basename(args[2]))
-zip::zipr(p.zip, c(p.html,args[2]))
+htmlwidgets::saveWidget(p, p.html, selfcontained=F, libdir=basename(args[2]), title=basename(args[2]))
+zip::zipr(p.zip, c(p.html,basename(args[2])))
