@@ -160,7 +160,7 @@ process "bedtools_merge" {
 
     script:
     """
-    bedtools merge -i ${differential} | sort -k1,1 -k2,2n > ${context}.merged.txt
+    cat <(head -1 ${differential} | cut -f-3) <(bedtools merge -i ${differential} | sort -k1,1 -k2,2n) > ${context}.merged.txt
     """  
 } 
 
