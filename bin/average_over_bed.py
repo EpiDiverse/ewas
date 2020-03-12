@@ -21,8 +21,8 @@ Procedure:
 	4. On each position, evaluate or skip to next
 
 Usage:
-	average_over_bed.py [REGIONS] [POSITIONS]
-eg. average_over_bed.py regions.bed positions.bed
+	average_over_bed.py [REGIONS] [POSITIONS] [INDEX]
+eg. average_over_bed.py regions.bed positions.bed index.txt
 '''
 
 ###################
@@ -33,7 +33,10 @@ import sys
 
 #################
 ## BEGIN __MAIN__
-def main(REGIONS,POSITIONS):
+def main(REGIONS,POSITIONS,INDEX):
+
+	# 0) Build scaffold index
+	index = buildIndex(INDEX)
 
 	# 1) Open the regions and positions files for reading
 	with open(REGIONS,'r') as regions, open(POSITIONS,'r') as positions:
@@ -48,8 +51,9 @@ def main(REGIONS,POSITIONS):
 		region = region.split("\t")
 
 		Chr = region[0]
+		iChr = index.index(Chr) 
 		Start = int(region[1])
-		End = int(region[2]) + 1
+		End = int(region[2])
 
 		# define booleans for header and region detection
 		Head = True
@@ -66,12 +70,10 @@ def main(REGIONS,POSITIONS):
 			if Head:
 
 				# establish initial variables
-				length = len(position) - 2
+				length = len(position) - 3
 				totals = [(0, 0) for i in range(0,length)]
-				#count = 0
 
 				# print header and skip to next position
-				position.insert(1, "start")
 				print("\t".join(position))
 				Head = False
 				continue
@@ -79,32 +81,39 @@ def main(REGIONS,POSITIONS):
 			##############################################
 			# establish current position
 			current_Chr = position[0]
-			current_Pos = int(position[1])
+			current_iChr = index.index(current_Chr)
+			current_Pos = int(position[1]) # should be START pos
 
-			# 3) On each position, test if we need to move to the next region
-			if Found and ((current_Chr != Chr) or ((current_Chr == Chr) and (current_Pos > End+1))):
+			# 3) On each new position, test if we have reached the end of a Found region
+			if Found and ((current_Chr != Chr) or ((current_Chr == Chr) and (current_Pos >= End))):
+				#print("{}\t{}\t{}\t{}\t{}\t{}\tmoving to next region".format(Chr,Start,End,current_Chr,current_Pos,position[2]),file=sys.stderr())
 
 				# print averages for current region
-				#averages = [str(format(n/count, '.5f')) for n in totals]
 				averages = [str(format(n[0]/n[1], '.5f')) if n[1] != 0 else "NA" for n in totals]
-				print("{}\t{}\t{}\t{}".format(Chr, Start, End-1, "\t".join(averages)))
-
-				# move the region ONCE
-				region, Chr, Start, End = moveToNextRegion(regions, Chr, Start, End)
-				if region is "kill": break
+				print("{}\t{}\t{}\t{}".format(Chr, Start, End, "\t".join(averages)))
 
 				# reset counts
 				totals = [(0, 0) for i in range(0,length)]
 				Found = False
 
-			# 4) On each position, evaluate current position or skip to next
-			if (current_Chr == Chr) and (current_Pos in range(Start, End+1)):
+				# move the region until we are ahead of current position
+				region = moveToNextRegion(index, regions, current_Chr, current_iChr, current_Pos)
+				if region is None: break
+				else:
+					Chr = region[0]
+					Start = int(region[1])
+					End = int(region[2]) 
 
-				totals = [(totals[i][0],totals[i][1]) if position[i+2] == "NA" else (totals[i][0]+float(position[i+2]),totals[i][1]+1) for i in range(0, length)]
+			# 4) On each position, evaluate current position or skip to next
+			if (current_Chr == Chr) and (current_Pos in range(Start, End)):
+				#print("{}\t{}\t{}\t{}\t{}\t{}\tposition is inside region".format(Chr,Start,End,current_Chr,current_Pos,position[2]),file=sys.stderr())
+				totals = [(totals[i][0],totals[i][1]) if position[i+3] == "NA" else (totals[i][0]+float(position[i+3]),totals[i][1]+1) for i in range(0, length)]
 				Found = True
 
 			# we already moved the region, so now move position
-			else: continue
+			else:
+				#print("{}\t{}\t{}\t{}\t{}\t{}\tsearching for first position in region".format(Chr,Start+1,End+1,current_Chr,current_Pos,position[2]),file=sys.stderr())
+				continue
 
 
 ## END OF __MAIN__
@@ -114,20 +123,28 @@ def main(REGIONS,POSITIONS):
 ###################
 ## DEFINE FUNCTIONS
 
-# move to the next region until the next region contains position
-def moveToNextRegion(regions, Chr, Start, End):
+# build index of scaffold IDs
+def buildIndex(INDEX):
+
+	with open(INDEX, 'r') as f: lines = f.read().splitlines()
+	return lines
+
+# move to the next region until we are ahead of position
+def moveToNextRegion(index, regions, Chr, iChr, Pos):
 
 	# move the region
 	try: region = next(regions)
-	except StopIteration: return "kill", Chr, Start, End
+	except StopIteration: return None
 
 	region = region.rstrip()
 	region = region.split("\t")
-	Chr = region[0]
-	Start = int(region[1])
-	End = int(region[2]) + 1
+
+	# if the new region is behind the current position, we need to run recursively
+	if (index.index(region[0]) < iChr) or ((region[0] == Chr) and (Pos+1 > int(region[2]))):
+		#print("{}\t{}\t{}\tregion removed due to coverage filter".format(region[0],region[1],region[2]),file=sys.stderr)
+		region = moveToNextRegion(index, regions, Chr, iChr, Pos)
 	
-	return region, Chr, Start, End
+	return region
 
 
 ## END OF FUNCTIONS
@@ -138,7 +155,7 @@ def moveToNextRegion(regions, Chr, Start, End):
 
 # run main()
 if __name__ == '__main__':
-	main(sys.argv[1],sys.argv[2])
+	main(sys.argv[1],sys.argv[2],sys.argv[3])
 
 ## END OF SCRIPT
 ################

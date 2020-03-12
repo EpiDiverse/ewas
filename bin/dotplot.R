@@ -80,7 +80,6 @@ gg.dotplot <- function(df, title, contigs){
 
 }
 
-
 df <- try(read.table(args[1],header=F))
 
 if(inherits(df, "try-error")){

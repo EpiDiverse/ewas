@@ -11,7 +11,8 @@ args <- commandArgs(trailingOnly=T)
 
 # args[1]   path to input data
 # args[2]   path to output data
-# args[3]   significance threshold
+# args[3]   significance threshold (blue line)
+# args[4]	suggestive threshold (red line)
 
 gg.manhattan <- function(df, threshold, hlight, col, ylims, title){
 
@@ -96,7 +97,7 @@ gg.manhattan <- function(df, threshold, hlight, col, ylims, title){
 }
 
 sig <- as.numeric(args[3]) # 5e-8 # significant threshold line
-sugg <- 1e-3 # 1e-6 # suggestive threshold line
+sugg <- as.numeric(args[4]) # 1e-6 # suggestive threshold line
 
 mypalette <- c("#FF817E", "#E9534F", "#D92B26", "#AE1612", "#870300")
 
