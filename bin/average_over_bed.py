@@ -12,6 +12,7 @@ Description:
 
 List of functions:
 	main()
+	buildIndex()
 	moveToNextRegion()
 
 Procedure:

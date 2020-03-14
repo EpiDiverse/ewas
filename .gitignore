@@ -1,0 +1,4 @@
+.nextflow*
+work/
+ewas/
+.DS_Store
