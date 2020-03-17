@@ -10,8 +10,8 @@ args <- commandArgs(trailingOnly=T)
 df <- read.table(args[1], header=T)
 df$log_pvalue <- -log10(df$pvalue)
 
-title <- paste("Q-Q plot for all",nrow(small),"p-values")
-qq <- ggplot(data = small, mapping = aes(sample = log_pvalue)) +
+title <- paste("Q-Q plot for all",nrow(df),"p-values")
+qq <- ggplot(data = df, mapping = aes(sample = log_pvalue)) +
   stat_qq_line(col="red") +
   stat_qq_point() + labs(x = "-Log10 (p-value), theoretical", y = "-Log10 (p-value), observed") +
   theme_bw() +
@@ -20,7 +20,7 @@ qq <- ggplot(data = small, mapping = aes(sample = log_pvalue)) +
 qq.name <- paste0(args[2], ".qqplot.png")
 ggsave(qq.name, qq, width=12, height=7)
 
-ph <- ggplot(small, aes(log_pvalue)) +
+ph <- ggplot(df, aes(log_pvalue)) +
   geom_histogram(binwidth = 0.05)  +  
   ggtitle("Histogram of -Log10 (p-values)") +
   xlab("-Log10 (p-value)") + ylab("Frequency") +
