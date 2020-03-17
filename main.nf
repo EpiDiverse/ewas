@@ -421,7 +421,7 @@ workflow 'EWAS' {
         // visualisation
         manhattan(calculate_FDR.out.filter{ it[0] == "Emodel" })
         dotPlot(calculate_FDR.out.filter{ it[0] == "Gmodel" })
-        kplots_channel = calculate_FDR.out.filter{ it[0] == "GxE" }.map{ it.tail() }.combine(GEM_GxEmodel.out[1].map{ tuple( it[0] + "." + it[1], *it) }.groupTuple(), by:0).view()
+        kplots_channel = calculate_FDR.out.filter{ it[0] == "GxE" }.map{ it.tail() }.combine(GEM_GxEmodel.out[1].map{ tuple( it[0] + "." + it[1], it.last()) }.groupTuple(), by:0).view()
         //topKplots(calculate_FDR.out.filter{ it[0] == "GxE" }, vcftools_extract.out, parsing.out[2])
 
 
