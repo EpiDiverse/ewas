@@ -42,6 +42,36 @@ process "parsing" {
 }
 
 
+// meth_channel = bedtools_unionbedg.out.filter{it[1] == "bedGraph"}.mix(bedtools_intersect.out, average_over_regions.out)
+// eg. [CpG, bedGraph, methylation.txt]
+// eg. [CpG, DMRs, CpG.bed]
+// eg. [CpG, regions, CpG.avg]
+
+
+// bcftools.out
+// extract required format
+process "split_scaffolds" {
+
+    label "low"
+    label "finish"
+    tag "$type - $context"
+     
+    input:
+    tuple context, type, path(bed)
+    
+    output:
+    tuple context, type, path("output/*.bed")
+
+    script:
+    """   
+    mkdir output
+    awk -F "\\t" '{if(NR-1){if(\$1 in arr == 0){arr[\$1]=\$1; print header > "output/"\$1".bed"};
+    print \$0 >> "output/"\$1".bed"} else {header=\$0}}' ${bed}
+    """ 
+}
+//split_scaffolds.out.transpose()
+
+
 // GEM_Gmodel.out.map{ tuple( it[0] + "." + it[1], *it) }.groupTuple().map{ tuple("Gmodel", *it) }
 // process to calculate FDR on combined files after splitting
 process "calculate_FDR" {
@@ -55,21 +85,25 @@ process "calculate_FDR" {
     
     output:
     tuple model, key, val("${types.unique().join("")}"), path("${model}/*.txt")
-    tuple model, key, val("${types.unique().join("")}"), path(txt), path("${model}/${key}.filtered_${params.output_FDR}_FDR.txt")
+    tuple model, key, val("${types.unique().join("")}"), path("input/*.txt"), path("${model}/${key}.filtered_${params.output_FDR}_FDR.txt")
 
     when:
-    params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel || params.GxE)
+    params.input
 
     script:
     """
     mkdir input ${model}
-    tail -q -n+2 ${results} > input/${key}.txt
+    head -qn 1 txt* | uniq > input/header.txt
+    tail -q -n+2 *.txt > input/${key}.txt
+    total=\$(cat *.log | grep "100.00%" | cut -d " " -f3 | tr -d "," | awk 'BEGIN{c=0} {c+=\$0} END{print c}')
 
-    if [[ \$(cat input/${key}.txt | wc -l) == 0 ]]; then
-    echo "No findings with ${model == "Gmodel" ? "--Gmodel_pv ${params.Gmodel_pv}" : "--GxE_pv ${params.GxE_pv}"}" > ${model}/${key}.txt
+    if [[ \$(head input/${key}.txt | wc -l) == 0 ]]; then
+    echo "No findings with ${model == "Emodel" ? "--Emodel_pv ${params.Emodel_pv}" : model == "Gmodel" ? "--Gmodel_pv ${params.Gmodel_pv}" : "--GxE_pv ${params.GxE_pv}"}" > ${model}/${key}.txt
     else
-    Rscript ${baseDir}/bin/FDR.R input/${key}.txt ${model}/${key}.txt || exit \$?
-    awk '{if(NR==1){print} else {if(\$6<=${params.output_FDR}){print}}}' ${model}/${key}.txt > ${model}/${key}.filtered_${params.output_FDR}_FDR.txt
+    sort -grk${model == "Emodel" ? "4" : "5"} input/${key}.txt |
+    awk -F "\\t" -v t="\$total" 'BEGIN{OFS="\\t";p=1;r=t} {fdr=(t/r)*${model == "Emodel" ? "\$4" : "\$5"};
+    if(fdr>p){fdr=p}; if(fdr<=${params.output_FDR}){print \$0,fdr > ${model}/${key}.filtered_${params.output_FDR}_FDR.txt};
+    print \$0,fdr; p=fdr;r--}' > ${model}/${key}.txt || exit \$?
     fi
     """ 
 }
@@ -82,10 +116,11 @@ process "manhattan" {
 
     label "low"
     label "ignore"
-    tag "${context} - ${type}"
+    tag "${key}"
      
     input:
-    tuple context, type, path(txt)
+    tuple model, key, type, path(txt)
+    // eg. [Emodel, CpG.bedGraph, bedGraph, [/paths/... ,/paths/...]]
     
     output:
     tuple type, path("*.png") optional true
@@ -97,9 +132,8 @@ process "manhattan" {
     script:
     """
     awk -F "\\t" 'BEGIN{print "SNP","CHR","BP","P"} NR!=1{split(\$1,cpg,":"); split(cpg[2],cpos,"-"); pos=(cpos[1]+cpos[2])/2;
-    print \$1,cpg[1],pos,\$5}' ${txt} > manhattan.txt
-    
-    Rscript ${baseDir}/bin/manhattan.R manhattan.txt \$(basename ${txt} .txt) 0.00000001 0.000001
+    print \$1,cpg[1],pos,\$5}' ${key}.filtered_${params.output_FDR}_FDR.txt > manhattan.txt
+    Rscript ${baseDir}/bin/manhattan.R manhattan.txt ${key}.filtered_${params.output_FDR}_FDR 0.00000001 0.000001
     """ 
 }
 
@@ -111,7 +145,7 @@ process "dotPlot" {
 
     label "low"
     label "ignore"
-    tag "${key}.txt"
+    tag "${key}"
      
     input:
     tuple model, key, type, path(result)
@@ -144,10 +178,10 @@ process "topKplots" {
 
     label "low"
     label "ignore"
-    tag "${key}.txt"
+    tag "${key}"
      
     input:
-    tuple model, key, type, path("txt"), path(result)
+    tuple model, key, type, path(txt), path(result)
     path snp
     path gxe
     
@@ -160,12 +194,8 @@ process "topKplots" {
     script:
     """
     mkdir ${model} ${model}/${key}
-    head -qn 1 txt* | uniq > ${model}/${key}.txt
-    tail -q -n+2 txt* >> ${model}/${key}.txt || exit \$?
-
-    head -1 ${result} > ${model}/${key}/${result}
-    tail -n+2 ${result} | sort -gk6 | head -${params.kplots} >> ${model}/${key}/${result} || exit \$?
-
+    cat ${txt} > ${model}/${key}.txt
+    awk 'NR==1{print;next}{print | "sort -gk6 | head -${params.kplots}"}' ${result} > ${model}/${key}/${result} || exit \$?
     Rscript ${baseDir}/bin/Kplot.R ${model}/${key}/${result} ${model}/${key}.txt ${snp} ${gxe}
     """ 
 }

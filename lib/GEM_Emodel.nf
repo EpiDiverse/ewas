@@ -161,7 +161,8 @@ process "bedtools_merge" {
     script:
     """
     cat <(head -1 ${differential} | cut -f-3) <(bedtools merge -i ${differential} | sort -k1,1 -k2,2n) > ${context}.merged.txt
-    """  
+    """
+
 } 
 
 
@@ -192,7 +193,8 @@ process "average_over_regions" {
     """
     tail -q -n+2 differential.txt methylation.txt | cut -f1 | uniq | sort | uniq > index.txt
     ${baseDir}/bin/average_over_bed.py <(tail -n+2 differential.txt) methylation.txt index.txt > ${context}.${type}.bed
-    """  
+    """
+
 } 
 
 
@@ -215,19 +217,16 @@ process "GEM_Emodel" {
     path covs
     
     output:
-    tuple context, type, path("${context}.${type}.filtered_${params.output_FDR}_FDR.txt")
-    tuple type, path("${context}.${type}.txt")
-    tuple type, path("${context}.${type}.jpg")
-    tuple type, path("${context}.${type}.log")
+    tuple context, type, path("${context}.txt"), path("output/*.{txt,log}")
    
     when:
     (!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel
     
     script: 
     """
+    mkdir output
     awk -F "\\t" '{printf \"%s:%s-%s\",\$1,\$2,\$3; for(i=4; i<=NF; i++) {printf \"\\t%s\",\$i}; print null}' ${meth} > ${context}.txt
-    Rscript ${baseDir}/bin/GEM_Emodel.R ${envs} ${covs} ${context}.txt ${params.Emodel_pv} ${context}.${type} > ${context}.${type}.log
-    sort -V ${context}.${type}.txt |
-    awk 'BEGIN{OFS="\\t"; print "cpg\\tbeta\\tstats\\tpvalue\\tFDR"} \$5<=${params.output_FDR}{print \$1,\$2,\$3,\$4,\$5}' > ${context}.${type}.filtered_${params.output_FDR}_FDR.txt
+    Rscript ${baseDir}/bin/GEM_Emodel.R ${baseDir}/bin ${envs} ${covs} ${context}.txt ${params.Gmodel_pv} output/${context}.${type} > output/${context}.${type}.log
     """
+
 }

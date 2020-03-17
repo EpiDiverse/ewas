@@ -406,17 +406,18 @@ workflow 'EWAS' {
         split_scaffolds(meth_channel)
 
         // run GEM on selected combination of inputs
-        GEM_Emodel(meth_channel, parsing.out[0], parsing.out[1])
+        GEM_Emodel(split_scaffold.out.transpose(), parsing.out[0], parsing.out[1])
         GEM_Gmodel(split_scaffolds.out.transpose(), vcftools_extract.out, parsing.out[1])
         GEM_GxEmodel(split_scaffolds.out.transpose(), vcftools_extract.out, parsing.out[2])
         
         // calculate FDR
+        Emodel_channel = GEM_Emodel.out[0].map{ tuple( it[0] + "." + it[1], *it) }.groupTuple().map{ tuple("Emodel", *it) }
         Gmodel_channel = GEM_Gmodel.out[0].map{ tuple( it[0] + "." + it[1], *it) }.groupTuple().map{ tuple("Gmodel", *it) }
         GxE_channel = GEM_GxEmodel.out[0].map{ tuple( it[0] + "." + it[1], *it) }.groupTuple().map{ tuple("GxE", *it) }
-        calculate_FDR(Gmodel_channel.mix(GxE_channel))
+        calculate_FDR(Emodel_channel.mix(Gmodel_channel, GxE_channel))
 
         // visualisation
-        manhattan(GEM_Emodel.out[0])
+        manhattan(calculate_FDR.out[0].filter{ it[0] == "Emodel" })
         dotPlot(calculate_FDR.out[0].filter{ it[0] == "Gmodel" })
         topKplots(calculate_FDR.out[1].filter{ it[0] == "GxE" }, vcftools_extract.out, parsing.out[2])
 
@@ -431,15 +432,6 @@ workflow 'EWAS' {
         bedtools_unionbedg_out = bedtools_unionbedg.out
         bedtools_intersect_out = bedtools_intersect.out
         average_over_regions_out = average_over_regions.out
-
-        gem_emodel_filtered_reg = GEM_Emodel.out[0].filter{ it[1] == "region" || it[1] == "merged" }
-        gem_emodel_filtered_pos = GEM_Emodel.out[0].filter{ it[1] != "region" && it[1] != "merged" }
-        gem_emodel_full_reg = GEM_Emodel.out[1].filter{ it[0] == "region" || it[0] == "merged" }
-        gem_emodel_full_pos = GEM_Emodel.out[1].filter{ it[0] != "region" && it[0] != "merged" }
-        gem_emodel_jpg_reg = GEM_Emodel.out[2].filter{ it[0] == "region" || it[0] == "merged" }
-        gem_emodel_jpg_pos = GEM_Emodel.out[2].filter{ it[0] != "region" && it[0] != "merged" }
-        gem_emodel_log_reg = GEM_Emodel.out[3].filter{ it[0] == "region" || it[0] == "merged" }
-        gem_emodel_log_pos = GEM_Emodel.out[3].filter{ it[0] != "region" && it[0] != "merged" }
 
         calculate_FDR_reg = calculate_FDR.out[0].filter{ it[2] == "region" || it[2] == "merged" }
         calculate_FDR_pos = calculate_FDR.out[0].filter{ it[2] != "region" && it[2] != "merged" }
@@ -474,15 +466,6 @@ workflow {
         EWAS.out.bedtools_unionbedg_out to: "${params.output}/input/bed", mode: 'copy'
         EWAS.out.bedtools_intersect_out to: "${params.output}/positions", mode: 'copy'
         EWAS.out.average_over_regions_out to: "${params.output}/regions", mode: 'copy'
-
-        EWAS.out.gem_emodel_filtered_reg to: "${params.output}/regions/Emodel", mode: 'copy'
-        EWAS.out.gem_emodel_filtered_pos to: "${params.output}/positions/Emodel", mode: 'copy'
-        EWAS.out.gem_emodel_full_reg to: "${params.output}/regions/Emodel", mode: 'copy'
-        EWAS.out.gem_emodel_full_pos to: "${params.output}/positions/Emodel", mode: 'copy'
-        EWAS.out.gem_emodel_jpg_reg to: "${params.output}/regions/Emodel", mode: 'copy'
-        EWAS.out.gem_emodel_jpg_pos to: "${params.output}/positions/Emodel", mode: 'copy'
-        EWAS.out.gem_emodel_log_reg to: "${params.output}/regions/Emodel", mode: 'copy'
-        EWAS.out.gem_emodel_log_pos to: "${params.output}/positions/Emodel", mode: 'copy'
 
         EWAS.out.calculate_FDR_reg to: "${params.output}/regions", mode: 'copy'
         EWAS.out.calculate_FDR_pos to: "${params.output}/positions", mode: 'copy'

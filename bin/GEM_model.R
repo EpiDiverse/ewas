@@ -1,3 +1,93 @@
+#' GEM_Emodel Analysis
+#'
+#' GEM_Emodel is to find the association between methylation and environmental factor genome widely.
+#'
+#' GEM_Emodel finds the association between methylation and environment genome-wide by performing matrix 
+#' based iterative correlation and memory-efficient data analysis instead of millions of linear regressions 
+#' (N = number_of_CpGs). The methylation data are the measurements for CpG probes, for example, 450,000 CpGs 
+#' from Illumina Infinium HumanMethylation450 Array. The environmental factor can be a particular phenotype or environment 
+#' factor from,for example, birth outcomes, maternal conditions or disease traits. The output of GEM_Emodel
+#' for particular environmental factor is a list of CpGs that are potential epigenetic biomarkers.
+#' GEM_Emodel runs linear regression like lm (M ~ E + covt), where M is a matrix with methylation data,
+#' E is a matrix with environment factor and covt is a matrix with covariates, and all read from the
+#' formatted text data file.
+#'
+#'
+#' @param env_file_name Text file with rows representing environment factor and columns representing samples, such as the example data file "env.txt".
+#' @param covariate_file_name Text file with rows representing covariate factors and columns representing samples, such as the example data file "cov.txt".
+#' @param methylation_file_name Text file with rows representing methylation profiles for CpGs, and columns representing samples,  such as the example data file "methylation.txt".
+#' @param Emodel_pv The pvalue cut off. Associations with significances at Emodel_pv level or below are saved to output_file_name, with corresponding estimate of effect size (slope coefficient), test statistics and p-value. Default value is 1.0.
+#' @param outfile The result file with each row presenting a CpG and its association with environment, which contains CpGID, estimate of effect size (slope coefficient), test statistics, pvalue and FDR at each column.
+#' @param noFDR toggle FDR calculation.
+#'
+#' @return save results automatically
+#' @export
+#'
+#' @examples
+#' DATADIR = system.file('extdata',package='GEM')
+#' RESULTDIR = getwd()
+#' env_file = paste(DATADIR, "env.txt", sep = .Platform$file.sep)
+#' covariate_file = paste(DATADIR, "cov.txt", sep = .Platform$file.sep)
+#' methylation_file = paste(DATADIR, "methylation.txt", sep = .Platform$file.sep)
+#' Emodel_pv = 1
+#' output_file = paste(RESULTDIR, "Result_Emodel.txt", sep = .Platform$file.sep)
+#' qqplot_file = paste(RESULTDIR, "QQplot_Emodel.jpg", sep = .Platform$file.sep)
+#' GEM_Emodel(env_file, covariate_file, methylation_file, Emodel_pv, output_file, qqplot_file)
+my.GEM_Emodel <-
+    function(env_file_name, covariate_file_name, methylation_file_name,
+             Emodel_pv, outfile, noFDR = FALSE) {
+
+        errorCovariance = numeric();
+
+        env <- SlicedData$new();
+        env$fileDelimiter = "\t";      # the TAB character
+        env$fileOmitCharacters = "NA"; # denote missing values;
+        env$fileSkipRows = 1;          # one row of column labels
+        env$fileSkipColumns = 1;       # one column of row labels
+        env$fileSliceSize = 2000;      # read file in slices of 2,000 rows
+        env$LoadFile(env_file_name);
+
+        cvrt <- SlicedData$new();
+        cvrt$fileDelimiter = "\t";      # the TAB character
+        cvrt$fileOmitCharacters = "NA"; # denote missing values;
+        cvrt$fileSkipRows = 1;          # one row of column labels
+        cvrt$fileSkipColumns = 1;       # one column of row labels
+        if (length(covariate_file_name) > 0) {
+            cvrt$LoadFile(covariate_file_name);
+        }
+
+        cpg = SlicedData$new();
+        cpg$fileDelimiter = "\t";      # the TAB character
+        cpg$fileOmitCharacters = "NA"; # denote missing values;
+        cpg$fileSkipRows = 1;          # one row of column labels
+        cpg$fileSkipColumns = 1;       # one column of row labels
+        cpg$fileSliceSize = 2000;      # read file in slices of 2,000 rows
+        cpg$LoadFile(methylation_file_name);
+
+        ## Run the analysis
+        Emodel <- Matrix_eQTL_engine2(
+            snps = env,
+            gene = cpg,
+            cvrt = cvrt,
+            output_file_name = outfile,
+            pvOutputThreshold = Emodel_pv,
+            useModel = modelLINEAR,
+            errorCovariance = errorCovariance,
+            verbose = FALSE,
+            pvalue.hist = FALSE,
+            min.pv.by.genesnp = FALSE,
+            noFDRsaveMemory = noFDR,
+            addInfo = "CpGs"
+        )
+
+        ## Results:
+        cat('Analysis done in: ', Emodel$time.in.sec, ' seconds', '\n');
+        #show(Emodel$all$eqtls)
+        #R2 = Emodel$all$eqtls$statistic ^ 2 / (Emodel$all$eqtls$statistic ^ 2 + Emodel$param$dfFull);
+        
+    }
+
+
 #' GEM_Gmodel Analysis
 #'
 #' GEM_Gmodel creates a methQTL genome-wide map.
@@ -89,8 +179,6 @@ my.GEM_Gmodel <-
         #R2 = Gmodel$all$eqtls$statistic ^ 2 / (Gmodel$all$eqtls$statistic ^ 2 + Gmodel$param$dfFull);
 
     }
-
-
 
 
 #' GEM_GxEmodel
