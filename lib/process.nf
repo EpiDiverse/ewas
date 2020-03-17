@@ -96,7 +96,7 @@ process "calculate_FDR" {
     head -qn 1 txt* | uniq > input/header.txt
     tail -q -n+2 ${results} > input/${key}.txt
     total=\$(cat ${logs} | grep "100.00%" | cut -d " " -f3 | tr -d "," | awk 'BEGIN{c=0} {c+=\$0} END{print c}')
-    echo -e ${model == "Emodel" ? "cpg" : "cpg\\tsnp"}\\tbeta\\tstats\\tpvalue\\tFDR |
+    echo -e "${model == "Emodel" ? "cpg" : "cpg\\tsnp"}\\tbeta\\tstats\\tpvalue\\tFDR" |
     tee ${model}/${key}.txt ${model}/${key}.filtered_${params.output_FDR}_FDR.txt
 
     if [[ \$(head input/${key}.txt | wc -l) == 0 ]]; then
