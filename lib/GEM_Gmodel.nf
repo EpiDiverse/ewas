@@ -27,6 +27,9 @@ process "tabix" {
 }
 
 
+//nextflow.processor.TaskPath
+//nextflow.util.BlankSeparatedList
+
 // tabix.out[0].collect()
 // tabix.out[1].collect()
 // merge single-sample vcf files
@@ -49,9 +52,8 @@ process "bcftools" {
     script:
     """
     mkdir input
-    ${snps.getClass()}
-    ${snps.getClass() == String ? "" : "bcftools merge ${snps} -Oz -o input/merged.vcf.gz || exit \$?"}
-    bcftools norm -Ov -m-snps ${snps.getClass() == String ? "${snps}" : "input/merged.vcf.gz"} > input/norm.vcf.gz || exit \$?
+    ${snps.getClass() == nextflow.util.BlankSeparatedList && snps.size() > 1 ? "bcftools merge ${snps} -Oz -o input/merged.vcf.gz || exit \$?" : ""}
+    bcftools norm -Ov -m-snps ${snps.getClass() == nextflow.util.BlankSeparatedList && snps.size() > 1 ? "input/merged.vcf.gz" : "${snps}"} > input/norm.vcf.gz || exit \$?
 
     bcftools view -S <(cut -f1 ${samples}) input/norm.vcf.gz > input/filtered.vcf.gz || exit \$?
     bcftools query -l input/filtered.vcf.gz > input/samples.txt || exit \$?
