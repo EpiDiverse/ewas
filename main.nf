@@ -481,8 +481,8 @@ workflow {
         EWAS.out.dotPlot_png_pos to: "${params.output}/positions", mode: 'copy'
         EWAS.out.dotPlot_zip_reg to: "${params.output}/regions", mode: 'copy'
         EWAS.out.dotPlot_zip_pos to: "${params.output}/positions", mode: 'copy'
-        EWAS.out.topKplots_png_reg to: "${params.output}/regions", mode: 'copy'
-        EWAS.out.topKplots_png_pos to: "${params.output}/positions", mode: 'copy'
+        //EWAS.out.topKplots_png_reg to: "${params.output}/regions", mode: 'copy'
+        //EWAS.out.topKplots_png_pos to: "${params.output}/positions", mode: 'copy'
 
 }
 
