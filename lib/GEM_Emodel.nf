@@ -217,7 +217,7 @@ process "GEM_Emodel" {
     path covs
     
     output:
-    tuple context, type, path("${context}.txt"), path("output/*.txt"), path("output/*.log")
+    tuple context, type, path("output/*.txt"), path("output/*.log")
    
     when:
     (!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel

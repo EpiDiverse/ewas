@@ -81,11 +81,11 @@ process "calculate_FDR" {
     tag "${model}:${key}"
      
     input:
-    tuple model, key, contexts, types, path("txt"), path(results), path(logs)
+    tuple model, key, contexts, types, path(results), path(logs)
     
     output:
     tuple model, key, val("${types.unique().join("")}"), path("${model}/*.txt")
-    tuple model, key, val("${types.unique().join("")}"), path("input/*.txt"), path("${model}/${key}.filtered_${params.output_FDR}_FDR.txt")
+    //tuple model, key, val("${types.unique().join("")}"), path("input/*.txt"), path("${model}/${key}.filtered_${params.output_FDR}_FDR.txt")
 
     when:
     params.input
@@ -195,6 +195,8 @@ process "topKplots" {
     script:
     """
     mkdir ${model} ${model}/${key}
+    head -qn 1 txt* | uniq > input/header.txt
+
     cat ${txt} > ${model}/${key}.txt
     awk 'NR==1{print;next}{print | "sort -gk6 | head -${params.kplots}"}' ${result} > ${model}/${key}/${result} || exit \$?
     Rscript ${baseDir}/bin/Kplot.R ${model}/${key}/${result} ${model}/${key}.txt ${snp} ${gxe}
