@@ -447,8 +447,8 @@ workflow 'EWAS' {
         dotPlot_png_pos = dotPlot.out[0].filter{ it[0] != "region" && it[0] != "merged" }
         dotPlot_zip_reg = dotPlot.out[1].filter{ it[0] == "region" || it[0] == "merged" }
         dotPlot_zip_pos = dotPlot.out[1].filter{ it[0] != "region" && it[0] != "merged" }
-        topKplots_png_reg = topKplots.out.filter{ it[0] == "region" || it[0] == "merged" }
-        topKplots_png_pos = topKplots.out.filter{ it[0] != "region" && it[0] != "merged" }
+        //topKplots_png_reg = topKplots.out.filter{ it[0] == "region" || it[0] == "merged" }
+        //topKplots_png_pos = topKplots.out.filter{ it[0] != "region" && it[0] != "merged" }
 
 }
 
