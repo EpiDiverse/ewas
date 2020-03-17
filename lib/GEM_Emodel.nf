@@ -217,7 +217,7 @@ process "GEM_Emodel" {
     path covs
     
     output:
-    tuple context, type, path("${context}.txt"), path("output/*.{txt,log}")
+    tuple context, type, path("${context}.txt"), path("output/*.txt"), path("output/*.log")
    
     when:
     (!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel
@@ -226,7 +226,7 @@ process "GEM_Emodel" {
     """
     mkdir output
     awk -F "\\t" '{printf \"%s:%s-%s\",\$1,\$2,\$3; for(i=4; i<=NF; i++) {printf \"\\t%s\",\$i}; print null}' ${meth} > ${context}.txt
-    Rscript ${baseDir}/bin/GEM_Emodel.R ${baseDir}/bin ${envs} ${covs} ${context}.txt ${params.Gmodel_pv} output/${context}.${type} > output/${context}.${type}.log
+    Rscript ${baseDir}/bin/GEM_Emodel.R ${baseDir}/bin ${envs} ${covs} ${context}.txt ${params.Gmodel_pv} output/\$(basename ${meth} .bed) > output/\$(basename ${meth} .bed).log
     """
 
 }

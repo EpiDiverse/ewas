@@ -141,7 +141,7 @@ process "GEM_Gmodel" {
     path covs
     
     output:
-    tuple context, type, path("${context}.txt"), path("output/*.{txt,log}")
+    tuple context, type, path("${context}.txt"), path("output/*.txt"), path("output/*.log")
    
     when:
     params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel)
@@ -150,7 +150,7 @@ process "GEM_Gmodel" {
     """
     mkdir output
     awk -F "\\t" '{printf \"%s:%s-%s\",\$1,\$2,\$3; for(i=4; i<=NF; i++) {printf \"\\t%s\",\$i}; print null}' ${meth} > ${context}.txt
-    Rscript ${baseDir}/bin/GEM_Gmodel.R ${baseDir}/bin ${snps} ${covs} ${context}.txt ${params.Gmodel_pv} output/\$(basename ${meth} .bed) > output/${context}.${type}.log
+    Rscript ${baseDir}/bin/GEM_Gmodel.R ${baseDir}/bin ${snps} ${covs} ${context}.txt ${params.Gmodel_pv} output/\$(basename ${meth} .bed) > output/\$(basename ${meth} .bed).log
     """
 }
 
@@ -168,7 +168,7 @@ process "GEM_GxEmodel" {
     path gxe
     
     output:
-    tuple context, type, path("${context}.txt"), path("output/*.{txt,log}")
+    tuple context, type, path("${context}.txt"), path("output/*.txt"), path("output/*.log")
    
     when:
     params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE)
@@ -177,6 +177,6 @@ process "GEM_GxEmodel" {
     """
     mkdir output
     awk -F "\\t" '{printf \"%s:%s-%s\",\$1,\$2,\$3; for(i=4; i<=NF; i++) {printf \"\\t%s\",\$i}; print null}' ${meth} > ${context}.txt
-    Rscript ${baseDir}/bin/GEM_GxE.R ${baseDir}/bin ${snps} ${gxe} ${context}.txt ${params.GxE_pv} output/\$(basename ${meth} .bed) > output/${context}.${type}.log
+    Rscript ${baseDir}/bin/GEM_GxE.R ${baseDir}/bin ${snps} ${gxe} ${context}.txt ${params.GxE_pv} output/\$(basename ${meth} .bed) > output/\$(basename ${meth} .bed).log
     """
 }

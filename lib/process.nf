@@ -81,7 +81,7 @@ process "calculate_FDR" {
     tag "${model}:${key}"
      
     input:
-    tuple model, key, contexts, types, path("txt"), path(results)
+    tuple model, key, contexts, types, path("txt"), path(results), path(logs)
     
     output:
     tuple model, key, val("${types.unique().join("")}"), path("${model}/*.txt")
@@ -94,8 +94,8 @@ process "calculate_FDR" {
     """
     mkdir input ${model}
     head -qn 1 txt* | uniq > input/header.txt
-    tail -q -n+2 *.txt > input/${key}.txt
-    total=\$(cat *.log | grep "100.00%" | cut -d " " -f3 | tr -d "," | awk 'BEGIN{c=0} {c+=\$0} END{print c}')
+    tail -q -n+2 ${results} > input/${key}.txt
+    total=\$(cat ${logs} | grep "100.00%" | cut -d " " -f3 | tr -d "," | awk 'BEGIN{c=0} {c+=\$0} END{print c}')
 
     if [[ \$(head input/${key}.txt | wc -l) == 0 ]]; then
     echo "No findings with ${model == "Emodel" ? "--Emodel_pv ${params.Emodel_pv}" : model == "Gmodel" ? "--Gmodel_pv ${params.Gmodel_pv}" : "--GxE_pv ${params.GxE_pv}"}" > ${model}/${key}.txt
