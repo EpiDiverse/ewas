@@ -100,9 +100,9 @@ process "calculate_FDR" {
     if [[ \$(head input/${key}.txt | wc -l) == 0 ]]; then
     echo "No findings with ${model == "Emodel" ? "--Emodel_pv ${params.Emodel_pv}" : model == "Gmodel" ? "--Gmodel_pv ${params.Gmodel_pv}" : "--GxE_pv ${params.GxE_pv}"}" > ${model}/${key}.txt
     else
-    sort -grk${model == "Emodel" ? "4" : "5"} input/${key}.txt |
+    sort -grk${model == "Emodel" ? "4" : "5"} input/${key}.txt | cut -f${model == "Emodel" ? "2-" : "1-"} |
     awk -F "\\t" -v t="\$total" 'BEGIN{OFS="\\t";p=1;r=t} {fdr=(t/r)*${model == "Emodel" ? "\$4" : "\$5"};
-    if(fdr>p){fdr=p}; if(fdr<=${params.output_FDR}){print \$0,fdr > ${model}/${key}.filtered_${params.output_FDR}_FDR.txt};
+    if(fdr>p){fdr=p}; if(fdr<=${params.output_FDR}){print \$0,fdr > "${model}/${key}.filtered_${params.output_FDR}_FDR.txt"};
     print \$0,fdr; p=fdr;r--}' > ${model}/${key}.txt || exit \$?
     fi
     """ 
