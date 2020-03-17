@@ -406,7 +406,7 @@ workflow 'EWAS' {
         split_scaffolds(meth_channel)
 
         // run GEM on selected combination of inputs
-        GEM_Emodel(split_scaffold.out.transpose(), parsing.out[0], parsing.out[1])
+        GEM_Emodel(split_scaffolds.out.transpose(), parsing.out[0], parsing.out[1])
         GEM_Gmodel(split_scaffolds.out.transpose(), vcftools_extract.out, parsing.out[1])
         GEM_GxEmodel(split_scaffolds.out.transpose(), vcftools_extract.out, parsing.out[2])
         
