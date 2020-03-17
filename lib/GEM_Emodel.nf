@@ -209,7 +209,7 @@ process "GEM_Emodel" {
     
     label "low"
     label "finish"
-    tag "$type - $context"
+    tag "$type - $context - ${meth.baseName}"
 
     input:
     tuple context, type, path(meth)
