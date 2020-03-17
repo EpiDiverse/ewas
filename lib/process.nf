@@ -172,14 +172,6 @@ process "dotPlot" {
 }
 
 
-
-
-[CHG.region,
-region,
-[/scr/epi/pipelines/.ewas/34/4c353198deeb3201ac342aee555ba0/GxE/CHG.region.filtered_0.05_FDR.txt, /scr/epi/pipelines/.ewas/34/4c353198deeb3201ac342aee555ba0/GxE/CHG.region.txt],
-[/scr/epi/pipelines/.ewas/a3/e2ae769e71fb53b0da1a41b4ee63d7/CHG.txt, /scr/epi/pipelines/.ewas/53/bd14f45051bcee86c2b79135998039/CHG.txt]]
-
-
 // calculate_FDR.out[1].filter{ it[0] == "GxE" }
 // process to generate top X plots from GxEmodel based on number provided by --kplots
 process "topKplots" {
@@ -207,7 +199,7 @@ process "topKplots" {
     tail -qn+2 txt* >> ${model}/${key}.txt
 
     cat ${txt} > ${model}/${key}.txt
-    
+
     awk 'NR==1{print;next}{print | "sort -gk6 | head -${params.kplots}"}' ${result} > ${model}/${key}/${result} || exit \$?
     Rscript ${baseDir}/bin/Kplot.R ${model}/${key}/${result} ${model}/${key}.txt ${snp} ${gxe}
     """ 
