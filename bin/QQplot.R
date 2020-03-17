@@ -13,7 +13,7 @@ df$log_pvalue <- -log10(df$pvalue)
 title <- paste("Q-Q plot for all",nrow(df),"p-values")
 qq <- ggplot(data = df, mapping = aes(sample = log_pvalue)) +
   stat_qq_line(col="red") +
-  stat_qq_point() + labs(x = "-Log10 (p-value), theoretical", y = "-Log10 (p-value), observed") +
+  stat_qq() + labs(x = "-Log10 (p-value), theoretical", y = "-Log10 (p-value), observed") +
   theme_bw() +
   ggtitle(title) + theme(plot.title = element_text(color="black", size=14, face="bold.italic",hjust=0.5))
 
