@@ -254,7 +254,7 @@ process "manhattan" {
 
     script:
     """
-    awk -F "\\t" 'BEGIN{print "SNP","CHR","BP","P"} NR!=1{split(\$1,cpg,":"); split(cpg[2],cpos,"-"); pos=(cpos[1]+cpos[2])/2;
+    awk -F "\\t" 'BEGIN{OFS="\\t"; print "SNP","CHR","BP","P"} NR!=1{split(\$1,cpg,":"); split(cpg[2],cpos,"-"); pos=(cpos[1]+cpos[2])/2;
     print \$1,cpg[1],pos,\$5}' ${key}.filtered_${params.output_FDR}_FDR.txt > manhattan.txt
     Rscript ${baseDir}/bin/manhattan.R manhattan.txt ${key}.filtered_${params.output_FDR}_FDR 0.00000001 0.000001
     """ 
