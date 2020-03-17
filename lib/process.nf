@@ -93,11 +93,10 @@ process "calculate_FDR" {
     script:
     """
     mkdir input ${model}
-    head -qn 1 txt* | uniq > input/header.txt
     tail -q -n+2 ${results} > input/${key}.txt
     total=\$(cat ${logs} | grep "100.00%" | cut -d " " -f3 | tr -d "," | awk 'BEGIN{c=0} {c+=\$0} END{print c}')
     echo -e "${model == "Emodel" ? "cpg" : "cpg\\tsnp"}\\tbeta\\tstats\\tpvalue\\tFDR" |
-    tee ${model}/${key}.txt ${model}/${key}.filtered_${params.output_FDR}_FDR.txt
+    tee input/header.txt ${model}/${key}.txt ${model}/${key}.filtered_${params.output_FDR}_FDR.txt
 
     if [[ \$(head input/${key}.txt | wc -l) == 0 ]]; then
     echo "No findings with ${model == "Emodel" ? "--Emodel_pv ${params.Emodel_pv}" : model == "Gmodel" ? "--Gmodel_pv ${params.Gmodel_pv}" : "--GxE_pv ${params.GxE_pv}"}" > ${model}/${key}.txt
