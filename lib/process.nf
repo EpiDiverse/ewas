@@ -187,20 +187,20 @@ process "topKplots" {
     path gxe
     
     output:
-    tuple type, path("${model}/${key}/*.png") optional true
+    tuple type, path("GxE/${key}/*.png") optional true
 
     when:
     params.kplots > 0
 
     script:
     """
-    mkdir ${model} ${model}/${key}
-    head -qn 1 txt* | uniq > ${model}/${key}.txt
-    tail -qn+2 txt* >> ${model}/${key}.txt
+    mkdir GxE GxE/${key}
+    head -qn 1 txt* | uniq > GxE/${key}.txt
+    tail -qn+2 txt* >> GxE/${key}.txt
 
     awk 'NR==1{print;next}{print | "sort -gk6 | head -${params.kplots}"}' ${key}.filtered_${params.output_FDR}_FDR.txt \\
-    > ${model}/${key}/${key}.filtered_${params.output_FDR}_FDR.txt || exit \$?
-    Rscript ${baseDir}/bin/Kplot.R ${model}/${key}/${key}.filtered_${params.output_FDR}_FDR.txt ${model}/${key}.txt ${snp} ${gxe}
+    > GxE/${key}/${key}.filtered_${params.output_FDR}_FDR.txt || exit \$?
+    Rscript ${baseDir}/bin/Kplot.R GxE/${key}/${key}.filtered_${params.output_FDR}_FDR.txt GxE/${key}.txt ${snp} ${gxe}
     """ 
 }
 
