@@ -49,8 +49,8 @@ process "bcftools" {
     script:
     """
     mkdir input
-    ${snps.size() > 1 ? "bcftools merge ${snps} -Oz -o input/merged.vcf.gz || exit \$?" : ""}
-    bcftools norm -Ov -m-snps ${snps.size() > 1 ? "input/merged.vcf.gz" : "${snps}"} > input/norm.vcf.gz || exit \$?
+    ${snps instanceOf Collection ? "bcftools merge ${snps} -Oz -o input/merged.vcf.gz || exit \$?" : ""}
+    bcftools norm -Ov -m-snps ${snps instanceOf Collection ? "input/merged.vcf.gz" : "${snps}"} > input/norm.vcf.gz || exit \$?
 
     bcftools view -S <(cut -f1 ${samples}) input/norm.vcf.gz > input/filtered.vcf.gz || exit \$?
     bcftools query -l input/filtered.vcf.gz > input/samples.txt || exit \$?
