@@ -54,7 +54,7 @@ process "split_scaffolds" {
 
     label "low"
     label "finish"
-    tag "$type - $context"
+    tag "${context}.${type}"
      
     input:
     tuple context, type, path(bed)
@@ -78,7 +78,7 @@ process "calculate_FDR" {
 
     label "low"
     label "finish"
-    tag "${model} - ${key}.txt"
+    tag "${model}:${key}"
      
     input:
     tuple model, key, contexts, types, path("txt"), path(results)

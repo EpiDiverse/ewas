@@ -417,9 +417,9 @@ workflow 'EWAS' {
         calculate_FDR(Emodel_channel.mix(Gmodel_channel, GxE_channel))
 
         // visualisation
-        manhattan(calculate_FDR.out[0].filter{ it[0] == "Emodel" })
-        dotPlot(calculate_FDR.out[0].filter{ it[0] == "Gmodel" })
-        topKplots(calculate_FDR.out[1].filter{ it[0] == "GxE" }, vcftools_extract.out, parsing.out[2])
+        manhattan(calculate_FDR.out[0].filter{ it[0] == "Emodel" }.map{ tuple(*it.init(), it.last().flatten()) })
+        dotPlot(calculate_FDR.out[0].filter{ it[0] == "Gmodel" }.map{ tuple(*it.init(), it.last().flatten()) })
+        topKplots(calculate_FDR.out[1].filter{ it[0] == "GxE" }.map{ tuple(*it.init(), it.last().flatten()) }, vcftools_extract.out, parsing.out[2])
 
 
     // emit results
