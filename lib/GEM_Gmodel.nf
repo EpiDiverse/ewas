@@ -49,6 +49,7 @@ process "bcftools" {
     script:
     """
     mkdir input
+    ${snps.getClass()}
     ${snps.getClass() == String ? "" : "bcftools merge ${snps} -Oz -o input/merged.vcf.gz || exit \$?"}
     bcftools norm -Ov -m-snps ${snps.getClass() == String ? "${snps}" : "input/merged.vcf.gz"} > input/norm.vcf.gz || exit \$?
 
