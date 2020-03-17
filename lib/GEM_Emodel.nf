@@ -5,7 +5,7 @@ process "filtering" {
 
     label "low"
     label "finish"
-    tag "$type - $context"
+    tag "${context}.${type}"
 
     maxForks "${params.fork}".toInteger()
    
@@ -46,7 +46,7 @@ process "bedtools_unionbedg" {
 
     label "low"
     label "finish"
-    tag "${types.unique().join("")} - $context"
+    tag "${context}.${types.unique().join("")}"
 
     maxForks "${params.fork}".toInteger()
    
@@ -87,7 +87,7 @@ process "bedtools_intersect" {
 
     label "low"
     label "finish"
-    tag "$type - $context"
+    tag "${context}.${type}"
 
     maxForks "${params.fork}".toInteger()
    
@@ -115,7 +115,7 @@ process "filter_regions" {
 
     label "low"
     label "finish"
-    tag "$type - $context"
+    tag "${context}.${type}"
 
     maxForks "${params.fork}".toInteger()
    
@@ -144,7 +144,7 @@ process "bedtools_merge" {
 
     label "low"
     label "finish"
-    tag "$type - $context"
+    tag "${context}.${type}"
 
     maxForks "${params.fork}".toInteger()
    
@@ -175,7 +175,7 @@ process "average_over_regions" {
 
     label "low"
     label "finish"
-    tag "$type - $context"
+    tag "${context}.${type}"
 
     maxForks "${params.fork}".toInteger()
    
@@ -209,7 +209,7 @@ process "GEM_Emodel" {
     
     label "low"
     label "finish"
-    tag "$type - $context - ${meth.baseName}"
+    tag "${context}.${type} - ${meth.baseName}"
 
     input:
     tuple context, type, path(meth)

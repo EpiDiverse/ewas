@@ -133,7 +133,7 @@ process "GEM_Gmodel" {
     
     label "low"
     label "finish"
-    tag "$type - $context - ${meth.baseName}"
+    tag "${context}.${type} - ${meth.baseName}"
 
     input:
     tuple context, type, path(meth)
@@ -160,7 +160,7 @@ process "GEM_GxEmodel" {
     
     label "low"
     label "finish"
-    tag "$type - $context - ${meth.baseName}"
+    tag "${context}.${type} - ${meth.baseName}"
 
     input:
     tuple context, type, path(meth)
