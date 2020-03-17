@@ -220,13 +220,42 @@ process "GEM_Emodel" {
     tuple context, type, path("output/*.txt"), path("output/*.log")
    
     when:
-    (!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel
+    params.input && (!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel
     
     script: 
     """
     mkdir output
-    awk -F "\\t" '{printf \"%s:%s-%s\",\$1,\$2,\$3; for(i=4; i<=NF; i++) {printf \"\\t%s\",\$i}; print null}' ${meth} > ${context}.txt
-    Rscript ${baseDir}/bin/GEM_Emodel.R ${baseDir}/bin ${envs} ${covs} ${context}.txt ${params.Gmodel_pv} output/\$(basename ${meth} .bed) > output/\$(basename ${meth} .bed).log
+    awk -F "\\t" '{printf \"%s:%s-%s\",\$1,\$2,\$3; for(i=4; i<=NF; i++) {printf \"\\t%s\",\$i}; print null}' ${meth} > \$(basename ${meth} .bed).txt
+    Rscript ${baseDir}/bin/GEM_Emodel.R ${baseDir}/bin ${envs} ${covs} \$(basename ${meth} .bed).txt ${params.Gmodel_pv} output/\$(basename ${meth} .bed) > output/\$(basename ${meth} .bed).log
     """
 
+}
+
+
+
+// GEM_Emodel.out[0]
+// process to generate manhattan plots from Emodel
+process "manhattan" {
+
+    label "low"
+    label "ignore"
+    tag "${key}"
+     
+    input:
+    tuple model, key, type, path(txt)
+    // eg. [Emodel, CpG.bedGraph, bedGraph, [/paths/... ,/paths/...]]
+    
+    output:
+    tuple type, path("*.png") optional true
+    tuple type, path("*.zip") optional true
+
+    when:
+    params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel)
+
+    script:
+    """
+    awk -F "\\t" 'BEGIN{print "SNP","CHR","BP","P"} NR!=1{split(\$1,cpg,":"); split(cpg[2],cpos,"-"); pos=(cpos[1]+cpos[2])/2;
+    print \$1,cpg[1],pos,\$5}' ${key}.filtered_${params.output_FDR}_FDR.txt > manhattan.txt
+    Rscript ${baseDir}/bin/manhattan.R manhattan.txt ${key}.filtered_${params.output_FDR}_FDR 0.00000001 0.000001
+    """ 
 }

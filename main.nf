@@ -312,7 +312,7 @@ if ( workflow.profile.tokenize(",").contains("test") ){
             .ifEmpty{ exit 1, "ERROR: No input found for CHH files: ${params.DMRs}\n"}
 
     // STAGE SNPs CHANNEL
-    globs = ["${params.SNPs}","${params.SNPs}/vcf/*.${params.extension}"]
+    globs = ["${params.SNPs}","${params.SNPs}/**.${params.extension}"]
     SNPs = !params.SNPs ? Channel.empty() : 
         Channel
             .fromFilePairs( globs, size: 1, type: "file" )
