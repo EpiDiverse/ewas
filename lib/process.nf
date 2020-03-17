@@ -63,6 +63,9 @@ process "split_scaffolds" {
     output:
     tuple context, type, path("output/*.bed")
 
+    when:
+    params.input
+
     script:
     """   
     mkdir output
@@ -103,7 +106,7 @@ process "calculate_FDR" {
     if [[ \$(head input/${key}.txt | wc -l) == 0 ]]; then
     echo "No findings with ${model == "Emodel" ? "--Emodel_pv ${params.Emodel_pv}" : model == "Gmodel" ? "--Gmodel_pv ${params.Gmodel_pv}" : "--GxE_pv ${params.GxE_pv}"}" > ${model}/${key}.txt
     else
-    sort -grk${model == "Emodel" ? "4" : "5"} input/${key}.txt | cut -f${model == "Emodel" ? "2-" : "1-"} |
+    sort -T tmp --parallel=${task.cpus} -grk${model == "Emodel" ? "4" : "5"} input/${key}.txt | cut -f${model == "Emodel" ? "2-" : "1-"} |
     awk -F "\\t" -v t="\$total" 'BEGIN{OFS="\\t";p=1;r=t} {fdr=(t/r)*${model == "Emodel" ? "\$4" : "\$5"};
     if(fdr>p){fdr=p}; if(fdr<=${params.output_FDR}){print \$0,fdr >> "${model}/${key}.filtered_${params.output_FDR}_FDR.txt"};
     print \$0,fdr; p=fdr;r--}' >> ${model}/${key}.txt || exit \$?
@@ -111,3 +114,28 @@ process "calculate_FDR" {
     """ 
 }
 
+
+// GEM_Emodel.out[0]
+// process to generate manhattan plots from Emodel
+process "qqPlot" {
+
+    label "low"
+    label "ignore"
+    tag "${key}"
+     
+    input:
+    tuple model, key, type, path(result)
+    // eg. [Emodel, CpG.bedGraph, bedGraph, [/paths/... ,/paths/...]]
+    
+    output:
+    tuple type, path("*.png") optional true
+
+    when:
+    params.input
+
+    script:
+    """
+    mkdir ${model}
+    Rscript ${baseDir}/bin/QQplot.R ${key}.txt ${model}/${key}
+    """ 
+}
