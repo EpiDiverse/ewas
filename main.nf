@@ -421,8 +421,8 @@ workflow 'EWAS' {
         // visualisation
         manhattan(calculate_FDR.out.filter{ it[0] == "Emodel" })
         dotPlot(calculate_FDR.out.filter{ it[0] == "Gmodel" })
-        kplots_channel = calculate_FDR.out.filter{ it[0] == "GxE" }.map{ it.tail() }.combine(GEM_GxEmodel.out[1].map{ tuple( it[0] + "." + it[1], it.last()) }.groupTuple(), by:0).view()
-        //topKplots(calculate_FDR.out.filter{ it[0] == "GxE" }, vcftools_extract.out, parsing.out[2])
+        kplots_channel = calculate_FDR.out.filter{ it[0] == "GxE" }.map{ it.tail() }.combine(GEM_GxEmodel.out[1].map{ tuple( it[0] + "." + it[1], it.last()) }.groupTuple(), by:0)
+        topKplots(kplots_channel, vcftools_extract.out, parsing.out[2])
 
 
     // emit results
@@ -447,8 +447,8 @@ workflow 'EWAS' {
         dotPlot_png_pos = dotPlot.out[0].filter{ it[0] != "region" && it[0] != "merged" }
         dotPlot_zip_reg = dotPlot.out[1].filter{ it[0] == "region" || it[0] == "merged" }
         dotPlot_zip_pos = dotPlot.out[1].filter{ it[0] != "region" && it[0] != "merged" }
-        //topKplots_png_reg = topKplots.out.filter{ it[0] == "region" || it[0] == "merged" }
-        //topKplots_png_pos = topKplots.out.filter{ it[0] != "region" && it[0] != "merged" }
+        topKplots_png_reg = topKplots.out.filter{ it[0] == "region" || it[0] == "merged" }
+        topKplots_png_pos = topKplots.out.filter{ it[0] != "region" && it[0] != "merged" }
 
 }
 
@@ -481,8 +481,8 @@ workflow {
         EWAS.out.dotPlot_png_pos to: "${params.output}/positions", mode: 'copy'
         EWAS.out.dotPlot_zip_reg to: "${params.output}/regions", mode: 'copy'
         EWAS.out.dotPlot_zip_pos to: "${params.output}/positions", mode: 'copy'
-        //EWAS.out.topKplots_png_reg to: "${params.output}/regions", mode: 'copy'
-        //EWAS.out.topKplots_png_pos to: "${params.output}/positions", mode: 'copy'
+        EWAS.out.topKplots_png_reg to: "${params.output}/regions", mode: 'copy'
+        EWAS.out.topKplots_png_pos to: "${params.output}/positions", mode: 'copy'
 
 }
 
