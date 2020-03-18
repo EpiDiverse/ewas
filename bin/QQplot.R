@@ -1,6 +1,6 @@
 #!/usr/bin/env R
 
-#library(ggplot2)
+library(ggplot2)
 
 args <- commandArgs(trailingOnly=T)
 
