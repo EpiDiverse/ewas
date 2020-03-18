@@ -81,7 +81,7 @@ process "split_scaffolds" {
 // process to calculate FDR on combined files after splitting
 process "calculate_FDR" {
 
-    label "low"
+    label "high"
     label "finish"
     tag "${model}:${key}"
      
@@ -97,7 +97,7 @@ process "calculate_FDR" {
 
     script:
     """
-    mkdir input ${model}
+    mkdir tmp input ${model}
     tail -q -n+2 ${results} > input/${key}.txt
     total=\$(cat ${logs} | grep "100.00%" | cut -d " " -f3 | tr -d "," | awk 'BEGIN{c=0} {c+=\$0} END{print c}')
     echo -e "${model == "Emodel" ? "cpg" : "cpg\\tsnp"}\\tbeta\\tstats\\tpvalue\\tFDR" |

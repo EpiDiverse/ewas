@@ -156,15 +156,23 @@ ParameterChecks.checkParams(params)
 CpG_path = "${params.input}/*/bedGraph/*_CpG.bedGraph"
 CHG_path = "${params.input}/*/bedGraph/*_CHG.bedGraph"
 CHH_path = "${params.input}/*/bedGraph/*_CHH.bedGraph"
+//CpG_path = "${params.input}/CpG/*.bedGraph"
+//CHG_path = "${params.input}/CHG/*.bedGraph"
+//CHH_path = "${params.input}/CHH/*.bedGraph"
   
 CpG_path_DMPs = "${params.DMPs}/CpG/metilene/*" 
 CHG_path_DMPs = "${params.DMPs}/CHG/metilene/*"
 CHH_path_DMPs = "${params.DMPs}/CHH/metilene/*"
+//CpG_path_DMPs = "${params.DMPs}/CpG/*.bed" 
+//CHG_path_DMPs = "${params.DMPs}/CHG/*.bed"
+//CHH_path_DMPs = "${params.DMPs}/CHH/*.bed"
 
 CpG_path_DMRs = "${params.DMRs}/CpG/metilene/*" 
 CHG_path_DMRs = "${params.DMRs}/CHG/metilene/*"
 CHH_path_DMRs = "${params.DMRs}/CHH/metilene/*"
-
+//CpG_path_DMRs = "${params.DMRs}/CpG/*.bed" 
+//CHG_path_DMRs = "${params.DMRs}/CHG/*.bed"
+//CHH_path_DMRs = "${params.DMRs}/CHH/*.bed"
 
 // PARAMETER CHECKS
 //if( !params.input ){error "ERROR: Missing required parameter --input"}
@@ -273,50 +281,62 @@ if ( workflow.profile.tokenize(",").contains("test") ){
     CpG = params.noCpG  ? Channel.empty() :
         Channel
             .fromFilePairs( CpG_path, size: 1)
-            .ifEmpty{ exit 1, "ERROR: No input found for CpG files: ${params.input}\n"}
+            .ifEmpty{ exit 1, "ERROR: No input found for CpG *.bedGraph files: ${params.input}/CpG\n\n \
+            -Please check files exist or specify --noCpG \n \
+            -Please check sample names match: ${samples}"}
     CHG = params.noCHG  ? Channel.empty() :
         Channel
             .fromFilePairs( CHG_path, size: 1)
-            .ifEmpty{ exit 1, "ERROR: No input found for CHG files: ${params.input}\n"}
+            .ifEmpty{ exit 1, "ERROR: No input found for CHG *.bedGraph files: ${params.input}/CHG\n\n \
+            -Please check files exist or specify --noCHG \n \
+            -Please check sample names match: ${samples}"}
     CHH = params.noCHH  ? Channel.empty() :
         Channel
             .fromFilePairs( CHH_path, size: 1)
-            .ifEmpty{ exit 1, "ERROR: No input found for CHH files: ${params.input}\n"}
+            .ifEmpty{ exit 1, "ERROR: No input found for CHH *.bedGraph files: ${params.input}/CHH\n\n \
+            -Please check files exist or specify --noCHH \n \
+            -Please check sample names match: ${samples}"}
 
     // STAGE DMP CHANNELS
     CpG_DMPs = params.noCpG  ? Channel.empty() : !params.DMPs ? Channel.empty() :
         Channel
             .fromFilePairs( CpG_path_DMPs, size: 1, type: "dir")
-            .ifEmpty{ exit 1, "ERROR: No input found for CpG files: ${params.DMPs}\n"}
+            .ifEmpty{ exit 1, "ERROR: No DMP input found for CpG *.bed files: ${params.DMPs}/CpG\n\n \
+            -Please check files exist or specify --noCpG"}
     CHG_DMPs = params.noCHG  ? Channel.empty() : !params.DMPs ? Channel.empty() :
         Channel
             .fromFilePairs( CHG_path_DMPs, size: 1, type: "dir")
-            .ifEmpty{ exit 1, "ERROR: No input found for CHG files: ${params.DMPs}\n"}
+            .ifEmpty{ exit 1, "ERROR: No DMP input found for CHG *.bed files: ${params.DMPs}/CHG\n\n \
+            -Please check files exist or specify --noCHG"}
     CHH_DMPs = params.noCHH  ? Channel.empty() : !params.DMPs ? Channel.empty() :
         Channel
             .fromFilePairs( CHH_path_DMPs, size: 1, type: "dir")
-            .ifEmpty{ exit 1, "ERROR: No input found for CHH files: ${params.DMPs}\n"}
+            .ifEmpty{ exit 1, "ERROR: No DMP input found for CHH *.bed files: ${params.DMPs}/CHH\n\n \
+            -Please check files exist or specify --noCHH"}
 
     // STAGE DMR CHANNELS
     CpG_DMRs = params.noCpG  ? Channel.empty() : !params.DMRs ? Channel.empty() :
         Channel
             .fromFilePairs( CpG_path_DMRs, size: 1, type: "dir")
-            .ifEmpty{ exit 1, "ERROR: No input found for CpG files: ${params.DMRs}\n"}
+            .ifEmpty{ exit 1, "ERROR: No DMR input found for CpG *.bed files: ${params.DMRs}\n\n \
+            -Please check files exist or specify --noCpG"}
     CHG_DMRs = params.noCHG  ? Channel.empty() : !params.DMRs ? Channel.empty() :
         Channel
             .fromFilePairs( CHG_path_DMRs, size: 1, type: "dir")
-            .ifEmpty{ exit 1, "ERROR: No input found for CHG files: ${params.DMRs}\n"}
+            .ifEmpty{ exit 1, "ERROR: No DMR input found for CHG *.bed files: ${params.DMRs}\n\n \
+            -Please check files exist or specify --noCHG"}
     CHH_DMRs = params.noCHH  ? Channel.empty() : !params.DMRs ? Channel.empty() :
         Channel
             .fromFilePairs( CHH_path_DMRs, size: 1, type: "dir")
-            .ifEmpty{ exit 1, "ERROR: No input found for CHH files: ${params.DMRs}\n"}
+            .ifEmpty{ exit 1, "ERROR: No DMR input found for CHH *.bed files: ${params.DMRs}\n\n \
+            -Please check files exist or specify --noCHH"}
 
     // STAGE SNPs CHANNEL
     globs = ["${params.SNPs}","${params.SNPs}/**.${params.extension}"]
     SNPs = !params.SNPs ? Channel.empty() : 
         Channel
             .fromFilePairs( globs, size: 1, type: "file" )
-            .ifEmpty{ exit 1, "ERROR: No input found for SNP files: ${params.SNPs}\n\n \
+            .ifEmpty{ exit 1, "ERROR: No input found for SNP file(s): ${params.SNPs}\n\n \
             For single-sample vcfs:\n \
             -Please check files exist: ${params.SNPs}/vcf/*.${params.extension}\n \
             -Please check sample names match: ${samples}\n \
