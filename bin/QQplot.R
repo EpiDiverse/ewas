@@ -19,7 +19,7 @@ x <- qnorm(p)                 # theoretical standard normal quantiles for p valu
 title <- paste("Q-Q plot for all",nrow(df),"p-values")
 qq.name <- paste0(args[2], ".qqplot.png")
 
-png(qq.name)
+png(qq.name, width=12, height=7)
 plot(x, df$log_pvalue, xlab= "-Log10 (p-value), theoretical", ylab= "-Log10 (p-value), observed", main= title)
 qqline(df$log_pvalue,col = "red")
 dev.off()
