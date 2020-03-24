@@ -396,11 +396,13 @@ workflow 'EWAS' {
         bedGraph_combined = filtering.out.filter{it[1] == "bedGraph"}.groupTuple()
         DMPs_combined = filtering.out.filter{it[1] == "DMPs"}.groupTuple()
         DMRs_combined = filtering.out.filter{it[1] == "DMRs"}.groupTuple()
+        bedtools_input = bedGraph_combined.mix(DMPs_combined, DMRs_combined)
         // bedtools_unionbedg for taking the union set in each context
-        bedtools_unionbedg(bedGraph_combined.mix(DMPs_combined, DMRs_combined))
+        bedtools_unionbedg(bedtools_input.filter{ it[3].size() > 1 })
+        bedtools_filtering(bedtools_input.filter{ it[3].size() == 1}.mix(bedtools_unionbedg.out))
         // stage channels for downstream processes
-        bedGraph_DMPs = bedtools_unionbedg.out.filter{it[1] == "bedGraph"}.combine(bedtools_unionbedg.out.filter{it[1] == "DMPs"}, by: 0)
-        bedGraph_DMRs = bedtools_unionbedg.out.filter{it[1] == "bedGraph"}.combine(bedtools_unionbedg.out.filter{it[1] == "DMRs"}, by: 0)
+        bedGraph_DMPs = bedtools_filtering.out.filter{it[1] == "bedGraph"}.combine(bedtools_filtering.out.filter{it[1] == "DMPs"}, by: 0)
+        bedGraph_DMRs = bedtools_filtering.out.filter{it[1] == "bedGraph"}.combine(bedtools_filtering.out.filter{it[1] == "DMRs"}, by: 0)
         // bedtools_intersect for intersecting individual methylation info based on DMPs/DMRs
         bedtools_intersect(bedGraph_DMPs.mix(bedGraph_DMRs))
         // filter regions based on bootstrap values
@@ -410,7 +412,7 @@ workflow 'EWAS' {
         // average_over_regions for calculating average methylation over defined regions
         average_over_regions(filter_regions.out.mix(bedtools_merge.out))
         // stage channels for downstream processes
-        bedGraph_channel = params.all || (!params.DMPs && !params.DMRs) ? bedtools_unionbedg.out.filter{it[1] == "bedGraph"} : Channel.empty()
+        bedGraph_channel = params.all || (!params.DMPs && !params.DMRs) ? bedtools_filtering.out.filter{it[1] == "bedGraph"} : Channel.empty()
         meth_channel = bedGraph_channel.mix(bedtools_intersect.out, average_over_regions.out)
 
         // SNPs
@@ -453,7 +455,7 @@ workflow 'EWAS' {
         parsing_gxe = GxE ? parsing.out[2] : Channel.empty()
         vcftools_extract_out = vcftools_extract.out
 
-        bedtools_unionbedg_out = bedtools_unionbedg.out
+        bedtools_unionbedg_out = bedtools_filtering.out
         bedtools_intersect_out = bedtools_intersect.out
         average_over_regions_out = average_over_regions.out
 
@@ -490,7 +492,7 @@ workflow {
         EWAS.out.parsing_gxe to: "${params.output}/input", mode: 'copy'
         EWAS.out.vcftools_extract_out to: "${params.output}/input", mode: 'copy'
 
-        EWAS.out.bedtools_unionbedg_out to: "${params.output}/input/bed", mode: 'copy'
+        EWAS.out.bedtools_unionbedg_out to: "${params.output}/input", mode: 'copy'
         EWAS.out.bedtools_intersect_out to: "${params.output}/positions", mode: 'copy'
         EWAS.out.average_over_regions_out to: "${params.output}/regions", mode: 'copy'
 
