@@ -135,7 +135,7 @@ process "bedtools_filtering" {
     params.input
 
     script:
-    if(samples.getClass() == nextflow.util.BlankSeparatedList && samples > 1)
+    if(samples.getClass() == nextflow.util.BlankSeparatedList && samples.size() > 1)
         """
         mkdir tmp bed
         head -1 ${bed} > bed/${context}.${types.unique().join("")}.bed
@@ -148,7 +148,7 @@ process "bedtools_filtering" {
     else
         """
         mkdir tmp bed
-        echo -e "chrom\\tstart\\tend\\t${samples.join(" ")}" > bed/${context}.${types.unique().join("")}.bed
+        echo -e "chrom\\tstart\\tend\\t${samples.join("")}" > bed/${context}.${types.unique().join("")}.bed
 
         tail -n+2 ${bed} | awk 'NR!=1{NA=0;c=0;s=0;ss=0;
         for(i=3;i<=NF;i++){if(\$i!="NA"){c++;s+=\$i;ss+=(\$i)^2}else{NA++}};
