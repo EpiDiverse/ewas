@@ -30,3 +30,13 @@ def check_test_data(CpGPaths, CHGPaths, CpGPaths_DMRs, CHGPaths_DMRs, SNPPaths) 
     // Return channels
     return tuple(CpG, CHG, CpG_DMRs, CHG_DMRs, SNPs)
 }
+
+
+def checkLines(myFile) {
+    int count = 0
+    String line = null
+    myFile.withReader {
+        while( count < 1 && ( ( line = it.readLine() ) != null )) {count++}
+    }
+    return count
+}
