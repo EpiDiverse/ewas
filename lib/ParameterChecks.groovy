@@ -9,7 +9,7 @@ class ParameterChecks {
         assert params.coverage instanceof Integer && params.coverage >= 0, "Input coverage filter must be a non-negative integer!"
         assert params.distance instanceof Integer && params.distance >= 0, "Distance parameter must be a non-negative integer!"
         assert Double.valueOf(params.proportion) >= 0.0d && Double.valueOf(params.proportion) <= 1.0d, "Proportion of shared regions must be a decimal in the range of 0 and 1!"
-        assert Double.valueOf(params.input_FDR) >= 0.0d && Double.valueOf(params.input_FDR) <= 1.0d, "Input FDR filter must be a decimal in the range of 0 and 1!"
+        assert Double.valueOf(params.filter_FDR) >= 0.0d && Double.valueOf(params.filter_FDR) <= 1.0d, "Input FDR filter must be a decimal in the range of 0 and 1!"
         assert Double.valueOf(params.output_FDR) >= 0.0d && Double.valueOf(params.output_FDR) <= 1.0d, "Output FDR filter must be a decimal in the range of 0 and 1!"
         assert Double.valueOf(params.Emodel_pv) >= 0.0d && Double.valueOf(params.Emodel_pv) <= 1.0d, "Emodel p-value must be a decimal in the range of 0 and 1!"
         assert Double.valueOf(params.Gmodel_pv) >= 0.0d && Double.valueOf(params.Gmodel_pv) <= 1.0d, "Gmodel p-value must be a decimal in the range of 0 and 1!"
