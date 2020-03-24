@@ -148,6 +148,7 @@ process "bedtools_filtering" {
     else
         """
         mkdir tmp bed
+        echo ${samples.getClass()}
         echo -e "chrom\\tstart\\tend\\t${samples.join("")}" > bed/${context}.${types.unique().join("")}.bed
 
         tail -n+2 ${bed} | awk 'NR!=1{NA=0;c=0;s=0;ss=0;
