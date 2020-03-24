@@ -374,7 +374,7 @@ input_channel = single_channel.mix(DMPs_channel, DMRs_channel)
 include './lib/process.nf' params(params)
 include './lib/GEM_Emodel.nf' params(params)
 include './lib/GEM_Gmodel.nf' params(params)
-include './lib/functions.nf'
+include checkLines from './lib/functions.nf'
 
 // SUB-WORKFLOWS
 workflow 'EWAS' {
