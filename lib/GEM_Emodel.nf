@@ -135,7 +135,7 @@ process "bedtools_filtering" {
     params.input
 
     script:
-    if(samples.getClass() == nextflow.util.BlankSeparatedList && samples.size() > 1)
+    if(samples.getClass() == nextflow.util.ArrayBag && samples.size() > 1)
         """
         mkdir tmp bed
         head -1 ${bed} > bed/${context}.${types.unique().join("")}.bed
