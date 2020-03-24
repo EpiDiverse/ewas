@@ -402,8 +402,8 @@ workflow 'EWAS' {
         bedtools_unionbedg(bedtools_input.filter{ it[3].size() > 1 })
         bedtools_filtering(bedtools_input.filter{ it[3].size() == 1}.mix(bedtools_unionbedg.out))
         bedtools_filtering_output = bedtools_filtering.out.filter{ checkLines(it[2]) > 1 }
-        bedtools_filtering.out.filter{ checkLines(it[2]) > 1 }.subscribe {
-            log.warn "WARN: no data left to analyse after filtering: ${it[0]}.${it[1]}.bed"
+        bedtools_filtering.out.filter{ checkLines(it[2]) <= 1 }.subscribe {
+            log.warn "no data left to analyse after filtering: ${it[0]}.${it[1]}.bed"
         }
         // stage channels for downstream processes
         bedGraph_DMPs = bedtools_filtering_output.filter{it[1] == "bedGraph"}.combine(bedtools_filtering_output.filter{it[1] == "DMPs"}, by: 0)
