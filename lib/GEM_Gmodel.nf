@@ -188,7 +188,7 @@ process "GEM_GxEmodel" {
     script: 
     """
     mkdir output
-    awk -F "\\t" '{if(NR==1);
+    awk -F "\\t" '{if(NR==1){
     printf "%s:%s-%s",\$1,\$2,\$3 > "header.txt"; printf "%s:%s-%s",\$1,\$2,\$3 > "meth.txt";
     for(i=4; i<=NF; i++) {printf "\\t%s",\$i > "header.txt"; printf "\\t%s",\$i; > "meth.txt"};
     print null > "header.txt"; print null > "meth.txt"}else{
