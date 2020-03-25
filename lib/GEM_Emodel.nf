@@ -152,7 +152,7 @@ process "bedtools_filtering" {
         echo -e "chrom\\tstart\\tend\\t${samples.join("")}" > bed/${context}.${types.unique().join("")}.bed
 
         tail -n+2 ${bed} | awk 'NR!=1{NA=0;c=0;s=0;ss=0;
-        for(i=3;i<=NF;i++){if(\$i!="NA"){c++;s+=\$i;ss+=(\$i)^2}else{NA++}};
+        for(i=4;i<=NF;i++){if(\$i!="NA"){c++;s+=\$i;ss+=\$i^2}else{NA++}};
         sd=sqrt((ss-s^2/c)/c); if(sd>${params.filter_SD} && (NA/NF-3)<=${params.filter_NA}){print}}' |
         sort -T tmp --parallel=${task.cpus} -k1,1 -k2,2n >> bed/${context}.${types.unique().join("")}.bed
         """
