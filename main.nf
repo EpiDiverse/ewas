@@ -448,9 +448,9 @@ workflow 'EWAS' {
             .map { it -> 
                 List key = it[0].tokenize(".")
                 context = key.init().join(".")
-                type = key.last().join(".")
+                type = key.last()
                 return tuple("Emodel", it[0], context, type, it[1], it[2])
-            }.view()
+            }
 
         Gmodel_txt = GEM_Gmodel.out[0].collectFile().map{ tuple(it.baseName, it) }
         Gmodel_log = GEM_Gmodel.out[1].collectFile().map{ tuple(it.baseName, it) }
@@ -458,9 +458,9 @@ workflow 'EWAS' {
             .map { it -> 
                 List key = it[0].tokenize(".")
                 context = key.init().join(".")
-                type = key.last().join(".")
+                type = key.last()
                 return tuple("Gmodel", it[0], context, type, it[1], it[2])
-            }.view()
+            }
 
         GxE_txt = GEM_GxEmodel.out[0].collectFile().map{ tuple(it.baseName, it) }
         GxE_log = GEM_GxEmodel.out[1].collectFile().map{ tuple(it.baseName, it) }
@@ -468,13 +468,12 @@ workflow 'EWAS' {
             .map { it -> 
                 List key = it[0].tokenize(".")
                 context = key.init().join(".")
-                type = key.last().join(".")
+                type = key.last()
                 return tuple("GxE", it[0], context, type, it[1], it[2])
-            }.view()
+            }
 
         // eg. [Emodel, context, type, context.txt, [scaffold.txt, ...], [scaffold.log], ...]]
         calculate_FDR(Emodel_channel.mix(Gmodel_channel, GxE_channel))
-        calculate_FDR.out[0].view()
         
         // visualisation
         qqPlot(calculate_FDR.out)
