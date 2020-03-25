@@ -188,11 +188,18 @@ process "GEM_GxEmodel" {
     script: 
     """
     mkdir output
-    awk -F "\\t" '{tee=(NR==1?"tee output/header.txt":"tee ${context}.${type}.txt");
-    printf "%s:%s-%s",\$1,\$2,\$3 | tee; for(i=4; i<=NF; i++) {printf "\\t%s",\$i | tee};
-    print null | tee}' ${meth} > meth.txt
+    awk -F "\\t" '{if(NR==1);
+    printf "%s:%s-%s",\$1,\$2,\$3 > "header.txt"; printf "%s:%s-%s",\$1,\$2,\$3 > "meth.txt";
+    for(i=4; i<=NF; i++) {printf "\\t%s",\$i > "header.txt"; printf "\\t%s",\$i; > "meth.txt"};
+    print null > "header.txt"; print null > "meth.txt"}else{
+    printf \"%s:%s-%s\",\$1,\$2,\$3; for(i=4; i<=NF; i++) {printf \"\\t%s\",\$i}; print null}}' ${meth} |
+    tee -a meth.txt > ${context}.${type}.txt
 
-    #awk -F "\\t" '{printf \"%s:%s-%s\",\$1,\$2,\$3; for(i=4; i<=NF; i++) {printf \"\\t%s\",\$i}; print null}' ${meth} > ${context}.${type}.txt
+    #awk -F "\\t" '{tee=(NR==1?"tee output/header.txt":"tee ${context}.${type}.txt");
+    #printf "%s:%s-%s",\$1,\$2,\$3 | tee; for(i=4; i<=NF; i++) {printf "\\t%s",\$i | tee};
+    #print null | tee}' ${meth} > meth.txt
+
+    #awk -F "\\t" '{printf \"%s:%s-%s\",\$1,\$2,\$3; for(i=4; i<=NF; i++) {printf \"\\t%s\",\$i}; print null}' ${meth} > meth.txt
     #awk -F "\\t" '{printf \"%s:%s-%s\",\$1,\$2,\$3; for(i=4; i<=NF; i++) {printf \"\\t%s\",\$i}; print null}' ${meth} > \$(basename ${meth} .bed).txt
     Rscript ${baseDir}/bin/GEM_GxE.R ${baseDir}/bin ${snps} ${gxe} meth.txt ${params.GxE_pv} output/meth > output/${context}.${type}.log || exit \$?
     tail -n+2 output/meth.txt > output/${context}.${type}.txt
