@@ -267,8 +267,8 @@ process "topKplots" {
     script:
     """
     mkdir GxE GxE/${key}
-    #head -n 1 ${scaffolds} > GxE/${key}.txt
-    #tail -n+2 ${scaffolds} >> GxE/${key}.txt
+    #head -n 1 \${scaffolds} > GxE/${key}.txt
+    #tail -n+2 \${scaffolds} >> GxE/${key}.txt
 
     awk 'NR==1{print;next}{print | "sort -gk6 | head -${params.kplots}"}' ${key}.filtered_${params.output_FDR}_FDR.txt \\
     > GxE/${key}/${key}.filtered_${params.output_FDR}_FDR.txt || exit \$?
