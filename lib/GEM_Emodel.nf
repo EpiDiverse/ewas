@@ -141,8 +141,8 @@ process "bedtools_filtering" {
         head -1 ${bed} > bed/${context}.${types.unique().join("")}.bed
 
         tail -n+2 ${bed} | awk 'NR!=1{NA=0;c=0;s=0;ss=0;
-        for(i=3;i<=NF;i++){if(\$i!="NA"){c++;s+=\$i;ss+=(\$i)^2}else{NA++}};
-        sd=sqrt((ss-s^2/c)/c); if(sd>${params.filter_SD} && (NA/NF-3)<=${params.filter_NA}){print}}' |
+        for(i=4;i<=NF;i++){if(\$i!="NA"){c++;s+=int(\$i*100+0.5);ss+=int(\$i*100+0.5)^2}else{NA++}};
+        sd=sqrt((ss-s^2/c)/c)/100; if(sd>${params.filter_SD} && (NA/NF-3)<=${params.filter_NA}){print}}' |
         sort -T tmp --parallel=${task.cpus} -k1,1 -k2,2n >> bed/${context}.${types.unique().join("")}.bed
         """
     else
@@ -152,8 +152,8 @@ process "bedtools_filtering" {
         echo -e "chrom\\tstart\\tend\\t${samples.join("")}" > bed/${context}.${types.unique().join("")}.bed
 
         tail -n+2 ${bed} | awk 'NR!=1{NA=0;c=0;s=0;ss=0;
-        for(i=4;i<=NF;i++){if(\$i!="NA"){c++;s+=\$i;ss+=\$i^2}else{NA++}};
-        sd=sqrt((ss-s^2/c)/c); if(sd>${params.filter_SD} && (NA/NF-3)<=${params.filter_NA}){print}}' |
+        for(i=4;i<=NF;i++){if(\$i!="NA"){c++;s+=int(\$i*100+0.5);ss+=int(\$i*100+0.5)^2}else{NA++}};
+        sd=sqrt((ss-s^2/c)/c)/100; if(sd>${params.filter_SD} && (NA/NF-3)<=${params.filter_NA}){print}}' |
         sort -T tmp --parallel=${task.cpus} -k1,1 -k2,2n >> bed/${context}.${types.unique().join("")}.bed
         """
 } 
@@ -302,7 +302,9 @@ process "GEM_Emodel" {
     path covs
     
     output:
-    tuple context, type, path("output/*.txt"), path("output/*.log")
+    //tuple context, type, path("output/*.txt"), path("output/*.log")
+    path "output/${context}.${type}.txt"
+    path "output/${context}.${type}.log"
    
     when:
     params.input && (!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel
@@ -311,7 +313,8 @@ process "GEM_Emodel" {
     """
     mkdir output
     awk -F "\\t" '{printf \"%s:%s-%s\",\$1,\$2,\$3; for(i=4; i<=NF; i++) {printf \"\\t%s\",\$i}; print null}' ${meth} > \$(basename ${meth} .bed).txt
-    Rscript ${baseDir}/bin/GEM_Emodel.R ${baseDir}/bin ${envs} ${covs} \$(basename ${meth} .bed).txt ${params.Gmodel_pv} output/\$(basename ${meth} .bed) > output/\$(basename ${meth} .bed).log
+    Rscript ${baseDir}/bin/GEM_Emodel.R ${baseDir}/bin ${envs} ${covs} \$(basename ${meth} .bed).txt ${params.Gmodel_pv} output/temp > output/${context}.${type}.log || exit \$?
+    tail -n+2 output/temp.txt > output/${context}.${type}.txt
     """
 
 }

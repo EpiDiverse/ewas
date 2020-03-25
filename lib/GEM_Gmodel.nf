@@ -144,7 +144,9 @@ process "GEM_Gmodel" {
     path covs
     
     output:
-    tuple context, type, path("output/*.txt"), path("output/*.log")
+    //tuple context, type, path("output/*.txt"), path("output/*.log")
+    path "output/${context}.${type}.txt"
+    path "output/${context}.${type}.log"
    
     when:
     params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel)
@@ -153,7 +155,9 @@ process "GEM_Gmodel" {
     """
     mkdir output
     awk -F "\\t" '{printf \"%s:%s-%s\",\$1,\$2,\$3; for(i=4; i<=NF; i++) {printf \"\\t%s\",\$i}; print null}' ${meth} > \$(basename ${meth} .bed).txt
-    Rscript ${baseDir}/bin/GEM_Gmodel.R ${baseDir}/bin ${snps} ${covs} \$(basename ${meth} .bed).txt ${params.Gmodel_pv} output/\$(basename ${meth} .bed) > output/\$(basename ${meth} .bed).log
+    Rscript ${baseDir}/bin/GEM_Gmodel.R ${baseDir}/bin ${snps} ${covs} \$(basename ${meth} .bed).txt ${params.Gmodel_pv} output/temp > output/${context}.${type}.log || exit \$?
+    tail -n+2 output/temp.txt > output/${context}.${type}.txt
+    #Rscript ${baseDir}/bin/GEM_Gmodel.R ${baseDir}/bin ${snps} ${covs} \$(basename ${meth} .bed).txt ${params.Gmodel_pv} output/\$(basename ${meth} .bed) > output/\$(basename ${meth} .bed).log
     """
 }
 
@@ -171,17 +175,28 @@ process "GEM_GxEmodel" {
     path gxe
     
     output:
-    tuple context, type, path("output/*.txt"), path("output/*.log")
-    tuple context, type, path("*.txt")
-   
+    //tuple context, type, path("output/*.txt"), path("output/*.log")
+    //tuple context, type, path("*.txt")
+    path "output/${context}.${type}.txt"
+    path "output/${context}.${type}.log"
+    path "${context}.${type}.txt"
+    tuple context, type, path("header.txt")
+
     when:
     params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE)
     
     script: 
     """
     mkdir output
-    awk -F "\\t" '{printf \"%s:%s-%s\",\$1,\$2,\$3; for(i=4; i<=NF; i++) {printf \"\\t%s\",\$i}; print null}' ${meth} > \$(basename ${meth} .bed).txt
-    Rscript ${baseDir}/bin/GEM_GxE.R ${baseDir}/bin ${snps} ${gxe} \$(basename ${meth} .bed).txt ${params.GxE_pv} output/\$(basename ${meth} .bed) > output/\$(basename ${meth} .bed).log
+    awk -F "\\t" '{tee=(NR==1?"tee output/header.txt":"tee ${context}.${type}.txt");
+    printf "%s:%s-%s",\$1,\$2,\$3 | tee; for(i=4; i<=NF; i++) {printf "\\t%s",\$i | tee};
+    print null | tee}' ${meth} > meth.txt
+
+    #awk -F "\\t" '{printf \"%s:%s-%s\",\$1,\$2,\$3; for(i=4; i<=NF; i++) {printf \"\\t%s\",\$i}; print null}' ${meth} > ${context}.${type}.txt
+    #awk -F "\\t" '{printf \"%s:%s-%s\",\$1,\$2,\$3; for(i=4; i<=NF; i++) {printf \"\\t%s\",\$i}; print null}' ${meth} > \$(basename ${meth} .bed).txt
+    Rscript ${baseDir}/bin/GEM_GxE.R ${baseDir}/bin ${snps} ${gxe} meth.txt ${params.GxE_pv} output/meth > output/${context}.${type}.log || exit \$?
+    tail -n+2 output/meth.txt > output/${context}.${type}.txt
+    #Rscript ${baseDir}/bin/GEM_GxE.R ${baseDir}/bin ${snps} ${gxe} \$(basename ${meth} .bed).txt ${params.GxE_pv} output/\$(basename ${meth} .bed) > output/\$(basename ${meth} .bed).log
     """
 }
 
@@ -228,8 +243,9 @@ process "topKplots" {
     tag "${key}"
      
     input:
-    tuple key, type, path(result), path(scaffolds)
-    // eg. [CHG.region, region, [path/to/CHG.region.txt, /path/to/filtered.txt], [path/to/CHG.txt, path/to/CHG.txt, ...]]
+    //tuple key, type, path(result), path(scaffolds)
+    // eg. [CHG.region, region, [path/to/CHG.region.txt, /path/to/filtered.txt], path/to/CHG.region.txt]
+    tuple key, type, path(results), path(scaffolds), path(header)
     path snp
     path gxe
     
@@ -242,11 +258,11 @@ process "topKplots" {
     script:
     """
     mkdir GxE GxE/${key}
-    head -qn 1 ${scaffolds} | uniq > GxE/${key}.txt
-    tail -qn+2 ${scaffolds} >> GxE/${key}.txt
+    #head -n 1 ${scaffolds} > GxE/${key}.txt
+    #tail -n+2 ${scaffolds} >> GxE/${key}.txt
 
     awk 'NR==1{print;next}{print | "sort -gk6 | head -${params.kplots}"}' ${key}.filtered_${params.output_FDR}_FDR.txt \\
     > GxE/${key}/${key}.filtered_${params.output_FDR}_FDR.txt || exit \$?
-    Rscript ${baseDir}/bin/Kplot.R GxE/${key}/${key}.filtered_${params.output_FDR}_FDR.txt GxE/${key}.txt ${snp} ${gxe}
+    Rscript ${baseDir}/bin/Kplot.R GxE/${key}/${key}.filtered_${params.output_FDR}_FDR.txt <(cat ${header} ${scaffolds}GxE/${key}.txt ${snp} ${gxe}
     """ 
 }

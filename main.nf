@@ -438,18 +438,52 @@ workflow 'EWAS' {
         GEM_GxEmodel(split_scaffolds.out.transpose(), vcftools_extract.out, parsing.out[2])
         
         // calculate FDR
-        Emodel_channel = GEM_Emodel.out[0].map{ tuple( it[0] + "." + it[1], *it) }.groupTuple().map{ tuple("Emodel", *it) }
-        Gmodel_channel = GEM_Gmodel.out[0].map{ tuple( it[0] + "." + it[1], *it) }.groupTuple().map{ tuple("Gmodel", *it) }
-        GxE_channel = GEM_GxEmodel.out[0].map{ tuple( it[0] + "." + it[1], *it) }.groupTuple().map{ tuple("GxE", *it) }
-        // eg. [Emodel, [types], [contexts], [context.txt, context,txt, ...], [scaffold.txt, ...], [scaffold.log], ...]]
+        //Emodel_channel = GEM_Emodel.out[0].map{ tuple( it[0] + "." + it[1], *it) }.groupTuple().map{ tuple("Emodel", *it) }
+        //Gmodel_channel = GEM_Gmodel.out[0].map{ tuple( it[0] + "." + it[1], *it) }.groupTuple().map{ tuple("Gmodel", *it) }
+        //GxE_channel = GEM_GxEmodel.out[0].map{ tuple( it[0] + "." + it[1], *it) }.groupTuple().map{ tuple("GxE", *it) }
 
+        Emodel_txt = GEM_Emodel.out[0].collectFile().map{ tuple(it.baseName, it) }
+        Emodel_log = GEM_Emodel.out[1].collectFile().map{ tuple(it.baseName, it) }
+        Emodel_channel = Emodel_txt.combine(Emodel_log, by: 0)
+            .map { it -> 
+                List key = it[0].tokenize(".")
+                String context = key.init().join(".")
+                String type = key.last().join(".")
+                return tuple("Emodel", it[0], context, type, it[1], it[2])
+            }
+
+        Gmodel_txt = GEM_Gmodel.out[0].collectFile().map{ tuple(it.baseName, it) }
+        Gmodel_log = GEM_Gmodel.out[1].collectFile().map{ tuple(it.baseName, it) }
+        Gmodel_channel = Gmodel_txt.combine(Gmodel_log, by: 0)
+            .map { it -> 
+                List key = it[0].tokenize(".")
+                String context = key.init().join(".")
+                String type = key.last().join(".")
+                return tuple("Gmodel", it[0], context, type, it[1], it[2])
+            }
+
+        GxE_txt = GEM_GxEmodel.out[0].collectFile().map{ tuple(it.baseName, it) }
+        GxE_log = GEM_GxEmodel.out[1].collectFile().map{ tuple(it.baseName, it) }
+        GxE_channel = GxE_txt.combine(GxE_log, by: 0)
+            .map { it -> 
+                List key = it[0].tokenize(".")
+                String context = key.init().join(".")
+                String type = key.last().join(".")
+                return tuple("GxE", it[0], context, type, it[1], it[2])
+            }
+
+        // eg. [Emodel, context, type, context.txt, [scaffold.txt, ...], [scaffold.log], ...]]
         calculate_FDR(Emodel_channel.mix(Gmodel_channel, GxE_channel))
         
         // visualisation
         qqPlot(calculate_FDR.out)
         manhattan(calculate_FDR.out.filter{ it[0] == "Emodel" })
         dotPlot(calculate_FDR.out.filter{ it[0] == "Gmodel" })
-        kplots_channel = calculate_FDR.out.filter{ it[0] == "GxE" }.map{ it.tail() }.combine(GEM_GxEmodel.out[1].map{ tuple( it[0] + "." + it[1], it.last()) }.groupTuple(), by:0)
+        //kplots_channel = calculate_FDR.out.filter{ it[0] == "GxE" }.map{ it.tail() }.combine(GEM_GxEmodel.out[1].map{ tuple( it[0] + "." + it[1], it.last()) }.groupTuple(), by:0)
+
+        GxE_plot = GEM_GxEmodel.out[2].collectFile().map{ tuple(it.baseName, it) }
+        GxE_head = GEM_GxEmodel.out[3].map{ tuple( it[0] + "." + it[1], it[2]) }.unique{ it[0] }
+        kplots_channel = calculate_FDR.out.filter{ it[0] == "GxE" }.map{ it.tail() }.combine(GxE_plot, by:0).combine(GxE_head, by:0)
         topKplots(kplots_channel, vcftools_extract.out, parsing.out[2])
 
 
