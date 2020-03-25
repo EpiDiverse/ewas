@@ -254,7 +254,7 @@ process "topKplots" {
     input:
     //tuple key, type, path(result), path(scaffolds)
     // eg. [CHG.region, region, [path/to/CHG.region.txt, /path/to/filtered.txt], path/to/CHG.region.txt]
-    tuple key, type, path(results), path(scaffolds), path(header)
+    tuple key, type, path(results), path("meth.txt"), path(header)
     path snp
     path gxe
     
@@ -272,6 +272,6 @@ process "topKplots" {
 
     awk 'NR==1{print;next}{print | "sort -gk6 | head -${params.kplots}"}' ${key}.filtered_${params.output_FDR}_FDR.txt \\
     > GxE/${key}/${key}.filtered_${params.output_FDR}_FDR.txt || exit \$?
-    Rscript ${baseDir}/bin/Kplot.R GxE/${key}/${key}.filtered_${params.output_FDR}_FDR.txt <(cat ${header} ${scaffolds}GxE/${key}.txt ${snp} ${gxe}
+    Rscript ${baseDir}/bin/Kplot.R GxE/${key}/${key}.filtered_${params.output_FDR}_FDR.txt <(cat ${header} meth.txt) ${snp} ${gxe}
     """ 
 }
