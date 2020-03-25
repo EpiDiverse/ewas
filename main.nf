@@ -447,8 +447,8 @@ workflow 'EWAS' {
         Emodel_channel = Emodel_txt.combine(Emodel_log, by: 0)
             .map { it -> 
                 List key = it[0].tokenize(".")
-                String context = key.init().join(".")
-                String type = key.last().join(".")
+                context = key.init().join(".")
+                type = key.last().join(".")
                 return tuple("Emodel", it[0], context, type, it[1], it[2])
             }
 
@@ -457,8 +457,8 @@ workflow 'EWAS' {
         Gmodel_channel = Gmodel_txt.combine(Gmodel_log, by: 0)
             .map { it -> 
                 List key = it[0].tokenize(".")
-                String context = key.init().join(".")
-                String type = key.last().join(".")
+                context = key.init().join(".")
+                type = key.last().join(".")
                 return tuple("Gmodel", it[0], context, type, it[1], it[2])
             }
 
@@ -467,8 +467,8 @@ workflow 'EWAS' {
         GxE_channel = GxE_txt.combine(GxE_log, by: 0)
             .map { it -> 
                 List key = it[0].tokenize(".")
-                String context = key.init().join(".")
-                String type = key.last().join(".")
+                context = key.init().join(".")
+                type = key.last().join(".")
                 return tuple("GxE", it[0], context, type, it[1], it[2])
             }
 
