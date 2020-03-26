@@ -100,7 +100,7 @@ process "bedtools_unionbedg" {
     // eg, [CpG, [DMRs, DMRs, DMRs, ...], [sample1, sample2, sample3, ...], [path1, path2, path3, ...]]
 
     output:
-    tuple context, types, samples, path("${context}.${types.unique().join("")}.bed")
+    tuple context, val("${types.unique().join("")}"), samples, path("${context}.${types.unique().join("")}.bed")
     // eg. [CpG, [DMRs, DMRs, DMRs, ...], [sample1, sample2, sample3, ...], /path/to/CpG.DMRs.bed]
 
     when:
@@ -119,16 +119,16 @@ process "bedtools_filtering" {
 
     label "low"
     label "finish"
-    tag "${context}.${types.unique().join("")}"
+    tag "${context}.${type}"
 
     maxForks "${params.fork}".toInteger()
    
     input:
-    tuple context, types, samples, path(bed)
-    // eg, [CpG, [DMRs, DMRs, DMRs, ...], [sample1, sample2, sample3, ...], /path/to/DMRs.bed]
+    tuple context, type, samples, path(bed)
+    // eg, [CpG, DMRs, [sample1, sample2, sample3, ...], /path/to/DMRs.bed]
 
     output:
-    tuple context, val("${types.unique().join("")}"), path("bed/${context}.${types.unique().join("")}.bed")
+    tuple context, type, path("bed/${context}.${type}.bed")
     // eg. [CpG, DMRs, /path/to/DMRs.bed]
 
     when:
@@ -138,23 +138,23 @@ process "bedtools_filtering" {
     if(samples.getClass() == nextflow.util.ArrayBag && samples.size() > 1)
         """
         mkdir tmp bed
-        head -1 ${bed} > bed/${context}.${types.unique().join("")}.bed
+        head -1 ${bed} > bed/${context}.${type}.bed
 
         tail -n+2 ${bed} | awk 'NR!=1{NA=0;c=0;s=0;ss=0;
         for(i=4;i<=NF;i++){if(\$i!="NA"){c++;s+=int(\$i*100+0.5);ss+=int(\$i*100+0.5)^2}else{NA++}};
         sd=sqrt((ss-s^2/c)/c)/100; if(sd>${params.filter_SD} && (NA/NF-3)<=${params.filter_NA}){print}}' |
-        sort -T tmp --parallel=${task.cpus} -k1,1 -k2,2n >> bed/${context}.${types.unique().join("")}.bed
+        sort -T tmp --parallel=${task.cpus} -k1,1 -k2,2n >> bed/${context}.${type}.bed
         """
     else
         """
         mkdir tmp bed
         echo ${samples.getClass()}
-        echo -e "chrom\\tstart\\tend\\t${samples.join("")}" > bed/${context}.${types.unique().join("")}.bed
+        echo -e "chrom\\tstart\\tend\\t${samples.join("")}" > bed/${context}.${type}.bed
 
         tail -n+2 ${bed} | awk 'NR!=1{NA=0;c=0;s=0;ss=0;
         for(i=4;i<=NF;i++){if(\$i!="NA"){c++;s+=int(\$i*100+0.5);ss+=int(\$i*100+0.5)^2}else{NA++}};
         sd=sqrt((ss-s^2/c)/c)/100; if(sd>${params.filter_SD} && (NA/NF-3)<=${params.filter_NA}){print}}' |
-        sort -T tmp --parallel=${task.cpus} -k1,1 -k2,2n >> bed/${context}.${types.unique().join("")}.bed
+        sort -T tmp --parallel=${task.cpus} -k1,1 -k2,2n >> bed/${context}.${type}.bed
         """
 } 
 

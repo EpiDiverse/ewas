@@ -401,7 +401,7 @@ workflow 'EWAS' {
         // bedtools_unionbedg for taking the union set in each context
         bedtools_unionbedg(bedtools_input.filter{ it[3].size() > 1 })
         //bedtools_filtering(bedtools_input.filter{ it[3].size() == 1}.mix(bedtools_unionbedg.out))
-        bedtools_filtering(bedGraph_combined.filter{ it[3].size() == 1 }.mix(bedtools_unionbedg.out.filter{ it[1].unique().join("") == "bedGraph" }))
+        bedtools_filtering(bedGraph_combined.filter{ it[3].size() == 1 }.mix(bedtools_unionbedg.out.filter{ it[1] == "bedGraph" }))
 
         bedtools_filtering_output = bedtools_filtering.out.filter{ checkLines(it[2]) > 1 }
         bedtools_filtering.out.filter{ checkLines(it[2]) <= 1 }.subscribe {
@@ -410,8 +410,8 @@ workflow 'EWAS' {
         // stage channels for downstream processes
         //bedGraph_DMPs = bedtools_filtering_output.filter{it[1] == "bedGraph"}.combine(bedtools_filtering_output.filter{it[1] == "DMPs"}, by: 0)
         //bedGraph_DMRs = bedtools_filtering_output.filter{it[1] == "bedGraph"}.combine(bedtools_filtering_output.filter{it[1] == "DMRs"}, by: 0)
-        intersect_DMPs = DMPs_combined.filter{ it[3].size() == 1 }.mix(bedtools_unionbedg.out.filter{ it[1].unique().join("") == "DMPs" })
-        intersect_DMRs = DMRs_combined.filter{ it[3].size() == 1 }.mix(bedtools_unionbedg.out.filter{ it[1].unique().join("") == "DMPs" })
+        intersect_DMPs = DMPs_combined.filter{ it[3].size() == 1 }.mix(bedtools_unionbedg.out.filter{ it[1] == "DMPs" })
+        intersect_DMRs = DMRs_combined.filter{ it[3].size() == 1 }.mix(bedtools_unionbedg.out.filter{ it[1] == "DMPs" })
         bedGraph_DMPs = bedtools_filtering_output.combine(intersect_DMPs, by: 0)
         bedGraph_DMRs = bedtools_filtering_output.combine(intersect_DMRs, by: 0)
         // bedtools_intersect for intersecting individual methylation info based on DMPs/DMRs
