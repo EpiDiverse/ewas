@@ -177,7 +177,7 @@ process "bedtools_intersect" {
     maxForks "${params.fork}".toInteger()
    
     input:
-    tuple context, bedGraph, path("methylation.txt"), type, path("differential.txt")
+    tuple context, bedGraph, path("methylation.txt"), type, samples, path("differential.txt")
     // eg. [CpG, bedGraph, CpG.bedGraph.bed, DMPs, CpG.DMPs.bed]
 
     output:
@@ -205,7 +205,7 @@ process "filter_regions" {
     maxForks "${params.fork}".toInteger()
    
     input:
-    tuple context, bedGraph, path(methylation), type, path(differential)
+    tuple context, bedGraph, path(methylation), type, samples, path(differential)
     // eg. [CpG, bedGraph, CpG.bedGraph.bed, DMRs, CpG.DMRs.bed]
 
     output:
