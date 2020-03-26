@@ -411,7 +411,7 @@ workflow 'EWAS' {
         //bedGraph_DMPs = bedtools_filtering_output.filter{it[1] == "bedGraph"}.combine(bedtools_filtering_output.filter{it[1] == "DMPs"}, by: 0)
         //bedGraph_DMRs = bedtools_filtering_output.filter{it[1] == "bedGraph"}.combine(bedtools_filtering_output.filter{it[1] == "DMRs"}, by: 0)
         intersect_DMPs = DMPs_combined.filter{ it[3].size() == 1 }.mix(bedtools_unionbedg.out.filter{ it[1] == "DMPs" })
-        intersect_DMRs = DMRs_combined.filter{ it[3].size() == 1 }.mix(bedtools_unionbedg.out.filter{ it[1] == "DMPs" })
+        intersect_DMRs = DMRs_combined.filter{ it[3].size() == 1 }.mix(bedtools_unionbedg.out.filter{ it[1] == "DMRs" })
         bedGraph_DMPs = bedtools_filtering_output.combine(intersect_DMPs, by: 0)
         bedGraph_DMRs = bedtools_filtering_output.combine(intersect_DMRs, by: 0)
         // bedtools_intersect for intersecting individual methylation info based on DMPs/DMRs
