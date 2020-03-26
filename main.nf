@@ -401,7 +401,7 @@ workflow 'EWAS' {
         // bedtools_unionbedg for taking the union set in each context
         bedtools_unionbedg(bedtools_input.filter{ it[3].size() > 1 })
         //bedtools_filtering(bedtools_input.filter{ it[3].size() == 1}.mix(bedtools_unionbedg.out))
-        bedtools_filtering(bedGraph_combined.filter{ it[3].size() == 1}.mix(bedtools_unionbedg.out.filter{ it[1] == "bedGraph" }))
+        bedtools_filtering(bedGraph_combined.filter{ it[3].size() == 1 }.mix(bedtools_unionbedg.out.filter{ it[1].unique().join("") == "bedGraph" }))
 
         bedtools_filtering_output = bedtools_filtering.out.filter{ checkLines(it[2]) > 1 }
         bedtools_filtering.out.filter{ checkLines(it[2]) <= 1 }.subscribe {
