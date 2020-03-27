@@ -115,17 +115,14 @@ process "vcftools_extract" {
     script:
     """   
     vcftools --gzvcf ${snp} \\
-    --max-missing ${params.max_missing} \\
+    --max-missing 1 \\
     --mac ${params.mac} \\
     --minQ ${params.minQ} \\
-    --extract-FORMAT-info GT \\
-    --out splitted_requiredFormat || exit \$?
+    --012 \\
+    --out GT || exit \$?
 
-    awk '{printf \"%s:%s-%s\",\$1,\$2-1,\$2; for(i=3; i<=NF; i++) {printf \"\\t%s\",\$i}; print null}' splitted_requiredFormat.GT.FORMAT |
-    perl -pe 's!0/0!1!g; s!0/1!2!g; s!1/0!2!g; s!1/1!3!g; s!./.!0!g; s/CHROM_POS/ID/g' |
-    awk -v OFS="\t" '\$1=\$1' |
-    awk 'NR == 1; NR > 1 {print \$0 | "sort -n"}' |
-    uniq > snps.txt
+    paste <(cat <(echo -e "CHROM\tPOS") GT.012.pos) <(paste GT.012.indv <(cut -f2- GT.012) | datamash transpose) |
+    awk '{printf "%s:%s-%s",\$1,\$2-1,\$2; for(i=3; i<=NF; i++) {printf "\\t%s",\$i+1}; print null}' > snps.txt
     """ 
 }
 
