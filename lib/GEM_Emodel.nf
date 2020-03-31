@@ -108,6 +108,7 @@ process "bedtools_unionbedg" {
 
     script:
     """
+    sleep 1h
     bedtools unionbedg -filler NA -i ${beds} -header -names ${samples.join(" ")} > ${context}.${types.unique().join("")}.bed
     """
 } 
