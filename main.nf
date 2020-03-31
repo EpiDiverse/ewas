@@ -411,12 +411,13 @@ workflow 'EWAS' {
         sort_DMPs = DMPs_combined.filter{ it[3].size() == 1 }.mix(bedtools_unionbedg.out.filter{ it[1] == "DMPs" })
         sort_DMRs = DMRs_combined.filter{ it[3].size() == 1 }.mix(bedtools_unionbedg.out.filter{ it[1] == "DMRs" })
         bedtools_sorting(bedtools_filtering_output.mix(sort_DMPs, sort_DMRs))
+        
         // stage channels for downstream processes
         intersect_DMPs = bedtools_sorting.out.filter{ it[1] == "DMPs" }
         intersect_DMRs = bedtools_sorting.out.filter{ it[1] == "DMRs" }
         bedGraph_DMPs = bedtools_sorting.out.filter{it[1] == "bedGraph"}.combine(intersect_DMPs, by: 0)
         bedGraph_DMRs = bedtools_sorting.out.filter{it[1] == "bedGraph"}.combine(intersect_DMRs, by: 0)
-        
+
         // bedtools_intersect for intersecting individual methylation info based on DMPs/DMRs
         bedtools_intersect(bedGraph_DMPs.mix(bedGraph_DMRs))
         // filter regions based on bootstrap values
@@ -447,10 +448,6 @@ workflow 'EWAS' {
         GEM_GxEmodel(split_scaffolds.out.transpose(), vcftools_extract.out, parsing.out[2])
         
         // calculate FDR
-        //Emodel_channel = GEM_Emodel.out[0].map{ tuple( it[0] + "." + it[1], *it) }.groupTuple().map{ tuple("Emodel", *it) }
-        //Gmodel_channel = GEM_Gmodel.out[0].map{ tuple( it[0] + "." + it[1], *it) }.groupTuple().map{ tuple("Gmodel", *it) }
-        //GxE_channel = GEM_GxEmodel.out[0].map{ tuple( it[0] + "." + it[1], *it) }.groupTuple().map{ tuple("GxE", *it) }
-
         Emodel_txt = GEM_Emodel.out[0].collectFile().map{ tuple(it.baseName, it) }
         Emodel_log = GEM_Emodel.out[1].collectFile().map{ tuple(it.baseName, it) }
         Emodel_channel = Emodel_txt.combine(Emodel_log, by: 0)

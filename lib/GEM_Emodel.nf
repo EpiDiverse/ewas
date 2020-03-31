@@ -40,49 +40,6 @@ process "filtering" {
 // DMPs_combined = filtering.out.filter{it[1] == "DMPs"}.groupTuple()
 // DMRs_combined = filtering.out.filter{it[1] == "DMRs"}.groupTuple()
 
-/*
-// process "process_bedtools_unionbedg_methcalls" { combine filtered bedGraphs
-process "bedtools_unionbedg" {
-
-    label "low"
-    label "finish"
-    tag "${context}.${types.unique().join("")}"
-
-    maxForks "${params.fork}".toInteger()
-   
-    input:
-    tuple context, types, samples, path(beds)
-    // eg, [CpG, [DMRs, DMRs, DMRs, ...], [sample1, sample2, sample3, ...], [path1, path2, path3, ...]]
-
-    output:
-    tuple context, val("${types.unique().join("")}"), path("${context}.${types.unique().join("")}.bed")
-    // eg. [CpG, DMRs, /path/to/DMRs.bed]
-
-    when:
-    params.input
-
-    script:
-    if (beds.size() > 1)
-        """
-        bedtools unionbedg -filler NA -i ${beds} -header -names ${samples.join(" ")} > unsorted.${context}.${types.unique().join("")}.bed || exit \$?
-        head -1 unsorted.${context}.${types.unique().join("")}.bed > ${context}.${types.unique().join("")}.bed
-
-        tail -n+2 unsorted.${context}.${types.unique().join("")}.bed |
-        awk 'NR!=1{NA=0;c=0;s=0;ss=0; for(i=3;i<=NF;i++){if(\$i!="NA"){c++;s+=\$i;ss+=(\$i)^2}else{NA++}};
-        sd=sqrt((ss-s^2/c)/c); if(sd<=${params.filter_var} && (NA/NF)<=${params.filter_NA}){print \$0}}' |
-        sort -k1,1 -k2,2n >> ${context}.${types.unique().join("")}.bed
-        """
-    else
-        """
-        echo -e "chrom\\tstart\\tend\\t${samples.join(" ")}" > ${context}.${types.unique().join("")}.bed
-        tail -n+2 ${beds} |
-        awk 'NR!=1{NA=0;c=0;s=0;ss=0; for(i=3;i<=NF;i++){if(\$i!="NA"){c++;s+=\$i;ss+=(\$i)^2}else{NA++}};
-        sd=sqrt((ss-s^2/c)/c); if(sd<=${params.filter_var} && (NA/NF)<=${params.filter_NA}){print \$0}}' |
-        sort -k1,1 -k2,2n >> ${context}.${types.unique().join("")}.bed
-        """
-} 
-*/
-
 
 //bedtools_unionbedg_input.filter{ it[3].size() > 1 }
 //bedtools_unionbedg_input.filter{ it[3].size() == 1 }
@@ -111,53 +68,6 @@ process "bedtools_unionbedg" {
     bedtools unionbedg -filler NA -i ${beds} -header -names ${samples.join(" ")} > ${context}.${types.unique().join("")}.bed
     """
 } 
-
-/*
-//bedtools_unionbedg_input.mix(bedtools_unionbedg_output)
-// process "process_bedtools_unionbedg_methcalls" { combine filtered bedGraphs
-process "bedtools_filtering" {
-
-    label "low"
-    label "finish"
-    tag "${context}.${type}"
-
-    maxForks "${params.fork}".toInteger()
-   
-    input:
-    tuple context, type, samples, path(bed)
-    // eg, [CpG, DMRs, [sample1, sample2, sample3, ...], /path/to/DMRs.bed]
-
-    output:
-    tuple context, type, path("bed/${context}.${type}.bed")
-    // eg. [CpG, DMRs, /path/to/DMRs.bed]
-
-    when:
-    params.input
-
-    script:
-    if(samples.getClass() == nextflow.util.ArrayBag && samples.size() > 1)
-        """
-        mkdir tmp bed
-        head -1 ${bed} > bed/${context}.${type}.bed
-
-        tail -n+2 ${bed} | awk 'NR!=1{NA=0;c=0;s=0;ss=0;
-        for(i=4;i<=NF;i++){if(\$i!="NA"){c++;s+=int(\$i*100+0.5);ss+=int(\$i*100+0.5)^2}else{NA++}};
-        sd=sqrt((ss-s^2/c)/c)/100; if(sd>${params.filter_SD} && (NA/NF-3)<=${params.filter_NA}){print}}' |
-        sort -T tmp --parallel=${task.cpus} -k1,1 -k2,2n >> bed/${context}.${type}.bed
-        """
-    else
-        """
-        mkdir tmp bed
-        echo ${samples.getClass()}
-        echo -e "chrom\\tstart\\tend\\t${samples.join("")}" > bed/${context}.${type}.bed
-
-        tail -n+2 ${bed} | awk 'NR!=1{NA=0;c=0;s=0;ss=0;
-        for(i=4;i<=NF;i++){if(\$i!="NA"){c++;s+=int(\$i*100+0.5);ss+=int(\$i*100+0.5)^2}else{NA++}};
-        sd=sqrt((ss-s^2/c)/c)/100; if(sd>${params.filter_SD} && (NA/NF-3)<=${params.filter_NA}){print}}' |
-        sort -T tmp --parallel=${task.cpus} -k1,1 -k2,2n >> bed/${context}.${type}.bed
-        """
-} 
-*/
 
 
 //bedtools_unionbedg_input.mix(bedtools_unionbedg_output)
@@ -192,7 +102,6 @@ process "bedtools_filtering" {
     sd=sqrt((ss-s^2/c)/c)/100; if(sd>${params.filter_SD} && (NA/NF-3)<=${params.filter_NA}){print}}' >> bed/${context}.${type}.bed
     """
 } 
-
 
 
 

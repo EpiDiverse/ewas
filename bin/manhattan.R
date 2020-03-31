@@ -64,12 +64,6 @@ gg.manhattan <- function(df, threshold, hlight, col, ylims, title){
 		geom_hline(yintercept = -log10(sig), color="blue") +
 		geom_hline(yintercept = -log10(sugg), linetype="dashed", color="red") +
 		
-		# Add highlighted points
-		#geom_point(data=subset(df.tmp, is_highlight=="yes"), color="orange", size=2) +
-		
-		# Add label using ggrepel to avoid overlapping
-		geom_text_repel(data=df.tmp[df.tmp$is_annotate=="yes",], aes(label=as.factor(SNP), alpha=0.7), size=2, force=5) +
-		
 		# Custom the theme:
 		theme_bw(base_size = 15) +
 		theme( 
@@ -82,6 +76,11 @@ gg.manhattan <- function(df, threshold, hlight, col, ylims, title){
 				axis.text.x=element_blank(),
 				axis.ticks.x=element_blank()
 		)
+
+	# Add label using ggrepel to avoid overlapping
+	if(nrow(df.tmp[df.tmp$is_annotate=="yes",]) > 0){
+	p <- p + geom_text_repel(data=df.tmp[df.tmp$is_annotate=="yes",], aes(label=as.factor(SNP), alpha=0.7), size=2, force=5)
+	}
 
 	# save plot image
 	p.png <- paste0(title, ".png")
