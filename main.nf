@@ -81,7 +81,13 @@ if(params.help){
             
               --filter_FDR <FLOAT>             Specify the minimum FDR significance threshold to include DMPs and/or DMRs from the respective
                                                 --DMPs and --DMRs directories [default: 0.05]          
-                
+
+              --filter_NA <FLOAT>              Specify the maximum proportion of samples that can contain a missing value before a methylated
+                                                position is removed from the analysis [default: 0] 
+
+              --filter_SD <FLOAT>              Specify the maximum standard deviation in methylation between samples to filter individual
+                                                positions based on the degree of difference [default: 0] 
+
               --proportion <FLOAT>            Minimum proportion of samples that must share a DMP and/or DMR for it to be considered in the
                                                 analysis [default: 0.2]
 
@@ -90,9 +96,6 @@ if(params.help){
 
 
          Options: SNP FILTERING
-              --max_missing <FLOAT>           Variants that were successfully genotyped in given proportion of individuals. It can take
-                                                values from 0 to 1, where 1 means no missing data allowed [default: 0.5]
-
               --mac <INT>                     Minor allele count [default: 3]
 
 
