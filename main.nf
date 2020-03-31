@@ -410,7 +410,7 @@ workflow 'EWAS' {
 
         sort_DMPs = DMPs_combined.filter{ it[3].size() == 1 }.mix(bedtools_unionbedg.out.filter{ it[1] == "DMPs" })
         sort_DMRs = DMRs_combined.filter{ it[3].size() == 1 }.mix(bedtools_unionbedg.out.filter{ it[1] == "DMRs" })
-        bedtools_sorting(bedtools_filtering.out.mix(sort_DMPs, sort_DMRs))
+        bedtools_sorting(bedtools_filtering_output.mix(sort_DMPs, sort_DMRs))
         // stage channels for downstream processes
         //bedGraph_DMPs = bedtools_filtering_output.filter{it[1] == "bedGraph"}.combine(bedtools_filtering_output.filter{it[1] == "DMPs"}, by: 0)
         //bedGraph_DMRs = bedtools_filtering_output.filter{it[1] == "bedGraph"}.combine(bedtools_filtering_output.filter{it[1] == "DMRs"}, by: 0)
@@ -418,8 +418,10 @@ workflow 'EWAS' {
         //intersect_DMRs = DMRs_combined.filter{ it[3].size() == 1 }.mix(bedtools_unionbedg.out.filter{ it[1] == "DMRs" })
         intersect_DMPs = bedtools_sorting.out.filter{ it[1] == "DMPs" }
         intersect_DMRs = bedtools_sorting.out.filter{ it[1] == "DMRs" }
-        bedGraph_DMPs = bedtools_filtering_output.combine(intersect_DMPs, by: 0)
-        bedGraph_DMRs = bedtools_filtering_output.combine(intersect_DMRs, by: 0)
+        //bedGraph_DMPs = bedtools_filtering_output.combine(intersect_DMPs, by: 0)
+        //bedGraph_DMRs = bedtools_filtering_output.combine(intersect_DMRs, by: 0)
+        bedGraph_DMPs = bedtools_sorting.out.filter{it[1] == "bedGraph"}.combine(intersect_DMPs, by: 0)
+        bedGraph_DMRs = bedtools_sorting.out.filter{it[1] == "bedGraph"}.combine(intersect_DMRs, by: 0)
         // bedtools_intersect for intersecting individual methylation info based on DMPs/DMRs
         bedtools_intersect(bedGraph_DMPs.mix(bedGraph_DMRs))
         // filter regions based on bootstrap values
@@ -429,7 +431,7 @@ workflow 'EWAS' {
         // average_over_regions for calculating average methylation over defined regions
         average_over_regions(filter_regions.out.mix(bedtools_merge.out))
         // stage channels for downstream processes
-        bedGraph_channel = params.all || (!params.DMPs && !params.DMRs) ? bedtools_filtering_output.filter{it[1] == "bedGraph"} : Channel.empty()
+        bedGraph_channel = params.all || (!params.DMPs && !params.DMRs) ? bedtools_sorting.out.filter{it[1] == "bedGraph"} : Channel.empty()
         meth_channel = bedGraph_channel.mix(bedtools_intersect.out, average_over_regions.out)
 
         // SNPs
@@ -506,7 +508,7 @@ workflow 'EWAS' {
         parsing_gxe = GxE ? parsing.out[2] : Channel.empty()
         vcftools_extract_out = vcftools_extract.out
 
-        bedtools_unionbedg_out = bedtools_filtering_output
+        bedtools_unionbedg_out = bedtools_sorting.out
         bedtools_intersect_out = bedtools_intersect.out
         average_over_regions_out = average_over_regions.out
 

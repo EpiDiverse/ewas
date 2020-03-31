@@ -175,8 +175,8 @@ process "bedtools_filtering" {
     // eg, [CpG, DMRs, [sample1, sample2, sample3, ...], /path/to/DMRs.bed]
 
     output:
-    tuple context, type, path("bed/${context}.${type}.bed")
-    // eg. [CpG, DMRs, /path/to/DMRs.bed]
+    tuple context, type, samples, path("bed/${context}.${type}.bed")
+    // eg. [CpG, DMRs, [sample1, sample2, sample3, ...], /path/to/DMRs.bed]
 
     when:
     params.input
