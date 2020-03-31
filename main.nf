@@ -407,11 +407,17 @@ workflow 'EWAS' {
         bedtools_filtering.out.filter{ checkLines(it[2]) <= 1 }.subscribe {
             log.warn "no data left to analyse after filtering: ${it[0]}.${it[1]}.bed"
         }
+
+        sort_DMPs = DMPs_combined.filter{ it[3].size() == 1 }.mix(bedtools_unionbedg.out.filter{ it[1] == "DMPs" })
+        sort_DMRs = DMRs_combined.filter{ it[3].size() == 1 }.mix(bedtools_unionbedg.out.filter{ it[1] == "DMRs" })
+        bedtools_sorting(bedtools_filtering.out.mix(sort_DMPs, sort_DMRs))
         // stage channels for downstream processes
         //bedGraph_DMPs = bedtools_filtering_output.filter{it[1] == "bedGraph"}.combine(bedtools_filtering_output.filter{it[1] == "DMPs"}, by: 0)
         //bedGraph_DMRs = bedtools_filtering_output.filter{it[1] == "bedGraph"}.combine(bedtools_filtering_output.filter{it[1] == "DMRs"}, by: 0)
-        intersect_DMPs = DMPs_combined.filter{ it[3].size() == 1 }.mix(bedtools_unionbedg.out.filter{ it[1] == "DMPs" })
-        intersect_DMRs = DMRs_combined.filter{ it[3].size() == 1 }.mix(bedtools_unionbedg.out.filter{ it[1] == "DMRs" })
+        //intersect_DMPs = DMPs_combined.filter{ it[3].size() == 1 }.mix(bedtools_unionbedg.out.filter{ it[1] == "DMPs" })
+        //intersect_DMRs = DMRs_combined.filter{ it[3].size() == 1 }.mix(bedtools_unionbedg.out.filter{ it[1] == "DMRs" })
+        intersect_DMPs = bedtools_sorting.out.filter{ it[1] == "DMPs" }
+        intersect_DMRs = bedtools_sorting.out.filter{ it[1] == "DMRs" }
         bedGraph_DMPs = bedtools_filtering_output.combine(intersect_DMPs, by: 0)
         bedGraph_DMRs = bedtools_filtering_output.combine(intersect_DMRs, by: 0)
         // bedtools_intersect for intersecting individual methylation info based on DMPs/DMRs

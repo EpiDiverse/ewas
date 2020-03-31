@@ -112,7 +112,7 @@ process "bedtools_unionbedg" {
     """
 } 
 
-
+/*
 //bedtools_unionbedg_input.mix(bedtools_unionbedg_output)
 // process "process_bedtools_unionbedg_methcalls" { combine filtered bedGraphs
 process "bedtools_filtering" {
@@ -157,7 +157,73 @@ process "bedtools_filtering" {
         sort -T tmp --parallel=${task.cpus} -k1,1 -k2,2n >> bed/${context}.${type}.bed
         """
 } 
+*/
 
+
+//bedtools_unionbedg_input.mix(bedtools_unionbedg_output)
+// process "process_bedtools_unionbedg_methcalls" { combine filtered bedGraphs
+process "bedtools_filtering" {
+
+    label "low"
+    label "finish"
+    tag "${context}.${type}"
+
+    maxForks "${params.fork}".toInteger()
+   
+    input:
+    tuple context, type, samples, path(bed)
+    // eg, [CpG, DMRs, [sample1, sample2, sample3, ...], /path/to/DMRs.bed]
+
+    output:
+    tuple context, type, path("bed/${context}.${type}.bed")
+    // eg. [CpG, DMRs, /path/to/DMRs.bed]
+
+    when:
+    params.input
+
+    script:
+    """
+    mkdir bed
+    ${samples.getClass() == nextflow.util.ArrayBag && samples.size() > 1 ? "head -1 ${bed}" : "echo -e chrom\\tstart\\tend\\t${samples.join('')}" } \\
+    > bed/${context}.${type}.bed
+
+    tail -n+2 ${bed} | awk 'NR!=1{NA=0;c=0;s=0;ss=0;
+    for(i=4;i<=NF;i++){if(\$i!="NA"){c++;s+=int(\$i*100+0.5);ss+=int(\$i*100+0.5)^2}else{NA++}};
+    sd=sqrt((ss-s^2/c)/c)/100; if(sd>${params.filter_SD} && (NA/NF-3)<=${params.filter_NA}){print}}' >> bed/${context}.${type}.bed
+    """
+} 
+
+
+
+
+//bedtools_unionbedg_input.mix(bedtools_unionbedg_output)
+// process "process_bedtools_unionbedg_methcalls" { combine filtered bedGraphs
+process "bedtools_sorting" {
+
+    label "low"
+    label "finish"
+    tag "${context}.${type}"
+
+    maxForks "${params.fork}".toInteger()
+   
+    input:
+    tuple context, type, samples, path(bed)
+    // eg, [CpG, DMRs, [sample1, sample2, sample3, ...], /path/to/DMRs.bed]
+
+    output:
+    tuple context, type, path("bed/${context}.${type}.bed")
+    // eg. [CpG, DMRs, /path/to/DMRs.bed]
+
+    when:
+    params.input
+
+    script:
+    """
+    mkdir tmp bed
+    head -1 ${bed} > bed/${context}.${type}.bed
+    tail -n+2 ${bed} | sort -T tmp --parallel=${task.cpus} -k1,1 -k2,2n >> bed/${context}.${type}.bed
+    """
+} 
 
 
 
