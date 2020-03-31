@@ -390,7 +390,6 @@ workflow 'EWAS' {
         // parse the samples.tsv file to get cov.txt and env.txt
         parsing(samples)
 
-        // bedGraphs, DMPs, DMRs
         // perform filtering on individual files
         filtering(input_channel)
         // stage channels for downstream processes
@@ -398,16 +397,17 @@ workflow 'EWAS' {
         DMPs_combined = filtering.out.filter{it[1] == "DMPs"}.groupTuple()
         DMRs_combined = filtering.out.filter{it[1] == "DMRs"}.groupTuple()
         bedtools_input = bedGraph_combined.mix(DMPs_combined, DMRs_combined)
+
         // bedtools_unionbedg for taking the union set in each context
         bedtools_unionbedg(bedtools_input.filter{ it[3].size() > 1 })
         //bedtools_filtering(bedtools_input.filter{ it[3].size() == 1}.mix(bedtools_unionbedg.out))
         bedtools_filtering(bedGraph_combined.filter{ it[3].size() == 1 }.mix(bedtools_unionbedg.out.filter{ it[1] == "bedGraph" }))
-
-        bedtools_filtering_output = bedtools_filtering.out.filter{ checkLines(it[2]) > 1 }
-        bedtools_filtering.out.filter{ checkLines(it[2]) <= 1 }.subscribe {
+        bedtools_filtering_output = bedtools_filtering.out.filter{ checkLines(it[3]) > 1 }
+        bedtools_filtering.out.filter{ checkLines(it[3]) <= 1 }.subscribe {
             log.warn "no data left to analyse after filtering: ${it[0]}.${it[1]}.bed"
         }
 
+        // sorting on union bed files
         sort_DMPs = DMPs_combined.filter{ it[3].size() == 1 }.mix(bedtools_unionbedg.out.filter{ it[1] == "DMPs" })
         sort_DMRs = DMRs_combined.filter{ it[3].size() == 1 }.mix(bedtools_unionbedg.out.filter{ it[1] == "DMRs" })
         bedtools_sorting(bedtools_filtering_output.mix(sort_DMPs, sort_DMRs))
