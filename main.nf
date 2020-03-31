@@ -1,12 +1,11 @@
 #!/usr/bin/env nextflow
 
-// MASTER BRANCH
-params.help = false
-params.debug = false
+// DSL2 BRANCH
+nextflow.preview.dsl=2
 
 // PRINT HELP AND EXIT
 if(params.help){
-println """\
+    println """\
 
          =================================================
           E P I D I V E R S E - E W A S   P I P E L I N E
@@ -14,740 +13,582 @@ println """\
          ~ version ${workflow.manifest.version}
 
          Usage: 
+              nextflow run epidiverse/ewas [OPTIONS]...
 
-              You must first make the pipeline available using this command: nextflow pull https://bitbucket.org/epidiverse/ewas
-
-              GEM_Emodel is used to find the association between methylation and environmental factor genome widely form using the following command:
-
-	          nextflow run epidiverse/ewas --samples --meth_calls --GEM_Emodel
-
-              GEM_Gmodel is to create a methQTL genome-wide map using the following command:
-
-	          nextflow run epidiverse/ewas --samples --meth_calls --GEM_Gmodel
-
-              GEM_GxEmodel is to test ability of the interaction of gene and environmental factor to predict DNA methylation level using the following command:
-
-	          nextflow run epidiverse/ewas --samples --meth_calls --GEM_GXEmodel
-
-         
-         
          Options: GENERAL
-     
-              --input                         [REQUIRED] Specify input path for the directory containing each sample output from the WGBS pipeline 
-                                              to be taken forward for analysis. All the subdirectories must correspond to sample names 
-                                              in the provided samples file, and contain within them a bedGraph directories with files 
-                                              in '*.bedGraph' format. [default: on]
-                                              
-                                                          
-              --DMP                           Specify input path for the DMR pipeline output directory  to run EWAS analyses with DMPs 
-                                              instead of the default input type methlation calls. [default: off]
+              --input [path/to/input/dir]     [REQUIRED] Specify input path for the directory containing outputs from the WGBS pipeline.
+                                                The pipeline searches for bedGraph files in '*/bedGraph/{sample_name}_{context}.bedGraph'
+                                                format, where sample names must correspond to the samplesheet and context can be either
+                                                "CpG", "CHG", or "CHH".
+
+              --samples [path/to/samples.tsv] [REQUIRED] Specify the path to the samplesheet file containing information regarding
+                                                sample names and corresponding environment and covariate values. The file must contain
+                                                at least three tab-separated columns: 1) sample names, 2) environment value, 3) covariate
+                                                values, with further columns optional for additional covariates.
+
+              --DMPs [path/to/DMPs/dir]       Specify path to the DMR pipeline output directory to run EWAS analyses in addition with
+                                                methylated positions filtered by significant DMPs. The pipeline searches for bed files in
+                                                '*/{context}/metilene/*/*.bed' format where context can be either "CpG", "CHG", or "CHH".
          
-              --DMR                           Specify input path for the DMR pipeline output directory  to run EWAS analyses with DMRs 
-                                              instead of the default input type methlation calls. [default: off]
-              
-              
-              --samples [path/to/samples.tsv] [REQUIRED] Specify the path to the "samples.tsv" file containing information  regarding 
-                                              sample names and corresponding groupings/replicates. The file must contain three tab-separated 
-                                              columns: 1) sample names, corresponding to subdirectories in the --methcalls directory. 
-                                              2) group names, for grouping samples together. 3) replicate names to provide easy-to-read 
-                                              alternatives for complicated sample names. 4) Environment value [int]. 
-              
-                                               
+              --DMRs [path/to/DMRs/dir]       Specify path to the DMR pipeline output directory to run EWAS analyses in addition with
+                                                methylated positions filtered by significant DMRs. In addition, the pipeline will call
+                                                the union of all significant regions and attempt to run EWAS with whole regions as markers.
+                                                The pipeline searches for bed files in '*/{context}/metilene/*/*.bed' format where context
+                                                can be either "CpG", "CHG", or "CHH".
 
-              --snp                           [path/to/snp_file] [REQUIRED for GEM_G and GEM_GXE Models run]. A subset with genotype data 
-                                              encoded as 1,2,3 for major allele homozygote (AA), heterozygote (AB) and minor allele homozygote 
-                                              (BB) for all SNPs across all samples. This file either can be generated by user or ... fill this part. 
+              --SNPs [path/to/vcf/dir]        Specify path to the SNP pipeline output directory to enable EWAS analyses Gmodel and GxEmodel
+                                                which attempt to create a genome-wide methQTL map. ONLY SUITABLE FOR DIPLOID ORGANISMS.
+                                                The pipeline searches for VCF files in '*/vcf/{sample_name}.{extension}' where sample names
+                                                must correspond to the samplesheet and the extension can be any standard vcf extension
+                                                readable by 'bcftools' and defined with --extension parameter. Alternatively, the path to a
+                                                single multi-sample VCF file can be provided.
 
-              --output [STR]                  A string that will be used as the name for the output results directory, which will be generated 
-                                              in the working directory. This directory will contain sub-directories for each set of reads analysed 
-                                              during the pipeline. [default: 'ewas']
+              --extension <STR>               Specify the extension to use when searching for VCF files [default: vcf.gz]
+
+              --output <STR>                  A string that can be given to name the output directory [default: ewas]
 
 
-         Options: MODIFIERS
+         Options: MODEL DECISION
+              --Emodel                        Run analysis with "E model". Disables other models unless they are also specified. If no
+                                                individual model is specified then all that are possible with the provided inputs will run
+                                                in parallel [default: off]
 
-                                         
-              --noCpG                        Disables DMR analysis in CpG context. [default: off] 
-              --noCHG                        Disables DMR analysis in CHG context. [default: off]
-              --noCHH                        Disables DMR analysis in CHH context. [default: off]
-              
+              --Gmodel                        Run analysis with "G model". Disables other models unless they are also specified. If no
+                                                individual model is specified then all that are possible with the provided inputs will run
+                                                in parallel [default: off]
+
+              --GxE                           Run analysis with "GxE model". Disables other models unless they are also specified. If no
+                                                individual model is specified then all that are possible with the provided inputs will run
+                                                in parallel [default: off]
+            
+              --noCpG                         Disables EWAS analysis in CpG context. Note: at least one methylation context is required
+                                                for analysis. [default: off]
+
+              --noCHG                         Disables EWAS analysis in CHG context. Note: at least one methylation context is required
+                                                for analysis. [default: off]
+
+              --noCHH                         Disables EWAS analysis in CHH context. Note: at least one methylation context is required
+                                                for analysis. [default: off]
+
+              --all                           If --DMPs and/or --DMRs are provided to the pipeline then raw un-intersected bedGraphs are
+                                                not carried forward for analysis. Enable this parameter to process them alongside the 
+                                                DMP / DMR intersections in parallel [default: off]
+
+
+         Options: INPUT FILTERING
+              --coverage <INT>                Specify the minimum coverage threshold to filter individual methylated positions from the
+                                                --input directory before running analyses [default: 0] 
+            
+              --filter_FDR <FLOAT>             Specify the minimum FDR significance threshold to include DMPs and/or DMRs from the respective
+                                                --DMPs and --DMRs directories [default: 0.05]          
+
+              --filter_NA <FLOAT>              Specify the maximum proportion of samples that can contain a missing value before a methylated
+                                                position is removed from the analysis [default: 0] 
+
+              --filter_SD <FLOAT>              Specify the maximum standard deviation in methylation between samples to filter individual
+                                                positions based on the degree of difference [default: 0] 
+
+              --proportion <FLOAT>            Minimum proportion of samples that must share a DMP and/or DMR for it to be considered in the
+                                                analysis [default: 0.2]
+
+              --merge                         When running EWAS using the union set of DMRs as markers, specify to merge adjacent sub-regions
+                                                into larger regions prior to methylation averaging and subsequent analysis [default: off]
+
+
+         Options: SNP FILTERING
+              --mac <INT>                     Minor allele count [default: 3]
+
+
+              --minQ <INT>                    Minimum quality score [default: 30]
+
+
+         Options: OUTPUT FILTERING       
+              --output_FDR <FLOAT>            Specify the maximum FDR threshold for filtering EWAS post-analysis [default: 0.05]
+
+              --Emodel_pv <FLOAT>             Set the p-value to run "E model". Note: this filter is applied prior to FDR calculation
+                                                and should be used cautiously [default: 1]
+
+              --Gmodel_pv <FLOAT>             Set the p-value to run "G model". Note: this filter is applied prior to FDR calculation
+                                                and should be used cautiously [default: 1]
+
+              --GxE_pv <FLOAT>                Set the p-value to run "GxE model". Note: this filter is applied prior to FDR calculation
+                                                and should be used cautiously [default: 1]
+
+
+
+         Options: VISUALISATION
+              --kplots <INT>                  Specify the number of plots to generate for the top k significant results in "GxE model"  
+                                                [default: 10]
+
+              --distance <INT>                Specify the distance threshold to define cis and trans methQTLs in the dotplot generated
+                                                for "G model" output [default: 5000]
+
+         Options: ADDITIONAL PARAMS
+              --help                          Display this help information and exit
+              --version                       Display the current pipeline version and exit
+              --debug                         Run the pipeline in debug mode    
+
+
+         Example: 
+              nextflow run epidiverse/ewas \
+              --input /path/to/input/dir \
+              --samples /path/to/samples.tsv
+              --output ewas
+
+    """
+    ["bash", "${baseDir}/bin/clean.sh", "${workflow.sessionId}"].execute()
+    exit 0
+}
+
+// PRINT VERSION AND EXIT
+if(params.version){
+    println """\
+         =================================================
+          E P I D I V E R S E - E W A S   P I P E L I N E
+         =================================================
+         ~ version ${workflow.manifest.version}
+    """
+    ["bash", "${baseDir}/bin/clean.sh", "${workflow.sessionId}"].execute()
+    exit 0
+}
+
+// VALIDATE PARAMETERS
+ParameterChecks.checkParams(params)
+
+// DEFINE PATHS
+CpG_path = "${params.input}/*/bedGraph/*_CpG.bedGraph"
+CHG_path = "${params.input}/*/bedGraph/*_CHG.bedGraph"
+CHH_path = "${params.input}/*/bedGraph/*_CHH.bedGraph"
+//CpG_path = "${params.input}/CpG/*.bedGraph"
+//CHG_path = "${params.input}/CHG/*.bedGraph"
+//CHH_path = "${params.input}/CHH/*.bedGraph"
   
-  
-         
-         Options: EWAS FILTERING
-         
-              --coverage [INT]              Specify the minimum coverage threshold to filter methylated positions before running
-                                            the EWAS analyses with methylation calls input type. [default: 0] If user would like 
-                                            to run the pipeline with DMP and/or DMR input options, then coverage filter has to be 
-                                            applied via EpiDiverse DMR pipeline.
-         
-              --sig                         Specify the maximum p-value threshold for filtering EWAS post-analysis. [default: 0.05]
-              
-              --FDR                         Specify the maximum FDR threshold for filtering EWAS post-analysis. [default: 0.05]
+CpG_path_DMPs = "${params.DMPs}/CpG/metilene/*" 
+CHG_path_DMPs = "${params.DMPs}/CHG/metilene/*"
+CHH_path_DMPs = "${params.DMPs}/CHH/metilene/*"
+//CpG_path_DMPs = "${params.DMPs}/CpG/*.bed" 
+//CHG_path_DMPs = "${params.DMPs}/CHG/*.bed"
+//CHH_path_DMPs = "${params.DMPs}/CHH/*.bed"
 
-        
-        Options: DEVELOPER USE
-         
-              --debug                       Prevent nextflow from clearing the cache on completion of the pipeline. This
-                                            includes '.work' and '.nextflow' directories and any log files that have been
-                                            created. [default: off]
+CpG_path_DMRs = "${params.DMRs}/CpG/metilene/*" 
+CHG_path_DMRs = "${params.DMRs}/CHG/metilene/*"
+CHH_path_DMRs = "${params.DMRs}/CHH/metilene/*"
+//CpG_path_DMRs = "${params.DMRs}/CpG/*.bed" 
+//CHG_path_DMRs = "${params.DMRs}/CHG/*.bed"
+//CHH_path_DMRs = "${params.DMRs}/CHH/*.bed"
 
-         
-         
-"""
-if (params.debug == false) { ["bash", "${baseDir}/bin/clean.sh", "${workflow.sessionId}"].execute() }
-exit 1
+// PARAMETER CHECKS
+//if( !params.input ){error "ERROR: Missing required parameter --input"}
+//if( params.noCpG && params.noCHG && params.noCHH ){error "ERROR: please specify at least one methylation context for analysis"}
+if( !params.Emodel && !params.Gmodel && !params.GxE ){
+    Emodel = true
+    Gmodel = true
+    GxE = true
+} else {
+    Emodel = params.Emodel
+    Gmodel = params.Gmodel
+    GxE = params.GxE
 }
 
 
-
-// DECLARE PIPELINE PARAMETERS
-params.output          = "ewas"
-params.samples         = false
-params.snp             = false
-params.input           = false
-params.DMP             = false
-params.DMR             = false
-params.GEM_Emodel      = false
-params.GEM_Gmodel      = false
-params.GEM_GXEmodel    = false  
-output_path            = "$PWD/${params.output}"
-
-
-params.noCpG = false
-params.noCHG = false
-params.noCHH = false
-
-params.coverage = "0"
-params.Emodel_pv = "1e-04"
-params.Gmodel_pv = "1e-04"
-params.GXEmodel_pv = "1e-04"
-params.sig = "0.05"
-params.FDR = "0.05"
-
-
-
-// DEFINE MODEL TYPE FOR GEM RUN
-def modelLine = ""
-if( params.GEM_Emodel == true ){ modelLine += "GEM_Emodel," }
-if( params.GEM_Gmodel == true ){ modelLine += "GEM_Gmodel," }
-if( params.GEM_GXEmodel == true ){ modelLine += "GEM_GXEmodel," }
-if( (params.GEM_Emodel == false) && (params.GEM_Gmodel == false) && (params.GEM_GXEmodel == false) ){error "ERROR: please specify at least one model type for GEM run"}
-
-
-
-// DEFINE CONTEXTLINE FOR INPUT PATH
-def contextLine = ""
-if( params.noCpG == false ){ contextLine += "CpG," }
-if( params.noCHG == false ){ contextLine += "CHG," }
-if( params.noCHH == false ){ contextLine += "CHH," }
-if( params.noCpG && params.noCHG && params.noCHH ){error "ERROR: please specify at least one methylation context for analysis"}
-
-
-
-def commaLine = ""
-file("${params.samples}")
-    .readLines()
-    .each { def line = it.toString().tokenize('\t').get(0) 
-         commaLine += line
-         commaLine += "," }
-
-//bedGraph_path = "${params.methcalls}/{${commaLine[0..-2]}}/bedGraph/*_{${contextLine[0..-2]}}.bedGraph"
-results_path = "$PWD/${params.output}"
-//DMP_path = "${params.DMP}/{${contextLine[0..-2]}}/metilene/*.txt"
-
 // PRINT STANDARD LOGGING INFO
 log.info ""
-log.info "         ================================================"
+log.info "         =================================================="
 log.info "          E P I D I V E R S E - E W A S    P I P E L I N E"
 if(params.debug){
 log.info "         (debug mode enabled)"
-log.info "         ================================================" }
+log.info "         ==================================================" }
 else {
-log.info "         ================================================" }
+log.info "         ==================================================" }
+log.info "         ~ version ${workflow.manifest.version}"
 log.info ""
-log.info "         samples file                    : ${params.samples}"
-log.info "         context(s)                      : ${params.noCpG ? "" : "CpG "}${params.noCHH ? "" : "CHH "}${params.noCHG ? "" : "CHG"}"
-log.info "         snp file                        : ${params.snp}"
-log.info "         meth calls dir                  : ${params.input}"
-log.info "         DMR input                       : ${params.DMR}"
-log.info "         DMP input                       : ${params.DMP}"
+log.info "         samplesheet                     : ${params.samples}"
+log.info "         input dir                       : ${params.input}"
+log.info "         DMPs dir                        : ${params.DMPs ? "$params.DMPs" : "-"}"
+log.info "         DMRs dir                        : ${params.DMRs ? "$params.DMRs" : "-"}"
+log.info "         VCF(s)                          : ${params.SNPs ? "$params.SNPs" : "-"}"
 log.info "         output dir                      : ${params.output}"
+log.info ""
+log.info "         Analysis Configuration"
+log.info "         =================================================="
+log.info "         GEM model(s)                    : ${Emodel ? "Emodel " : ""}${Gmodel ? "Gmodel " : ""}${GxE ? "GxE" : ""}"
+log.info "         Methylation context(s)          : ${params.noCpG ? "" : "CpG "}${params.noCHH ? "" : "CHH "}${params.noCHG ? "" : "CHG"}"
+if(Emodel && params.Emodel_pv.toInteger() < 1){
+log.info "         Emodel p-value                  : ${params.Emodel_pv}" }
+if(params.SNPs && Gmodel && params.Gmodel_pv.toInteger() < 1){
+log.info "         Gmodel p-value                  : ${params.Gmodel_pv}" }
+if(params.SNPs && GxE && params.GxE_pv.toInteger() < 1){
+log.info "         GxE p-value                     : ${params.GxE_pv}" }
+log.info ""
+log.info "         Input Filtering"
+log.info "         =================================================="
+log.info "         coverage                        : ${params.coverage}"
+if(params.DMPs || params.DMRs){
+log.info "         input FDR                       : ${params.filter_FDR}"
+log.info "         overlap proportion              : ${params.proportion}" }
+if(params.DMRs){
+log.info "         merge regions?                  : ${params.merge ? "True" : "False"}" }
+log.info ""
+if(params.SNPs){
+log.info "         =================================================="
+log.info "         SNP Filtering"
+log.info "         =================================================="
+log.info "         maximum missing                 : ${params.max_missing}"
+log.info "         minor allele count              : ${params.mac}"
+log.info "         minimum quality score           : ${params.minQ}"
+log.info "" }
+log.info "         =================================================="
+log.info "         Output"
+log.info "         =================================================="
+log.info "         output FDR                      : ${params.output_FDR}"
+if(params.SNPs && Gmodel){
+log.info "         methQTL distance                : ${params.distance}" }
+if(params.SNPs && GxE){
+log.info "         number of kplots                : ${params.kplots}" }
+log.info ""    
+log.info "         =================================================="
+log.info "         RUN NAME: ${workflow.runName}"
+log.info ""
 
-log.info ""
-log.info "         GEM Parameters"
-log.info "         ================================================"
-log.info "         Emodel p_value                  : ${params.Emodel_pv}"
-log.info "         Gmodel p_value                  : ${params.Gmodel_pv}"
-log.info "         GXEmodel p_value                : ${params.GXEmodel_pv}"
-log.info "         GEM_Emodel                      : ${params.GEM_Emodel}"
-log.info "         GEM_Gmodel                      : ${params.GEM_Gmodel}"
-log.info "         GEM_GXEmodel                    : ${params.GEM_GXEmodel}"
-log.info ""
-log.info "         EWAS CpG-Filtering"
-log.info "         ================================================"
-log.info "         significance  : ${params.sig}"
-log.info "         FDR           : ${params.FDR}"
-log.info "         coverage      : ${params.coverage}"
-log.info ""
-log.info "         ================================================"
-log.info ""
 
 
+////////////////////
+// STAGE CHANNELS //
+////////////////////
+
+// STAGE SAMPLES CHANNEL
+samples_channel = Channel
+    .from(file("${params.samples}").readLines())
+    .ifEmpty{ exit 1, "ERROR: samples file is missing or invalid. Please remember to use the --samples parameter." }
+    .map { line ->
+        def field = line.toString().tokenize('\t').take(1)
+        return tuple(field[0].replaceAll("\\s",""))}
+
+
+// STAGE TEST PROFILE 
+if ( workflow.profile.tokenize(",").contains("test") ){
+
+    include check_test_data from './lib/functions.nf' params(CpGPaths: params.CpGPaths, CHGPaths: params.CHGPaths, CpGPaths_DMRs: params.CpGPaths_DMRs, CHGPaths_DMRs: params.CHGPaths_DMRs, SNPPaths: params.SNPPaths)
+    (CpG, CHG, CpG_DMRs, CHG_DMRs, SNPs) = check_test_data(params.CpGPaths, params.CHGPaths, params.CpGPaths_DMRs, params.CHGPaths_DMRs, params.SNPPaths)
+
+    CpG_DMPs = CpG_DMRs
+    CHG_DMPs = CHG_DMRs
+    
+    CHH = Channel.empty()
+    CHH_DMPs = Channel.empty()
+    CHH_DMRs = Channel.empty()
+
+} else {
+
+    // STAGE INPUT CHANNELS
+    CpG = params.noCpG  ? Channel.empty() :
+        Channel
+            .fromFilePairs( CpG_path, size: 1)
+            .ifEmpty{ exit 1, "ERROR: No input found for CpG *.bedGraph files: ${params.input}/CpG\n\n \
+            -Please check files exist or specify --noCpG \n \
+            -Please check sample names match: ${samples}"}
+    CHG = params.noCHG  ? Channel.empty() :
+        Channel
+            .fromFilePairs( CHG_path, size: 1)
+            .ifEmpty{ exit 1, "ERROR: No input found for CHG *.bedGraph files: ${params.input}/CHG\n\n \
+            -Please check files exist or specify --noCHG \n \
+            -Please check sample names match: ${samples}"}
+    CHH = params.noCHH  ? Channel.empty() :
+        Channel
+            .fromFilePairs( CHH_path, size: 1)
+            .ifEmpty{ exit 1, "ERROR: No input found for CHH *.bedGraph files: ${params.input}/CHH\n\n \
+            -Please check files exist or specify --noCHH \n \
+            -Please check sample names match: ${samples}"}
+
+    // STAGE DMP CHANNELS
+    CpG_DMPs = params.noCpG  ? Channel.empty() : !params.DMPs ? Channel.empty() :
+        Channel
+            .fromFilePairs( CpG_path_DMPs, size: 1, type: "dir")
+            .ifEmpty{ exit 1, "ERROR: No DMP input found for CpG *.bed files: ${params.DMPs}/CpG\n\n \
+            -Please check files exist or specify --noCpG"}
+    CHG_DMPs = params.noCHG  ? Channel.empty() : !params.DMPs ? Channel.empty() :
+        Channel
+            .fromFilePairs( CHG_path_DMPs, size: 1, type: "dir")
+            .ifEmpty{ exit 1, "ERROR: No DMP input found for CHG *.bed files: ${params.DMPs}/CHG\n\n \
+            -Please check files exist or specify --noCHG"}
+    CHH_DMPs = params.noCHH  ? Channel.empty() : !params.DMPs ? Channel.empty() :
+        Channel
+            .fromFilePairs( CHH_path_DMPs, size: 1, type: "dir")
+            .ifEmpty{ exit 1, "ERROR: No DMP input found for CHH *.bed files: ${params.DMPs}/CHH\n\n \
+            -Please check files exist or specify --noCHH"}
+
+    // STAGE DMR CHANNELS
+    CpG_DMRs = params.noCpG  ? Channel.empty() : !params.DMRs ? Channel.empty() :
+        Channel
+            .fromFilePairs( CpG_path_DMRs, size: 1, type: "dir")
+            .ifEmpty{ exit 1, "ERROR: No DMR input found for CpG *.bed files: ${params.DMRs}\n\n \
+            -Please check files exist or specify --noCpG"}
+    CHG_DMRs = params.noCHG  ? Channel.empty() : !params.DMRs ? Channel.empty() :
+        Channel
+            .fromFilePairs( CHG_path_DMRs, size: 1, type: "dir")
+            .ifEmpty{ exit 1, "ERROR: No DMR input found for CHG *.bed files: ${params.DMRs}\n\n \
+            -Please check files exist or specify --noCHG"}
+    CHH_DMRs = params.noCHH  ? Channel.empty() : !params.DMRs ? Channel.empty() :
+        Channel
+            .fromFilePairs( CHH_path_DMRs, size: 1, type: "dir")
+            .ifEmpty{ exit 1, "ERROR: No DMR input found for CHH *.bed files: ${params.DMRs}\n\n \
+            -Please check files exist or specify --noCHH"}
+
+    // STAGE SNPs CHANNEL
+    globs = ["${params.SNPs}","${params.SNPs}/**.${params.extension}"]
+    SNPs = !params.SNPs ? Channel.empty() : 
+        Channel
+            .fromFilePairs( globs, size: 1, type: "file" )
+            .ifEmpty{ exit 1, "ERROR: No input found for SNP file(s): ${params.SNPs}\n\n \
+            For single-sample vcfs:\n \
+            -Please check files exist: ${params.SNPs}/vcf/*.${params.extension}\n \
+            -Please check sample names match: ${samples}\n \
+            -Please check given file extension: ${params.extension}"}
+
+}
+
+// METHYLATION CALLS
+CpG_single = CpG.combine(samples_channel, by: 0).map{tuple("CpG", "bedGraph", *it)}
+CHG_single = CHG.combine(samples_channel, by: 0).map{tuple("CHG", "bedGraph", *it)}
+CHH_single = CHH.combine(samples_channel, by: 0).map{tuple("CHH", "bedGraph", *it)}
+single_channel = CpG_single.mix(CHG_single,CHH_single)
+
+// METHYLATION DMPs
+CpG_DMPs_single = CpG_DMPs.map{tuple("CpG", "DMPs", *it)}
+CHG_DMPs_single = CHG_DMPs.map{tuple("CHG", "DMPs", *it)}
+CHH_DMPs_single = CHH_DMPs.map{tuple("CHH", "DMPs", *it)}
+DMPs_channel = CpG_DMPs_single.mix(CHG_DMPs_single,CHH_DMPs_single)
+
+// METHYLATION DMRs
+CpG_DMRs_single = CpG_DMRs.map{tuple("CpG", "DMRs", *it)}
+CHG_DMRs_single = CHG_DMRs.map{tuple("CHG", "DMRs", *it)}
+CHH_DMRs_single = CHH_DMRs.map{tuple("CHH", "DMRs", *it)}
+DMRs_channel = CpG_DMRs_single.mix(CHG_DMRs_single,CHH_DMRs_single)
+
+// STAGE FINAL INPUTS
+samples = file("${params.samples}", checkIfExists: true)
+input_channel = single_channel.mix(DMPs_channel, DMRs_channel)
 
 ////////////////////
 // BEGIN PIPELINE //
 ////////////////////
 
-
-// set samples file
-samples_file = file("${params.samples}", checkIfExists: true)
-
-
-// STAGE SAMPLES CHANNEL for methylation calls
-//I decided to make sample file with five columns. User can use exactly the same sample file for DMR pipeline run
-//columns will be like
-//#1 sample identifier
-//#2group identifier
-//#3 rep identifier
-//#4 env values (int)
-//#5 cov values (int)
-
-// STAGE SAMPLES CHANNEL for methylation calls, DMPs and DMRs
-Channel
-    .from(samples_file.readLines())
-    .map { line ->
-         def field = line.toString().tokenize('\t').take(3)
-         return tuple(field[0].replaceAll("\\s",""), field[1].replaceAll("\\s",""), field[2].replaceAll("\\s",""))}
-    .into{ samples_bedGraph; samples_bedGraph2; samples_bedGraph3; samples_env_cov_DMP; samples_env_cov_DMR }
-// eg. [name1, group1, rep1, env1, cov1],[name2, group1, rep2, env2, cov2]
-
-//depending on the input type (eg. methcalls, DMPs and DMRs), conditions were set for making a decision and separated for each context
-//this is also somehow good for checking if user will decide to run the pipeline with his/her input in the future, we will know whether he/she has correct files for running the pipeline
-//old pattern trials did not work properly
-//pattern = ~/\d\.\d+/
-//pattern = "[0-9].[0-9]\+" 
-//pattern = "[0-9].?"
-//pattern = "[0-9].[0-9]*"
-//pattern= ~/.\d.\d+$/
-
-
-if (params.DMP && params.DMR) {
-    println 'ERROR: Please specify at most one input type!'
-}
-else if (params.DMP) {   
-    CpG_metilene_path        = "${params.DMP}/CpG/metilene/*" 
-    CHG_metilene_path        = "${params.DMP}/CHG/metilene/*"
-    CHH_metilene_path        = "${params.DMP}/CHH/metilene/*"   
-}
-else if (params.DMR) {   
-    CpG_metilene_path        = "${params.DMR}/CpG/metilene/*" 
-    CHG_metilene_path        = "${params.DMR}/CHG/metilene/*"
-    CHH_metilene_path        = "${params.DMR}/CHH/metilene/*"   
-}
-
-
-CpG_path = "${params.input}/{${commaLine[0..-2]}}/bedGraph/*CpG.bedGraph"
-CHG_path = "${params.input}/{${commaLine[0..-2]}}/bedGraph/*CHG.bedGraph"
-CHH_path = "${params.input}/{${commaLine[0..-2]}}/bedGraph/*CHH.bedGraph"
-
-
-//CpG_path                 = ["${params.input}/CpG/metilene/*.bed", "{params.input}/CpG/input/*.txt"]
-//CpG_path                 = tuple("${params.input}/CpG/metilene/*[\\d].[\\d+].bed", "${params.input}/CpG/input/*.txt")
-//CpG_path                 = tuple("${params.input}/CpG/metilene/*[0-9].[0-9][0-9].bed", "${params.input}/CpG/input/*.txt")
-
-
-
-// STAGE DMP,DMR and METHCALLS INPUT DIRECTORIES 
-
-
-//METHCALLS CHANNELS FOR ALL CONTEXTS
-//eg [group1_vs_group2.0.05.bed]
-bedGraph_channel1 = params.noCpG  ? Channel.empty() :
-Channel
-    .fromFilePairs( CpG_path, size: 1)
-    .ifEmpty{ exit 1, "ERROR: 2: ${params.input}\n"}
-    .set{CpG_input1}
-
-//bedGraph_channel1.into{CpG_input1; CpG_input2; CpG_input3}
-methcalls1 = (params.noCpG  ? Channel.empty() :CpG_input1.combine(samples_bedGraph, by: 0).map{tuple("CpG", *it)})
-
-//CHG input channel
-bedGraph_channel2 = params.noCHG  ? Channel.empty() :
-Channel
-    .fromFilePairs( CHG_path, size: 1)
-    .ifEmpty{ exit 1, "ERROR: 2: ${params.input}\n"}
-    .set{CHG_input1}
- 
-methcalls2 =(params.noCHG  ? Channel.empty() : CHG_input1.combine(samples_bedGraph2, by: 0).map{tuple("CHG", *it)})
-
-//CHH input channel
-bedGraph_channel3 = params.noCHH  ? Channel.empty() :
-Channel
-    .fromFilePairs( CHH_path, size: 1)
-    .ifEmpty{ exit 1, "ERROR: 2: ${params.input}\n"}
-    .set{CHH_input1}
-methcalls3 = (params.noCHH  ? Channel.empty() :CHH_input1.combine(samples_bedGraph3, by: 0).map{tuple("CHH", *it)})
-
-methcalls= methcalls1.mix(methcalls2).mix(methcalls3)
-//methcalls.view()
-
-
-//DMP CHANNELS FOR ALL CONTEXTS
-//CpG DMP channel
-metilene_channel1= params.noCpG || !params.DMP  ? Channel.empty() :
-Channel
-    .fromFilePairs( CpG_metilene_path,  type: 'dir', size:1)
-    .ifEmpty{ exit 1, "ERROR: No input found in: ${params.DMP}\n" }
-
-DMPs1 = (params.noCpG  ? Channel.empty() : metilene_channel1.map{tuple("CpG", *it)}.groupTuple())
-
-metilene_channel3= params.noCHG  || !params.DMP ? Channel.empty() :
-Channel
-    .fromFilePairs( CHG_metilene_path, type: 'dir', size: 1)
-    .ifEmpty{ exit 1, "ERROR: 1: ${params.DMP}\n" }
-DMPs2 = (params.noCHG  ? Channel.empty() : metilene_channel3.map{tuple("CHG", *it)}.groupTuple())
-
-
-metilene_channel5= params.noCHH  || !params.DMP ? Channel.empty() :
-Channel
-    .fromFilePairs( CHH_metilene_path, type: 'dir', size: 1)
-    .ifEmpty{ exit 1, "ERROR: 1: ${params.DMP}\n" }
-DMPs3 = (params.noCHH  ? Channel.empty() :metilene_channel5.map{tuple("CHH", *it)}.groupTuple())
-
-DMPs= DMPs1.mix(DMPs2).mix(DMPs3)
-
-
-
-//DMR CHANNELS FOR ALL CONTEXTS
-//CpG DMR channel
-metilene_channel2= params.noCpG  || !params.DMR ? Channel.empty() :
-Channel
-    .fromFilePairs( CpG_metilene_path, type: 'dir', size: 1)
-    .ifEmpty{ exit 1, "ERROR: No input found in: ${params.DMR}\n" }
-
-DMRs1 = (params.noCpG  ? Channel.empty() :metilene_channel2.map{tuple("CpG", *it)}.groupTuple())
-
-
-metilene_channel4= params.noCHG  || !params.DMR ? Channel.empty() :
-Channel
-    .fromFilePairs( CHG_metilene_path, type: 'dir', size: 1)
-    .ifEmpty{ exit 1, "ERROR: 1: ${params.DMR}\n" }
-DMRs2 = (params.noCHG  ? Channel.empty() : metilene_channel4.map{tuple("CHG", *it)}.groupTuple())
-
-
-metilene_channel6= params.noCHH  || !params.DMR ? Channel.empty() :
-Channel
-    .fromFilePairs( CHH_metilene_path, type: 'dir', size: 1)
-    .ifEmpty{ exit 1, "ERROR: 1: ${params.DMR}\n" }
-DMRs3 =(params.noCHH  ? Channel.empty() : metilene_channel6.map{tuple("CHH", *it)}.groupTuple())
-
-DMRs= DMRs1.mix(DMRs2).mix(DMRs3)
-
-
-
-// BEGIN PIPELINE
-
-// taking sample.tsv and generating env.txt and cov.txt for all input types (meth. calls, DMPs and DMRs)
-
-process "process_cov_and_env_files" {
-
-    label "low"
-    publishDir "${output_path}/meth_calls", mode: 'copy'
-    if(params.DMP){publishDir "${output_path}/DMPs", mode: 'copy'}
-    if(params.DMR){publishDir "${output_path}/DMRs", mode: 'copy'}
-
-    input: 
-    file samples from samples_file
-
-    output:   
-    file "env.txt" into environment_methcalls, environment_DMPs, environment_DMRs, env,gxe
-    file "cov.txt" into covariate_methcalls, covariate_DMPs, covariate_DMRs, cov_gxe
-                  
-    script:
-    """
-    #!/bin/bash
-    sed '/[0-9]\\,/s/\\,/./g' ${samples} | awk -F "\\t" '{printf \"%s\t%.6f",\$1,\$2; for(i=3; i<=NF; i++) {printf \"\\t%s\",\$i}; print null}' | awk -F "\\t" '{printf \"%s\\t%s\",\$1,\$2; for(i=3; i<=NF; i++) {printf \"\\t%s\",\$i}; print null}' > samples2.txt
-    cat samples2.txt |grep '[0-9]'| sed 's/,//g' > samples3.txt
-    echo -e "ID\tenv" | cat - samples3.txt > samples4.txt
-    cat <(cut -f1 samples4.txt | paste -s) <(cut -f2 samples4.txt | paste -s) > env.txt
-    cut -f1 samples3.txt > header.txt
-    cut -d \$'\\t' -f3- samples3.txt  > pre_cov.txt
-    paste header.txt pre_cov.txt > 2pre_cov.txt
-     awk 'NR==1{printf "ID"; for(i=1; i<=NF-1; i++) h=h OFS "cov" i; print h}1' OFS='\t' 2pre_cov.txt > 3pre_cov.txt
-    cat 3pre_cov.txt | datamash transpose | tr -d "\\r" > cov.txt    
-   
-   """
-}
-
-/*
-
-process "process_gxe_file" {
-
-    label "low"
-    publishDir "${output_path}/GEM_GXEmodel/input", mode: 'copy'
-   
-    input:
-    file cov from cov_gxe
-    file env from env_gxe
-
-    output:
-    file("gxe.txt") into gxe_methcalls, gxe_DMPs, gxe_DMRs
-    
-    when:
-    params.GEM_GXEmodel
-    
-    script:
-    """
-    #!/bin/bash
-    head -n 1 ${env} > 2env.txt
-    paste ${cov} 2env.txt > gxe.txt
-    """  
-} 
-
-*/
-
-process "process_input_files_meth_calls" {
-
-    label "low"
-    //publishDir "${output_path}/meth_calls/${context}/GEM_Emodel/input", mode: 'copy'
-   
-    input:
-    set context, sample, file(bedGraph), env, cov from methcalls
-
-    output:
-    set context, sample, file("*.txt"), env, cov into cut1, cut2, cut3
-    // eg. [CpG, samplename, bedgraph.txt]
-    
-
-    script:
-    """
-    #!/bin/bash
-    tail -n+2 ${bedGraph} | awk 'BEGIN{OFS=\"\\t\"} {if((\$5+\$6)>=${params.coverage}) {printf \"%s\\t%s\\t%s\\t%1.2f\\n\", \$1,\$2,\$3,(\$4/100)}}' > ${bedGraph}.txt
-    """  
-} 
-
-
-//DMP INPUT SECTION
-// taking lists of files with with DMPs and merging into GEM E_model methylation input format
-
-
-process "process_bedtools_unionbedg_methcalls1" {
-
-    label "low"
-    publishDir "${output_path}/DMPs/${context}/GEM_Emodel/input", mode: 'copy'
-   
-    input:   
-    set context, samples, file(bedGraph), env, cov  from cut1.groupTuple()
-
-    output:
-    set context, samples, file("methylation.txt"), env, cov into bedGraph_DMPs
-    
-    when:
-    params.DMP
-
-    script:
-    """
-    #!/bin/bash
-    bedtools unionbedg -filler NA -i ${bedGraph} -header -names ${samples.join(" ")} | awk -F "\\t" '{printf \"%s\t%s\t%s",\$1,\$2,\$3; for(i=4; i<=NF; i++) {printf \"\\t%s\",\$i}; print null}' | sed 's/NA/ /g' > methylation.txt 
- 
-    """  
-} 
-
-
-process "process_bedtools_unionbedg_methcalls2" {
-
-    label "low"
-    //publishDir "${output_path}/meth_calls/${context}/GEM_Emodel/input", mode: 'copy'
-   
-    input:
-   
-    set context, samples, file(bedGraph), env, cov  from cut2.groupTuple()
-
-    output:
-    set context, samples, file("methylation2.txt"), env, cov into bedGraph_methcalls
-    
-    when:
-    !params.DMP && !params.DMR
+// INCLUDES
+include './lib/process.nf' params(params)
+include './lib/GEM_Emodel.nf' params(params)
+include './lib/GEM_Gmodel.nf' params(params)
+include checkLines from './lib/functions.nf'
+
+// SUB-WORKFLOWS
+workflow 'EWAS' {
+
+    // get the initial files / Channels
+    get:
+        samples
+        input_channel
+        SNPs
+
+    // outline workflow
+    main:
+        // parse the samples.tsv file to get cov.txt and env.txt
+        parsing(samples)
+
+        // perform filtering on individual files
+        filtering(input_channel)
+        // stage channels for downstream processes
+        bedGraph_combined = filtering.out.filter{it[1] == "bedGraph"}.groupTuple()
+        DMPs_combined = filtering.out.filter{it[1] == "DMPs"}.groupTuple()
+        DMRs_combined = filtering.out.filter{it[1] == "DMRs"}.groupTuple()
+        bedtools_input = bedGraph_combined.mix(DMPs_combined, DMRs_combined)
+
+        // bedtools_unionbedg for taking the union set in each context
+        bedtools_unionbedg(bedtools_input.filter{ it[3].size() > 1 })
+        // filtering bedGraph union bed files based on SD and NA
+        bedtools_filtering(bedGraph_combined.filter{ it[3].size() == 1 }.mix(bedtools_unionbedg.out.filter{ it[1] == "bedGraph" }))
+        bedtools_filtering_output = bedtools_filtering.out.filter{ checkLines(it[3]) > 1 }
+        bedtools_filtering.out.filter{ checkLines(it[3]) <= 1 }.subscribe {
+            log.warn "no data left to analyse after filtering: ${it[0]}.${it[1]}.bed"
+        }
+
+        // sorting on union bed files
+        sort_DMPs = DMPs_combined.filter{ it[3].size() == 1 }.mix(bedtools_unionbedg.out.filter{ it[1] == "DMPs" })
+        sort_DMRs = DMRs_combined.filter{ it[3].size() == 1 }.mix(bedtools_unionbedg.out.filter{ it[1] == "DMRs" })
+        bedtools_sorting(bedtools_filtering_output.mix(sort_DMPs, sort_DMRs))
         
-    script:
-    """
-    #!/bin/bash
-    bedtools unionbedg -filler NA -i ${bedGraph} -header -names ${samples.join(" ")} | awk -F "\\t" '{printf \"%s_%s\",\$1,\$2; for(i=4; i<=NF; i++) {printf \"\\t%s\",\$i}; print null}' | sed 's/NA/ /g' > methylation2.txt 
-    
-    """  
-} 
+        // stage channels for downstream processes
+        intersect_DMPs = bedtools_sorting.out.filter{ it[1] == "DMPs" }
+        intersect_DMRs = bedtools_sorting.out.filter{ it[1] == "DMRs" }
+        bedGraph_DMPs = bedtools_sorting.out.filter{it[1] == "bedGraph"}.combine(intersect_DMPs, by: 0)
+        bedGraph_DMRs = bedtools_sorting.out.filter{it[1] == "bedGraph"}.combine(intersect_DMRs, by: 0)
 
-process "process_bedtools_unionbedg_methcalls3" {
+        // bedtools_intersect for intersecting individual methylation info based on DMPs/DMRs
+        bedtools_intersect(bedGraph_DMPs.mix(bedGraph_DMRs))
+        // filter regions based on bootstrap values
+        filter_regions(bedGraph_DMRs)
+        // bedtools_merge for optionally combining filtered sub-regions
+        bedtools_merge(filter_regions.out)
+        // average_over_regions for calculating average methylation over defined regions
+        average_over_regions(filter_regions.out.mix(bedtools_merge.out))
+        // stage channels for downstream processes
+        bedGraph_channel = params.all || (!params.DMPs && !params.DMRs) ? bedtools_sorting.out.filter{it[1] == "bedGraph"} : Channel.empty()
+        meth_channel = bedGraph_channel.mix(bedtools_intersect.out, average_over_regions.out)
 
-    label "low"
-    //publishDir "${output_path}/DMRs/${context}/GEM_Emodel/input", mode: 'copy'
-   
-    input:   
-    set context, samples, file(bedGraph), env, cov  from cut3.groupTuple()
+        // SNPs
+        // index individual vcf files, optionally rename header
+        tabix(SNPs)
+        // merge files, normalise, validate sample names in header
+        bcftools(samples, tabix.out[0].collect(), tabix.out[1].collect())
+        // extract missing information
+        vcftools_missing(bcftools.out)
+        // extract snps.txt for GEM_GModel
+        vcftools_extract(bcftools.out)
+        // split data based on scaffolds
+        split_scaffolds(meth_channel)
 
-    output:
-    set context, samples, file("methylation.txt"), env, cov into bedGraph_DMRs
-    
-    when:
-    params.DMR
+        // run GEM on selected combination of inputs
+        GEM_Emodel(split_scaffolds.out.transpose(), parsing.out[0], parsing.out[1])
+        GEM_Gmodel(split_scaffolds.out.transpose(), vcftools_extract.out, parsing.out[1])
+        GEM_GxEmodel(split_scaffolds.out.transpose(), vcftools_extract.out, parsing.out[2])
+        
+        // calculate FDR
+        Emodel_txt = GEM_Emodel.out[0].collectFile().map{ tuple(it.baseName, it) }
+        Emodel_log = GEM_Emodel.out[1].collectFile().map{ tuple(it.baseName, it) }
+        Emodel_channel = Emodel_txt.combine(Emodel_log, by: 0)
+            .map { it -> 
+                List key = it[0].tokenize(".")
+                context = key.init().join(".")
+                type = key.last()
+                return tuple("Emodel", it[0], context, type, it[1], it[2])
+            }
 
-    script:
-    """
-    #!/bin/bash
-    bedtools unionbedg -filler NA -i ${bedGraph} -header -names ${samples.join(" ")} | awk -F "\\t" '{printf \"%s\t%s\t%s",\$1,\$2,\$3; for(i=4; i<=NF; i++) {printf \"\\t%s\",\$i}; print null}' | sed 's/NA/ /g' > methylation.txt 
-    
-    """  
-} 
+        Gmodel_txt = GEM_Gmodel.out[0].collectFile().map{ tuple(it.baseName, it) }
+        Gmodel_log = GEM_Gmodel.out[1].collectFile().map{ tuple(it.baseName, it) }
+        Gmodel_channel = Gmodel_txt.combine(Gmodel_log, by: 0)
+            .map { it -> 
+                List key = it[0].tokenize(".")
+                context = key.init().join(".")
+                type = key.last()
+                return tuple("Gmodel", it[0], context, type, it[1], it[2])
+            }
+
+        GxE_txt = GEM_GxEmodel.out[0].collectFile().map{ tuple(it.baseName, it) }
+        GxE_log = GEM_GxEmodel.out[1].collectFile().map{ tuple(it.baseName, it) }
+        GxE_channel = GxE_txt.combine(GxE_log, by: 0)
+            .map { it -> 
+                List key = it[0].tokenize(".")
+                context = key.init().join(".")
+                type = key.last()
+                return tuple("GxE", it[0], context, type, it[1], it[2])
+            }
+
+        // eg. [Emodel, context, type, context.txt, [scaffold.txt, ...], [scaffold.log], ...]]
+        calculate_FDR(Emodel_channel.mix(Gmodel_channel, GxE_channel))
+        
+        // visualisation
+        qqPlot(calculate_FDR.out)
+        manhattan(calculate_FDR.out.filter{ it[0] == "Emodel" })
+        dotPlot(calculate_FDR.out.filter{ it[0] == "Gmodel" })
+        //kplots_channel = calculate_FDR.out.filter{ it[0] == "GxE" }.map{ it.tail() }.combine(GEM_GxEmodel.out[1].map{ tuple( it[0] + "." + it[1], it.last()) }.groupTuple(), by:0)
+
+        GxE_plot = GEM_GxEmodel.out[2].collectFile().map{ tuple(it.baseName, it) }
+        GxE_head = GEM_GxEmodel.out[3].map{ tuple( it[0] + "." + it[1], it[2]) }.unique{ it[0] }
+        kplots_channel = calculate_FDR.out.filter{ it[0] == "GxE" }.map{ it.tail() }.combine(GxE_plot, by:0).combine(GxE_head, by:0)
+        topKplots(kplots_channel, vcftools_extract.out, parsing.out[2])
 
 
+    // emit results
+    emit:
+        parsing_env = parsing.out[0]
+        parsing_cov = parsing.out[1]
+        parsing_gxe = GxE ? parsing.out[2] : Channel.empty()
+        vcftools_extract_out = vcftools_extract.out
 
-//use this inside GEM for methcalls
-//bedtools unionbedg -filler NA -i ${bed} -header -names ${samples.join(" ")} | awk -F "\\t" '{printf \"%s_%s\",\$1,\$2; for(i=4; i<=NF; i++) {printf \"\\t%s\",\$i}; print null}' | sed 's/NA/ /g' > methylation2.txt 
+        bedtools_unionbedg_out = bedtools_sorting.out
+        bedtools_intersect_out = bedtools_intersect.out
+        average_over_regions_out = average_over_regions.out
+
+        calculate_FDR_reg = calculate_FDR.out[0].filter{ it[2] == "region" || it[2] == "merged" }
+        calculate_FDR_pos = calculate_FDR.out[0].filter{ it[2] != "region" && it[2] != "merged" }
+
+        qqPlot_png_reg = qqPlot.out.filter{ it[0] == "region" || it[0] == "merged" }
+        qqPlot_png_pos = qqPlot.out.filter{ it[0] != "region" && it[0] != "merged" }
+        manhattan_png_reg = manhattan.out[0].filter{ it[0] == "region" || it[0] == "merged" }
+        manhattan_png_pos = manhattan.out[0].filter{ it[0] != "region" && it[0] != "merged" }
+        manhattan_zip_reg = manhattan.out[1].filter{ it[0] == "region" || it[0] == "merged" }
+        manhattan_zip_pos = manhattan.out[1].filter{ it[0] != "region" && it[0] != "merged" }
+        dotPlot_png_reg = dotPlot.out[0].filter{ it[0] == "region" || it[0] == "merged" }
+        dotPlot_png_pos = dotPlot.out[0].filter{ it[0] != "region" && it[0] != "merged" }
+        dotPlot_zip_reg = dotPlot.out[1].filter{ it[0] == "region" || it[0] == "merged" }
+        dotPlot_zip_pos = dotPlot.out[1].filter{ it[0] != "region" && it[0] != "merged" }
+        topKplots_png_reg = topKplots.out.filter{ it[0] == "region" || it[0] == "merged" }
+        topKplots_png_pos = topKplots.out.filter{ it[0] != "region" && it[0] != "merged" }
 
 
-
-// RUN GEM with methylation calls
-process "process_GEM_Emodel_run_meth_calls" {
-    
-    label "low"    
-    publishDir "${output_path}/meth_calls/${context}/GEM_Emodel", mode: 'copy'
-    
-    //beforeScript "${workflow.profile == "standard" || workflow.profile == "diverse" ? 'source activate /scr/epi/pipelines/ewas/libs/gem' : ''}"
-    //afterScript "${workflow.profile == "standard" || workflow.profile == "diverse" ? 'conda deactivate /scr/epi/pipelines/ewas/libs/gem' : ''}"
-
-    input:
-    file envs from environment_methcalls
-    file covs from covariate_methcalls
-    set context, samples, file (meth), env, cov from bedGraph_methcalls
-    
-    output:
-    file("emodel.txt")
-    file("filtered_emodel.txt")
-    file("emodel.png") 
-
-    when:    
-    !params.DMP && !params.DMR
-    
-    script: 
-    """
-    Rscript ${baseDir}/bin/GEM_Emodel_methcalls.R ${envs} ${covs} ${meth} ${params.Emodel_pv} > emodel.txt
-    sort -n emodel.txt | awk 'BEGIN{OFS=\"\\t\"} {if((\$4)<=${params.sig} && (\$5)<=${params.FDR}) {printf \"%s\\t%s\\t%s\\t%s\\t%s\\n\", \$1,\$2,\$3,\$4,\$5}}' > filtered_emodel.txt    
-    """
 }
 
-/*
+// MAIN WORKFLOW 
+workflow {
 
-//
-//
-//
-//
-//
-//DMP PROCESS STARTS
-process "process_bedtools_unionbedg_DMPs" {
+    // call sub-workflows
+    main:
+        EWAS(samples, input_channel, SNPs)
 
-    label "low"
-    //publishDir "${output_path}/DMPs/${context}/GEM_Emodel/input", mode: 'copy'
-   
-    input:
-    set context, pairwise, file(bed) from DMPs.map{tuple(it[0],it[1],tuple(it[2].flatten()))}
-   
-    output:
-    
-    set context, pairwise, file("dmp.txt")  into pre_DMP 
-    
-    when:    
-    params.DMP
-   
-    script:
-    """
-    #!/bin/bash
-    
-    find . -mindepth 1 -maxdepth 1 -type l | while read dir; do file=\$(ls \$dir/*.bed | awk 'BEGIN{OFS="\\t"} {print length,\$0}' | sort -nrk1 | head -1 | cut -f2); cut -f1,2,3,4 \$file > \$(basename \$file); done
-    bedtools unionbedg -i *.bed > 2pre_dmp.txt
-    cut -f1,2,3,4 2pre_dmp.txt > dmp.txt
-    
-    """  
-} 
+    // publish files
+    publish:
+        EWAS.out.parsing_env to: "${params.output}/input", mode: 'copy'
+        EWAS.out.parsing_cov to: "${params.output}/input", mode: 'copy'
+        EWAS.out.parsing_gxe to: "${params.output}/input", mode: 'copy'
+        EWAS.out.vcftools_extract_out to: "${params.output}/input", mode: 'copy'
 
+        EWAS.out.bedtools_unionbedg_out to: "${params.output}/input", mode: 'copy'
+        EWAS.out.bedtools_intersect_out to: "${params.output}/positions", mode: 'copy'
+        EWAS.out.average_over_regions_out to: "${params.output}/regions", mode: 'copy'
 
+        EWAS.out.calculate_FDR_reg to: "${params.output}/regions", mode: 'copy'
+        EWAS.out.calculate_FDR_pos to: "${params.output}/positions", mode: 'copy'
 
-process "process_bedtools_intersect_DMP" {
+        EWAS.out.qqPlot_png_reg to: "${params.output}/regions", mode: 'copy'
+        EWAS.out.qqPlot_png_pos to: "${params.output}/positions", mode: 'copy'
+        EWAS.out.manhattan_png_reg to: "${params.output}/regions/Emodel", mode: 'copy'
+        EWAS.out.manhattan_png_pos to: "${params.output}/positions/Emodel", mode: 'copy'
+        EWAS.out.manhattan_zip_reg to: "${params.output}/regions/Emodel", mode: 'copy'
+        EWAS.out.manhattan_zip_pos to: "${params.output}/positions/Emodel", mode: 'copy'
+        EWAS.out.dotPlot_png_reg to: "${params.output}/regions", mode: 'copy'
+        EWAS.out.dotPlot_png_pos to: "${params.output}/positions", mode: 'copy'
+        EWAS.out.dotPlot_zip_reg to: "${params.output}/regions", mode: 'copy'
+        EWAS.out.dotPlot_zip_pos to: "${params.output}/positions", mode: 'copy'
+        EWAS.out.topKplots_png_reg to: "${params.output}/regions", mode: 'copy'
+        EWAS.out.topKplots_png_pos to: "${params.output}/positions", mode: 'copy'
 
-    label "low"
-    //publishDir "${output_path}/DMPs/${context}/GEM_Emodel/input", mode: 'copy'
-   
-    input:
-      
-    set context, pairwise, file (dmp) from pre_DMP
-    set context, samples, file (meth), env, cov from bedGraph_DMPs
-   
-    output:
-    set context, pairwise, file("methylation_DMP.txt") into methylation_DMP 
-     
-    when:    
-    params.DMP
-   
-    script:
-    """
-    #!/bin/bash
-    head -1 ${meth} > header.txt
-    sed '1d' ${meth} > 2meth.txt
-    awk '{if(\$2<\$3) {printf \"\\t%s\",\$i}; print null}' ${dmp} > 2dmp.txt
-    bedtools intersect -a 2meth.txt -b 2dmp.txt > pre_dmp.txt
-    cat header.txt pre_dmp.txt > 2pre_dmp.txt 
-    cat 2pre_dmp.txt | awk -F "\\t" '{printf \"%s_%s\",\$1,\$2; for(i=4; i<=NF; i++) {printf \"\\t%s\",\$i}; print null}' > methylation_DMP.txt
- 
-    """  
-} 
-//cat header.txt 2meth.txt > methylation_DMP.txt
-//    bedtools intersect -a 2meth.txt -b ${dmp} > 3meth.txt
-//    cat header.txt 3meth.txt > methylation_DMP.txt
-
-//file("methylation.txt") from bedGraph_DMPs
-//   bedtools intersect -a methylation.txt -b dmp.txt > pre2meth.txt
-//    cat header.txt pre2meth.txt > methylation_DMP.txt
-
-
-
-process "process_GEM_Emodel_run_DMPs" {
-    
-    label "low"    
-    publishDir "${output_path}/DMPs/${context}/GEM_Emodel", mode: 'copy'
-    
-
-    input:
-    file envs from environment_DMPs
-    file covs from covariate_DMPs
-    set context, pairwise, file (meth) from methylation_DMP
-
-    output:
-    file("emodel.txt")
-    file("filtered_emodel.txt")
-    file("emodel.png") 
-
-    when: 
-    params.DMP
-    
-    script: 
-    """
-    Rscript ${baseDir}/bin/GEM_Emodel_methcalls.R ${envs} ${covs} ${meth} ${params.Emodel_pv} > emodel.txt
-    sort -n emodel.txt | awk 'BEGIN{OFS=\"\\t\"} {if((\$4)<=${params.sig} && (\$5)<=${params.FDR}) {printf \"%s\\t%s\\t%s\\t%s\\t%s\\n\", \$1,\$2,\$3,\$4,\$5}}' > filtered_emodel.txt        
-    """
-}
-
-*/
-
-//
-//
-//
-//
-//
-//DMR PROCESS STARTS
-process "process_bedtools_unionbedg_DMRs" {
-
-    label "low"
-    //publishDir "${output_path}/DMRs/${context}/GEM_Emodel/input", mode: 'copy'
-   
-    input:
-    set context, pairwise, file(bed) from DMRs.map{tuple(it[0],it[1],tuple(it[2].flatten()))}
-   
-    output:
-    
-    set context, pairwise, file("dmr.txt")  into pre_DMR 
-    
-    when:    
-    params.DMR
-   
-    script:
-    """
-    #!/bin/bash
-    
-    find . -mindepth 1 -maxdepth 1 -type l | while read dir; do file=\$(ls \$dir/*.bed | awk 'BEGIN{OFS="\\t"} {print length,\$0}' | sort -nrk1 | head -1 | cut -f2); cut -f1,2,3,4 \$file > \$(basename \$file); done
-    bedtools unionbedg -i *.bed > 2pre_dmr.txt
-    cut -f1,2,3,4 2pre_dmr.txt > dmr.txt
-    
-    """  
-} 
-
-
-
-process "process_bedtools_intersect_DMR" {
-
-    label "low"
-    //publishDir "${output_path}/DMRs/${context}/GEM_Emodel/input", mode: 'copy'
-   
-    input:
-      
-    set context, pairwise, file (dmr) from pre_DMR
-    set context, samples, file (meth), env, cov from bedGraph_DMRs
-   
-    output:
-    set context, pairwise, file("methylation_DMR.txt") into methylation_DMR 
-     
-    when:    
-    params.DMR
-   
-    script:
-    """
-    #!/bin/bash
-    head -1 ${meth} > header.txt
-    sed '1d' ${meth} > 2meth.txt
-    awk '{if(\$2<\$3) {print \$0}}' ${dmr} > 2dmr.txt
-    bedtools intersect -a 2meth.txt -b 2dmr.txt > pre_dmr.txt
-    cat header.txt pre_dmr.txt > 2pre_dmr.txt 
-    cat 2pre_dmr.txt | awk -F "\\t" '{printf \"%s_%s\",\$1,\$2; for(i=4; i<=NF; i++) {printf \"\\t%s\",\$i}; print null}' > methylation_DMR.txt
- 
-    """  
-} 
-
-process "process_GEM_Emodel_run_DMRs" {
-    
-    label "low"    
-    publishDir "${output_path}/DMRs/${context}/GEM_Emodel", mode: 'copy'
-    
-
-    input:
-    file envs from environment_DMRs
-    file covs from covariate_DMRs
-    set context, pairwise, file (meth) from methylation_DMR
-
-    output:
-    file("emodel.txt") 
-    file("emodel.png") 
-    file("filtered_emodel.txt")
-
-    when:   
-    params.DMR
-    
-    script: 
-    """
-    Rscript ${baseDir}/bin/GEM_Emodel_methcalls.R ${envs} ${covs} ${meth} ${params.Emodel_pv} > emodel.txt
-    sort -n emodel.txt | awk 'BEGIN{OFS=\"\\t\"} {if((\$4)<=${params.sig} && (\$5)<=${params.FDR}) {printf \"%s\\t%s\\t%s\\t%s\\t%s\\n\", \$1,\$2,\$3,\$4,\$5}}' > filtered_emodel.txt    
-   
-    """
 }
 
 
 
-// WORKFLOW TRACING
+//////////////////
+// END PIPELINE //
+//////////////////
+
+// WORKFLOW TRACING # what to display when the pipeline finishes
+// eg. with errors
 workflow.onError {
-
-log.info "Oops... Pipeline execution stopped with the following message: ${workflow.errorMessage}"
+    log.info "Oops... Pipeline execution stopped with the following message: ${workflow.errorMessage}"
 }
 
-
+// eg. in general
 workflow.onComplete {
 
-log.info ""
-log.info "         Pipeline execution summary"
-log.info "         ---------------------------"
-log.info "         Completed at : ${workflow.complete}"
-log.info "         Duration     : ${workflow.duration}"
-log.info "         Status       : ${workflow.success ? "success" : "failed"}"
-log.info "         workDir      : ${workflow.workDir} ${params.debug || !workflow.success ? "" : "(cleared)" }"
-log.info "         exit status  : ${workflow.exitStatus}"
-log.info "         Error report : ${workflow.errorReport ?: "-"}"
-log.info ""
+    log.info ""
+    log.info "         Pipeline execution summary"
+    log.info "         ---------------------------"
+    log.info "         Name         : ${workflow.runName}${workflow.resume ? " (resumed)" : ""}"
+    log.info "         Profile      : ${workflow.profile}"
+    log.info "         Launch dir   : ${workflow.launchDir}"    
+    log.info "         Work dir     : ${workflow.workDir} ${workflow.success && !params.debug ? "(cleared)" : ""}"
+    log.info "         Status       : ${workflow.success ? "success" : "failed"}"
+    log.info "         Error report : ${workflow.errorReport ?: "-"}"
+    log.info ""
 
-  if (params.debug == false && workflow.success) { ["bash", "${baseDir}/bin/clean.sh", "${workflow.sessionId}"].execute() }
+    // run a small clean-up script to remove "work" directory after successful completion 
+    if (workflow.success && !params.debug) {
+        ["bash", "${baseDir}/bin/clean.sh", "${workflow.sessionId}"].execute() }
 }
