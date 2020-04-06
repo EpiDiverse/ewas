@@ -58,7 +58,7 @@ process "bcftools" {
     bcftools view -S <(cut -f1 ${samples}) input/norm.vcf.gz > input/filtered.vcf.gz || exit \$?
     bcftools query -l input/filtered.vcf.gz > input/samples.txt || exit \$?
 
-    total=\$(cat ${samples} | wc -l)
+    total=\$(cut -f1 ${samples} | wc -l)
     match=\$(grep -f <(cut -f1 ${samples}) input/samples.txt | wc -l)
 
     if [[ \$match != \$total ]];
