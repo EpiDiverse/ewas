@@ -104,7 +104,7 @@ process "calculate_FDR" {
     echo -e "${model == "Emodel" ? "cpg" : "cpg\\tsnp"}\\tbeta\\tstats\\tpvalue\\tFDR" |
     tee input/header.txt ${model}/${key}.txt ${model}/${key}.filtered_${params.output_FDR}_FDR.txt
 
-    if [ -z $(gzip -cd ${results} | head -c1) ]; then
+    if [ -z \$(gzip -cd ${results} | head -c1) ]; then
     echo "No findings with ${model == "Emodel" ? "--Emodel_pv ${params.Emodel_pv}" : model == "Gmodel" ? "--Gmodel_pv ${params.Gmodel_pv}" : "--GxE_pv ${params.GxE_pv}"}" > ${model}/${key}.txt
     else
     gzip -cd ${results} | sort -T tmp --parallel=${task.cpus} -grk5 | cut -f${model == "Emodel" ? "2-" : "1-"} |
