@@ -268,11 +268,9 @@ samples_channel = Channel
 // STAGE TEST PROFILE 
 if ( workflow.profile.tokenize(",").contains("test") ){
 
-    include check_test_data from './lib/functions.nf' params(CpGPaths: params.CpGPaths, CHGPaths: params.CHGPaths, CpGPaths_DMRs: params.CpGPaths_DMRs, CHGPaths_DMRs: params.CHGPaths_DMRs, SNPPaths: params.SNPPaths)
-    (CpG, CHG, CpG_DMRs, CHG_DMRs, SNPs) = check_test_data(params.CpGPaths, params.CHGPaths, params.CpGPaths_DMRs, params.CHGPaths_DMRs, params.SNPPaths)
+    include check_test_data from './lib/functions.nf' params(CpGPaths: params.CpGPaths, CHGPaths: params.CHGPaths, CpGPaths_DMPs: params.CpGPaths_DMPs, CHGPaths_DMPs: params.CHGPaths_DMPs, CpGPaths_DMRs: params.CpGPaths_DMRs, CHGPaths_DMRs: params.CHGPaths_DMRs, SNPPaths: params.SNPPaths)
+    (CpG, CHG, CpG_DMPs, CHG_DMPs, CpG_DMRs, CHG_DMRs, SNPs) = check_test_data(params.CpGPaths, params.CHGPaths, params.CpGPaths_DMPs, params.CHGPaths_DMPs, params.CpGPaths_DMRs, params.CHGPaths_DMRs, params.SNPPaths)
 
-    CpG_DMPs = CpG_DMRs
-    CHG_DMPs = CHG_DMRs
     
     CHH = Channel.empty()
     CHH_DMPs = Channel.empty()
