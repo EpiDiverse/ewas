@@ -2,7 +2,7 @@
 // This file for loading custom functions into the main.nf script (separated for portability)
 
 // FUNCTION TO LOAD DATASETS IN TEST PROFILE
-def check_test_data(CpGPaths, CHGPaths, CpGPaths_DMRs, CHGPaths_DMRs, SNPPaths) {
+def check_test_data(CpGPaths, CHGPaths, CpGPaths_DMPs, CHGPaths_DMPs, CpGPaths_DMRs, CHGPaths_DMRs, SNPPaths) {
 
     // STAGE INPUT CHANNELS
     CpG = Channel.from(CpGPaths)
