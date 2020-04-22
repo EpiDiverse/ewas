@@ -2,7 +2,7 @@
 // This file for loading custom functions into the main.nf script (separated for portability)
 
 // FUNCTION TO LOAD DATASETS IN TEST PROFILE
-def check_test_data(CpGPaths, CHGPaths, CpGPaths_DMPs, CHGPaths_DMPs, CpGPaths_DMRs, CHGPaths_DMRs, SNPPaths) {
+def check_test_data(CpGPaths, CHGPaths, CpGPaths_DMRs, CHGPaths_DMRs, SNPPaths) {
 
     // STAGE INPUT CHANNELS
     CpG = Channel.from(CpGPaths)
@@ -22,14 +22,6 @@ def check_test_data(CpGPaths, CHGPaths, CpGPaths_DMPs, CHGPaths_DMPs, CpGPaths_D
         .map { row -> [ row[0], file(row[1]) ] }
         .ifEmpty { exit 1, "test profile CHGPaths_DMRs was empty - no input files supplied" }
 
-    // STAGE DMP CHANNELS
-    CpG_DMPs = Channel.from(CpGPaths_DMPs)
-        .map { row -> [ row[0], file(row[1]) ] }
-        .ifEmpty { exit 1, "test profile CpGPaths_DMPs was empty - no input files supplied" }
-
-    CHG_DMPs = Channel.from(CHGPaths_DMPs)
-        .map { row -> [ row[0], file(row[1]) ] }
-        .ifEmpty { exit 1, "test profile CHGPaths_DMPs was empty - no input files supplied" }
         
     // STAGE SNPs CHANNEL
     SNPs = Channel.from(SNPPaths)
