@@ -29,7 +29,7 @@ def check_test_data(CpGPaths, CHGPaths, CpGPaths_DMRs, CHGPaths_DMRs, SNPPaths) 
         .ifEmpty { exit 1, "test profile SNPPaths was empty - no input files supplied" }
 
     // Return channels
-    return tuple(CpG, CHG, CpG_DMPs, CHG_DMPs, CpG_DMRs, CHG_DMRs, SNPs)
+    return tuple(CpG, CHG, CpG_DMRs, CHG_DMRs, SNPs)
 }
 
 
