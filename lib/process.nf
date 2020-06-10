@@ -118,6 +118,7 @@ process "calculate_FDR" {
 
 // GEM_Emodel.out[0]
 // process to generate manhattan plots from Emodel
+/*
 process "qqPlot" {
 
     label "low"
@@ -140,3 +141,4 @@ process "qqPlot" {
     Rscript ${baseDir}/bin/QQplot.R ${key}.txt ${model}/${key}
     """ 
 }
+*/
