@@ -153,11 +153,10 @@ process "GEM_Gmodel" {
     mkdir output
     awk -F "\\t" '{printf \"%s:%s-%s\",\$1,\$2,\$3; for(i=4; i<=NF; i++) {printf \"\\t%s\",\$i}; print null}' ${meth} > \$(basename ${meth} .bed).txt
     Rscript ${baseDir}/bin/GEM_Gmodel.R ${baseDir}/bin ${snps} ${covs} \$(basename ${meth} .bed).txt ${params.Gmodel_pv} output/temp > output/${context}.${type}.log || exit \$?
-    tail -n+2 output/temp.txt | awk 'BEGIN{OFS=\"\\t\"} {printf \"%s\\t%s\\t%s\\t%s\\t%s\\n\", \$2,\$1,\$3,\$4,\$5}' | gzip > output/${context}.${type}.gz 
-     
+    tail -n+2 output/temp.txt | awk 'BEGIN{OFS=\"\\t\"} {printf \"%s\\t%s\\t%s\\t%s\\t%s\\n\", \$2,\$1,\$3,\$4,\$5}' | gzip > output/${context}.${type}.gz  && rm output/temp.txt   
     """
 }
-//gzip > output/${context}.${type}.gz  && rm output/temp.txt
+
 
 // RUN GEM Gmodel
 process "GEM_GxEmodel" {
@@ -201,11 +200,11 @@ process "GEM_GxEmodel" {
     head -1 meth.txt > header.txt && tail -n+2 meth.txt > ${context}.${type}.txt
     #awk -F "\\t" '{printf \"%s:%s-%s\",\$1,\$2,\$3; for(i=4; i<=NF; i++) {printf \"\\t%s\",\$i}; print null}' ${meth} > \$(basename ${meth} .bed).txt
     Rscript ${baseDir}/bin/GEM_GxE.R ${baseDir}/bin ${snps} ${gxe} meth.txt ${params.GxE_pv} output/meth > output/${context}.${type}.log || exit \$?
-    tail -n+2 output/meth.txt | gzip > output/${context}.${type}.gz && rm output/meth.txt
-    #Rscript ${baseDir}/bin/GEM_GxE.R ${baseDir}/bin ${snps} ${gxe} \$(basename ${meth} .bed).txt ${params.GxE_pv} output/\$(basename ${meth} .bed) > output/\$(basename ${meth} .bed).log
+    tail -n+2 output/meth.txt | awk 'BEGIN{OFS=\"\\t\"} {printf \"%s\\t%s\\t%s\\t%s\\t%s\\n\", \$2,\$1,\$3,\$4,\$5}' | gzip > output/${context}.${type}.gz  && rm output/temp.txt  
+    #Rscript ${baseDir}/bin/GEM_GxE.R ${baseDir}/bin ${snps} ${gxe} \$(basename ${meth} .bed).txt ${params.GxE_pv} output/\$(basename ${meth} .bed) > output/\$(basename ${meth} .bed).log    
     """
 }
-
+//    tail -n+2 output/meth.txt | gzip > output/${context}.${type}.gz && rm output/meth.txt
 
 
 // calculate_FDR.out[0].filter{ it[0] == "Gmodel" }
