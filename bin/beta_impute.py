@@ -16,8 +16,8 @@ import numpy as np
 fin = open(sys.argv[1], "r")
 #fout = open("beta_imputed_" + sys.argv[1], "w")
 
-filter_NA=0.8									#Max percentage of NAs of each line to be processed. Lines with more NAs are excluded.
-filter_SD=0.0001								#Min standard dev of each line to be processed. Cannot be zero!!!
+filter_NA=${params.filter_NA}									#Max percentage of NAs of each line to be processed. Lines with more NAs are excluded.
+filter_SD=${params.filter_SD}								#Min standard dev of each line to be processed. Cannot be zero!!!
 
 ## 1: Loop through lines with NAs < filter_NA.
 line_num = 0
