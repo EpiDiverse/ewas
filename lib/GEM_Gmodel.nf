@@ -197,7 +197,7 @@ process "GEM_GxEmodel" {
     #print null | tee}' ${meth} > meth.txt
 
     awk -F "\\t" '{printf \"%s:%s-%s\",\$1,\$2,\$3; for(i=4; i<=NF; i++) {printf \"\\t%s\",\$i}; print null}' ${meth} > \$(basename ${meth} .bed).txt
-    #head -1 meth.txt > header.txt && tail -n+2 \$(basename ${meth} .bed).txt > ${context}.${type}.txt
+    head -1 \$(basename ${meth} .bed).txt > header.txt && tail -n+2 \$(basename ${meth} .bed).txt > ${context}.${type}.txt
     #awk -F "\\t" '{printf \"%s:%s-%s\",\$1,\$2,\$3; for(i=4; i<=NF; i++) {printf \"\\t%s\",\$i}; print null}' ${meth} > \$(basename ${meth} .bed).txt
     Rscript ${baseDir}/bin/GEM_GxE.R ${baseDir}/bin ${snps} ${gxe} \$(basename ${meth} .bed).txt ${params.GxE_pv} output/temp > output/${context}.${type}.log || exit \$?
     tail -n+2 output/temp.txt | gzip > output/${context}.${type}.gz  && rm output/temp.txt
