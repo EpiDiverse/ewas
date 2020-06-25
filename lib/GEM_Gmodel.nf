@@ -173,10 +173,10 @@ process "GEM_GxEmodel" {
     output:
     //tuple context, type, path("output/*.txt"), path("output/*.log")
     //tuple context, type, path("*.txt")
-    path "output/${context}.${type}.gz"
+    path "output/${context}.${type}.txt"
     path "output/${context}.${type}.log"
-    //path "${context}.${type}.txt"
-    tuple context, type, path("meth")
+    path "${context}.${type}.txt"
+    tuple context, type, path("header.txt")
 
     when:
     params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE)
@@ -196,11 +196,11 @@ process "GEM_GxEmodel" {
     #printf "%s:%s-%s",\$1,\$2,\$3 | tee; for(i=4; i<=NF; i++) {printf "\\t%s",\$i | tee};
     #print null | tee}' ${meth} > meth.txt
 
-    awk -F "\\t" '{printf \"%s:%s-%s\",\$1,\$2,\$3; for(i=4; i<=NF; i++) {printf \"\\t%s\",\$i}; print null}' ${meth} > \$(basename ${meth} .bed).txt
-    #head -1 \$(basename ${meth} .bed).txt > header.txt 
+    awk -F "\\t" '{printf \"%s:%s-%s\",\$1,\$2,\$3; for(i=4; i<=NF; i++) {printf \"\\t%s\",\$i}; print null}' ${meth} > meth.txt
+    head -1 meth.txt > header.txt && tail -n+2 meth.txt > ${context}.${type}.txt
     #awk -F "\\t" '{printf \"%s:%s-%s\",\$1,\$2,\$3; for(i=4; i<=NF; i++) {printf \"\\t%s\",\$i}; print null}' ${meth} > \$(basename ${meth} .bed).txt
-    Rscript ${baseDir}/bin/GEM_GxE.R ${baseDir}/bin ${snps} ${gxe} \$(basename ${meth} .bed).txt ${params.GxE_pv} output/temp > output/${context}.${type}.log || exit \$?
-    tail -n+2 output/temp.txt | gzip > output/${context}.${type}.gz  && rm output/temp.txt
+    Rscript ${baseDir}/bin/GEM_GxE.R ${baseDir}/bin ${snps} ${gxe} meth.txt ${params.GxE_pv} output/meth > output/${context}.${type}.log || exit \$?
+    tail -n+2 output/meth.txt > output/${context}.${type}.txt
     #Rscript ${baseDir}/bin/GEM_GxE.R ${baseDir}/bin ${snps} ${gxe} \$(basename ${meth} .bed).txt ${params.GxE_pv} output/\$(basename ${meth} .bed) > output/\$(basename ${meth} .bed).log
     """
 }
