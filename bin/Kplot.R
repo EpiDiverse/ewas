@@ -41,7 +41,7 @@ if(!is.null(topKplot) && is.numeric(topKplot) && topKplot > 0){
                 facet_grid(. ~ snp) + theme_bw() + xlab("Environmental factor") + ylab(paste0(cpginame, " profile")) +
                 theme(strip.text.x = element_text(size=12, face="bold"))
 
-            ggsave(paste0(dirname(args[1]), "/", dp.name, ".png"), dp, width=12, height=7,dpi=72)
+            ggsave(paste0(dirname(args[1]), "/", dp.name, ".png"), dp, width=6.75,height=9)
 
         }else{
             write(paste0(dp.name, " comparison resulted in zero rows"), stderr())
