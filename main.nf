@@ -487,7 +487,7 @@ workflow 'EWAS' {
         calculate_FDR(Emodel_channel.mix(Gmodel_channel, GxE_channel))
         
         // visualisation
-        //qqPlot(calculate_FDR.out)
+        qqPlot(calculate_FDR.out)
         manhattan(calculate_FDR.out.filter{ it[0] == "Emodel" })
         dotPlot(calculate_FDR.out.filter{ it[0] == "Gmodel" })
         //kplots_channel = calculate_FDR.out.filter{ it[0] == "GxE" }.map{ it.tail() }.combine(GEM_GxEmodel.out[1].map{ tuple( it[0] + "." + it[1], it.last()) }.groupTuple(), by:0)
@@ -512,8 +512,8 @@ workflow 'EWAS' {
         calculate_FDR_reg = calculate_FDR.out[0].filter{ it[2] == "region" || it[2] == "merged" }
         calculate_FDR_pos = calculate_FDR.out[0].filter{ it[2] != "region" && it[2] != "merged" }
 
-        //qqPlot_png_reg = qqPlot.out.filter{ it[0] == "region" || it[0] == "merged" }
-        //qqPlot_png_pos = qqPlot.out.filter{ it[0] != "region" && it[0] != "merged" }
+        qqPlot_png_reg = qqPlot.out.filter{ it[0] == "region" || it[0] == "merged" }
+        qqPlot_png_pos = qqPlot.out.filter{ it[0] != "region" && it[0] != "merged" }
         manhattan_png_reg = manhattan.out[0].filter{ it[0] == "region" || it[0] == "merged" }
         manhattan_png_pos = manhattan.out[0].filter{ it[0] != "region" && it[0] != "merged" }
         manhattan_zip_reg = manhattan.out[1].filter{ it[0] == "region" || it[0] == "merged" }
@@ -549,8 +549,8 @@ workflow {
         EWAS.out.calculate_FDR_reg to: "${params.output}/regions", mode: 'copy'
         EWAS.out.calculate_FDR_pos to: "${params.output}/positions", mode: 'copy'
 
-        //EWAS.out.qqPlot_png_reg to: "${params.output}/regions", mode: 'copy'
-        //EWAS.out.qqPlot_png_pos to: "${params.output}/positions", mode: 'copy'
+        EWAS.out.qqPlot_png_reg to: "${params.output}/regions", mode: 'copy'
+        EWAS.out.qqPlot_png_pos to: "${params.output}/positions", mode: 'copy'
         EWAS.out.manhattan_png_reg to: "${params.output}/regions/Emodel", mode: 'copy'
         EWAS.out.manhattan_png_pos to: "${params.output}/positions/Emodel", mode: 'copy'
         EWAS.out.manhattan_zip_reg to: "${params.output}/regions/Emodel", mode: 'copy'
