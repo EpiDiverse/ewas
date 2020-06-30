@@ -95,7 +95,7 @@ process "bedtools_filtering" {
     """
     mkdir bed
     ${samples.getClass() == nextflow.util.ArrayBag && samples.size() > 1 ? "head -1 ${bed}" : "echo -e chrom\\tstart\\tend\\t${samples.join('')}" } \\
-    > bed/${context}.${type}.bed
+    > bed/${context}.${type}.txt
 
     tail -n+2 ${bed} | awk 'NR!=1{NA=0;c=0;s=0;ss=0;
     for(i=4;i<=NF;i++){if(\$i!="NA"){c++;s+=int(\$i*100+0.5);ss+=int(\$i*100+0.5)^2}else{NA++}};
