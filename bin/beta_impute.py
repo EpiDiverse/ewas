@@ -19,8 +19,8 @@ import numpy as np
 import argparse
 
 argparser = argparse.ArgumentParser()
-argparser.add_argument('--filter_NA', type="double")
-argparser.add_argument('--filter_SD', type="double")
+argparser.add_argument('--filter_NA', type=int)
+argparser.add_argument('--filter_SD', type=int)
 ARGS = argparser.parse_args()
 
 print(ARGS.text)
