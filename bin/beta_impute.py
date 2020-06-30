@@ -26,7 +26,7 @@ ARGS = argparser.parse_args()
 print(ARGS.text)
 
 fin = open(sys.argv[1], "r")
-#fout = open("beta_imputed_" + sys.argv[1], "w")
+fout = open("beta_imputed_" + sys.argv[1], "w")
 
 #filter_NA=${params.filter_NA}									#Max percentage of NAs of each line to be processed. Lines with more NAs are excluded.
 #filter_SD=${params.filter_SD}								#Min standard dev of each line to be processed. Cannot be zero!!!
@@ -71,12 +71,12 @@ for line in fin:
 					if val[x] == "NA":
 						val[x]= '{:.2f}'.format(0.00)
 			pos.extend(val)							#Append val list to pos list
-			print(*pos, sep="\t", file=fout)
+			print(pos, sep="\t", file=fout)
 	elif line_num < 2:
 		print(line, sep="\t", file=fout)		 	#Print headers
 
 fin.close()
-#fout.close()
+fout.close()
 
 #print(str(sys.argv[1]) + " contains " + str(spls) + " individulas")
 #print("Out of " + str(line_num) + " initial markers, " + str(proc_lines) + " were kept after filtering and imputation")
