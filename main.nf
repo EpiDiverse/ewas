@@ -225,6 +225,8 @@ log.info "         =================================================="
 log.info "         coverage                        : ${params.coverage}"
 if(params.DMPs || params.DMRs){
 log.info "         input FDR                       : ${params.filter_FDR}"
+log.info "         NA filtering                    : ${params.filter_NA}"
+log.info "         SD filtering                    : ${params.filter_SD}"
 log.info "         overlap proportion              : ${params.proportion}" }
 if(params.DMRs){
 log.info "         merge regions?                  : ${params.merge ? "True" : "False"}" }
