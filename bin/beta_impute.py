@@ -9,11 +9,12 @@ Note: Positions with all 1s or all 0s are imputed with a 1 or a 0 respectively. 
 NB: Set filter_NA in line 19 and filter_SD in line 20!! If willing to keep also lines with SD==0 a different script should be used, ask Dario
 
 Dependencies: numpy is required
+
 '''
 
 import sys
-from statistics import mean
-from statistics import pstdev
+import mean from statistics 
+import pstdev from statistics 
 import numpy as np
 import argparse
 
