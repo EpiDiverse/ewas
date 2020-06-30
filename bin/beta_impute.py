@@ -13,8 +13,8 @@ Dependencies: numpy is required
 '''
 
 import sys
-import mean from statistics 
-import pstdev from statistics 
+from statistics import mean 
+from statistics import pstdev 
 import numpy as np
 import argparse
 
