@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 '''
 Author: Dario Galanti, April 2020
@@ -71,7 +71,7 @@ for line in fin:
 					if val[x] == "NA":
 						val[x]= '{:.2f}'.format(0.00)
 			pos.extend(val)							#Append val list to pos list
-			print(pos, sep="\t", file=fout)
+			print(*pos, sep="\t", file=fout)
 	elif line_num < 2:
 		print(line, sep="\t", file=fout)		 	#Print headers
 
