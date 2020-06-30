@@ -1,12 +1,15 @@
-#!/usr/bin/python3
-## Author: Dario Galanti, April 2020
-## AIM: Filtering and Imputation of NAs in union_bedGraph files. This script calculates a beta distribution from each marker and uses it to randomly sample NAs at that position.
-## AIM: Such imputation method is minimizing the effect of NAs on the position, it is suitable to estimate few NAs per position without removing all positions with at least 1 NA
-## RUN: sbatch --partition test --cpus-per-task 4 --mem 24G --time 06:00:00 --wrap "python3 beta_impute_ewas.py CpG.unfilter.bed"
-## Note: Positions with all 1s or all 0s are imputed with a 1 or a 0 respectively. Beta distribution is not suitable to model these positions.
-## NB: Set filter_NA in line 19 and filter_SD in line 20!! If willing to keep also lines with SD==0 a different script should be used, ask Dario
+#!/usr/bin/env python
 
-## Dependencies: numpy is required
+'''
+Author: Dario Galanti, April 2020
+AIM: Filtering and Imputation of NAs in union_bedGraph files. This script calculates a beta distribution from each marker and uses it to randomly sample NAs at that position.
+AIM: Such imputation method is minimizing the effect of NAs on the position, it is suitable to estimate few NAs per position without removing all positions with at least 1 NA
+RUN: sbatch --partition test --cpus-per-task 4 --mem 24G --time 06:00:00 --wrap "python3 beta_impute_ewas.py CpG.unfilter.bed"
+Note: Positions with all 1s or all 0s are imputed with a 1 or a 0 respectively. Beta distribution is not suitable to model these positions.
+NB: Set filter_NA in line 19 and filter_SD in line 20!! If willing to keep also lines with SD==0 a different script should be used, ask Dario
+
+Dependencies: numpy is required
+'''
 
 import sys
 from statistics import mean
