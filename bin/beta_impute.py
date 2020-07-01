@@ -18,11 +18,12 @@ from statistics import pstdev
 import numpy as np
 import argparse
 
+'''
 argparser = argparse.ArgumentParser()
 argparser.add_argument('--filter_NA', type=double)
 argparser.add_argument('--filter_SD', type=double)
 ARGS = argparser.parse_args()
-
+'''
 #print(ARGS.text)
 
 fin = open(sys.argv[1], "r")
