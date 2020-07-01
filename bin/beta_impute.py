@@ -82,6 +82,7 @@ def main(fin,fout):
                     pos.extend(val)                         #Append val list to pos list
                     print(*pos, sep="\t", file=fout)
                 elif line_num < 2:
+                    print(line, sep="\t", file=fout)
 
 ## END OF __MAIN__
 ##################
@@ -92,16 +93,16 @@ def main(fin,fout):
 # define argparse
 #usage = 'read an ulfiltered file and impute missing values with beta distribution.'
 
-                   parser = argparse.ArgumentParser()
+parser = argparse.ArgumentParser()
 
-                   parser.add_argument('infile', metavar='in.txt', help= 'path to the unfiltered file')
-                   parser.add_argument('outfile', metavar='out.bed', help= 'path to the beta imputed file')
+parser.add_argument('infile', metavar='in.txt', help= 'path to the unfiltered file')
+parser.add_argument('outfile', metavar='out.bed', help= 'path to the beta imputed file')
 
-                   args = parser.parse_args()
+args = parser.parse_args()
 
 # call main()
-                   if __name__ == '__main__':
-                           main(args.infile,args.outfile)
+if __name__ == '__main__':
+    main(args.infile,args.outfile)
 
 ## END OF SCRIPT
 ################
