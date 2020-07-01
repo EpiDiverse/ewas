@@ -89,9 +89,9 @@ def main(fin,fout):
 ## RUN SCRIPT
 
 # define argparse
-usage = 'read an ulfiltered file and impute missing values with beta distribution.'
+#usage = 'read an ulfiltered file and impute missing values with beta distribution.'
 
-parser = argparse.ArgumentParser(description=usage)
+parser = argparse.ArgumentParser()
 
 parser.add_argument('infile', metavar='in.txt', 'the path to the unfiltered file')
 parser.add_argument('outfile', metavar='out.bed', 'the path to the beta imputed file')
