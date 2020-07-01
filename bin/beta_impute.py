@@ -30,7 +30,7 @@ ARGS = argparser.parse_args()
 
 #############
 #DEFINE __MAIN__
-def main(fin,fout, NA, SD):
+def main(fin,fout,filter_NA,filter_SD):
     
     #1) Open the unfiltered file for reading and writing
     with open(sys.argv[1], "r") as fin, open(sys.argv[2], "w") as fout:
@@ -46,7 +46,7 @@ def main(fin,fout, NA, SD):
             pos = splitline[:3]
             val = splitline[3:]
             spls = len(val)
-            max_NA = spls * NA                       #Calculate max number of NAs
+            max_NA = spls * float(filter_NA)                       #Calculate max number of NAs
             
             ## 3: Calculate position average and st.dev
             if line_num > 1 and line.count('NA') < max_NA:
@@ -55,7 +55,7 @@ def main(fin,fout, NA, SD):
                 av = mean(v)
                 sd = pstdev(v)
                 
-                if sd > SD:
+                if sd > float(filter_SD):
                     proc_lines += 1
                     
                     
@@ -97,14 +97,14 @@ parser = argparse.ArgumentParser(description=usage)
 
 parser.add_argument('infile', metavar='in.txt', help= 'path to the unfiltered file')
 parser.add_argument('outfile', metavar='out.bed', help= 'path to the beta imputed file')
-parser.add_argument('-NA', '--filter_NA', metavar='', help= '[OPTIONAL] The default missing data filterin is 0')
-parser.add_argument('-SD', '--filter_SD', metavar='', help= '[OPTIONAL] The default SD filtering is 0')
+parser.add_argument('-NA', '--missing', metavar='', help= '[OPTIONAL] The default missing data filterin is 0')
+parser.add_argument('-SD', '--std', metavar='', help= '[OPTIONAL] The default SD filtering is 0')
 
 args = parser.parse_args()
 
 # call main()
 if __name__ == '__main__':
-    main(args.infile,args.outfile, args.filter_NA, args.filter_SD)
+    main(args.infile,args.outfile, args.missing, args.std)
 
 ## END OF SCRIPT
 ################
