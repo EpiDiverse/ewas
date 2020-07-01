@@ -85,7 +85,7 @@ process "bedtools_filtering" {
     // eg, [CpG, DMRs, [sample1, sample2, sample3, ...], /path/to/DMRs.bed]
 
     output:
-    tuple context, type, samples, path("bed/${context}.${type}._NA_imputed.bed")
+    tuple context, type, samples, path("bed/${context}.${type}_NA_imputed.bed")
     // eg. [CpG, DMRs, [sample1, sample2, sample3, ...], /path/to/DMRs.bed]
 
     when:
