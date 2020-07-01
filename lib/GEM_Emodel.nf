@@ -102,8 +102,7 @@ process "bedtools_filtering" {
     sd=sqrt((ss-s^2/c)/c)/100; if(sd>${params.filter_SD} && (NA/(NF-3))<=${params.filter_NA}){print}}' >> bed/${context}.${type}.txt
     ${baseDir}/bin/beta_impute.py bed/${context}.${type}.txt  bed/${context}.${type}.bed -NA ${params.filter_NA} -SD ${params.filter_SD}
     """
-} 
-#     
+}  
 
 
 //bedtools_unionbedg_input.mix(bedtools_unionbedg_output)
