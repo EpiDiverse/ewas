@@ -33,7 +33,7 @@ ARGS = argparser.parse_args()
 def main(fin,fout):
     
     #1) Open the unfiltered file for reading and writing
-    with open(sys.argv[1], "r") as fin, open("beta_imputed_" + sys.argv[1], "w") as fout:
+    with open(sys.argv[1], "r") as fin, open(sys.argv[2], "w") as fout:
         
         
         ## 2: Loop through lines with NAs < filter_NA.
