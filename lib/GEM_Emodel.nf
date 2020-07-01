@@ -85,7 +85,7 @@ process "bedtools_filtering" {
     // eg, [CpG, DMRs, [sample1, sample2, sample3, ...], /path/to/DMRs.bed]
 
     output:
-    tuple context, type, samples, path("bed/${context}.${type}_NA_imputed.bed")
+    tuple context, type, samples, path("bed/${context}.${type}.bed")
     // eg. [CpG, DMRs, [sample1, sample2, sample3, ...], /path/to/DMRs.bed]
 
     when:
@@ -95,15 +95,15 @@ process "bedtools_filtering" {
     """
     mkdir bed
     ${samples.getClass() == nextflow.util.ArrayBag && samples.size() > 1 ? "head -1 ${bed}" : "echo -e chrom\\tstart\\tend\\t${samples.join('')}" } \\
-    > bed/${context}.${type}.bed
+    > bed/${context}.${type}.txt
 
     tail -n+2 ${bed} | awk 'NR!=1{NA=0;c=0;s=0;ss=0;
     for(i=4;i<=NF;i++){if(\$i!="NA"){c++;s+=int(\$i*100+0.5);ss+=int(\$i*100+0.5)^2}else{NA++}};
-    sd=sqrt((ss-s^2/c)/c)/100; if(sd>${params.filter_SD} && (NA/(NF-3))<=${params.filter_NA}){print}}' >> bed/${context}.${type}.bed
-    ${baseDir}/bin/beta_impute.py bed/${context}.${type}.bed  bed/${context}.${type}_NA_imputed.bed -NA ${params.filter_NA} -SD ${params.filter_SD} 
+    sd=sqrt((ss-s^2/c)/c)/100; if(sd>${params.filter_SD} && (NA/(NF-3))<=${params.filter_NA}){print}}' >> bed/${context}.${type}.txt
+    ${baseDir}/bin/beta_impute.py bed/${context}.${type}.txt  bed/${context}.${type}.bed -NA ${params.filter_NA} -SD ${params.filter_SD}
     """
 } 
-
+#     
 
 
 //bedtools_unionbedg_input.mix(bedtools_unionbedg_output)
