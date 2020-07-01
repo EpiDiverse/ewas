@@ -45,7 +45,7 @@ def main(fin,fout):
 			pos = splitline[:3]
 			val = splitline[3:]
 			spls = len(val)
-			max_NA = spls * filter_NA						#Calculate max number of NAs
+			max_NA = spls * filter_NA                       #Calculate max number of NAs
 			
 			## 3: Calculate position average and st.dev
 			if line_num > 1 and line.count('NA') < max_NA:
@@ -59,28 +59,28 @@ def main(fin,fout):
 					
 					
 					## 4: Fit the beta distribution (manual calculation of a and b parameters)
-					if 0.001 < av < 0.999:					#Exclude positions with all zeros or all ones and sd = 0 (sd = 0 won't allow a and b calculation)
+					if 0.001 < av < 0.999:                  #Exclude positions with all zeros or all ones and sd = 0 (sd = 0 won't allow a and b calculation)
 						a = av**2 * ((1 - av) / sd**2 - (1 / av))
 						b = a * (1 / av - 1)
 						
 						## 5: Randomly sample values from the beta distribution with "numpy" and substitute them to NAs
 						for x in range(spls):
 							if val[x] == "NA":
-								val[x]=	np.random.beta(a,b)
-								val[x]=	'{:.2f}'.format(val[x])
+								val[x]= np.random.beta(a,b)
+								val[x]= '{:.2f}'.format(val[x])
 								
 								
-					elif av >= 0.999:						#Impute positions with all "
+					elif av >= 0.999:                       #Impute positions with all "
 						for x in range(spls):
 							if val[x] == "NA":
 								val[x]= '{:.2f}'.format(1.00)
-					else:									#Impute positions with all "0s"
-					    for x in range(spls):
+					else:                                   #Impute positions with all "0s"
+						for x in range(spls):
 						if val[x] == "NA":
-						    val[x]= '{:.2f}'.format(0.00)
-				        pos.extend(val)							#Append val list to pos list
+							val[x]= '{:.2f}'.format(0.00)
+						pos.extend(val)                         #Append val list to pos list
 					print(*pos, sep="\t", file=fout)
-		        elif line_num < 2:
+				elif line_num < 2:
 ## END OF _MAIN_
 
 # define argparse
