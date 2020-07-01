@@ -27,8 +27,9 @@ argparser.add_argument('--filter_SD', type=double)
 ARGS = argparser.parse_args()
 '''
 #print(ARGS.text)
-#DEFINE __MAIN__
 
+#############
+#DEFINE __MAIN__
 def main(fin,fout):
     
     #1) Open the unfiltered file for reading and writing
@@ -91,12 +92,11 @@ def main(fin,fout):
 # define argparse
 #usage = 'read an ulfiltered file and impute missing values with beta distribution.'
 
-parser = argparse.ArgumentParser()
-
-parser.add_argument('infile', metavar='in.txt', 'the path to the unfiltered file')
-parser.add_argument('outfile', metavar='out.bed', 'the path to the beta imputed file')
-
-args = parser.parse_args()
+        parser = argparse.ArgumentParser()
+	
+	parser.add_argument('infile', metavar='in.txt', 'the path to the unfiltered file')
+	parser.add_argument('outfile', metavar='out.bed', 'the path to the beta imputed file')
+	args = parser.parse_args()
 
 # call main()
 if __name__ == '__main__':
