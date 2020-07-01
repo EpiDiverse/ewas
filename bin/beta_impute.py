@@ -76,10 +76,10 @@ def main(fin,fout):
                                 val[x]= '{:.2f}'.format(1.00)
                     else:                                   #Impute positions with all "0s"
                         for x in range(spls):
-                        if val[x] == "NA":
+                            if val[x] == "NA":
                             val[x]= '{:.2f}'.format(0.00)
                         pos.extend(val)                         #Append val list to pos list
-                    print(*pos, sep="\t", file=fout)
+                        print(*pos, sep="\t", file=fout)
                 elif line_num < 2:
 ## END OF _MAIN_
 
