@@ -91,23 +91,21 @@ def main(fin,fout):
 
 # define argparse
 #usage = 'read an ulfiltered file and impute missing values with beta distribution.'
-                  parser = argparse.ArgumentParser()
-              parser.add_argument('infile', metavar='in.txt', 'the path to the unfiltered file')
-'''
-parser.add_argument('outfile', metavar='out.bed', 'the path to the beta imputed file')
-          
-args = parser.parse_args()
+
+                   parser = argparse.ArgumentParser()
+
+                   parser.add_argument('infile', metavar='in.txt', help= 'path to the unfiltered file')
+                   parser.add_argument('outfile', metavar='out.bed', help= 'path to the beta imputed file')
+
+                   args = parser.parse_args()
 
 # call main()
-if __name__ == '__main__':
-    main(args.infile,args.outfile)
-'''
+                   if __name__ == '__main__':
+                           main(args.infile,args.outfile)
+
 ## END OF SCRIPT
 ################
 
 #print(line, sep="\t", file=fout)
 #fin.close()
 #fout.close()
-
-#print(str(sys.argv[1]) + " contains " + str(spls) + " individulas")
-#print("Out of " + str(line_num) + " initial markers, " + str(proc_lines) + " were kept after filtering and imputation")
