@@ -100,7 +100,7 @@ process "bedtools_filtering" {
     tail -n+2 ${bed} | awk 'NR!=1{NA=0;c=0;s=0;ss=0;
     for(i=4;i<=NF;i++){if(\$i!="NA"){c++;s+=int(\$i*100+0.5);ss+=int(\$i*100+0.5)^2}else{NA++}};
     sd=sqrt((ss-s^2/c)/c)/100; if(sd>${params.filter_SD} && (NA/(NF-3))<=${params.filter_NA}){print}}' >> bed/${context}.${type}.txt
-    ${baseDir}/bin/beta_impute.py bed/${context}.${type}.txt  bed/${context}.${type}.bed -NA ${params.filter_NA} -SD ${params.filter_SD} | rm bed/${context}.${type}.txt
+    ${baseDir}/bin/beta_impute.py bed/${context}.${type}.txt  bed/${context}.${type}.bed -NA ${params.filter_NA} -SD ${params.filter_SD} 
     """
 } 
 
