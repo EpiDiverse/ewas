@@ -104,7 +104,7 @@ args = parser.parse_args()
 
 # call main()
 if __name__ == '__main__':
-    main(args.infile,args.outfile, args.NA, args.SD)
+    main(args.infile,args.outfile, args.filter_NA, args.filter_SD)
 
 ## END OF SCRIPT
 ################
