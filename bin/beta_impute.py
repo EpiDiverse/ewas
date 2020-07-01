@@ -97,8 +97,8 @@ parser = argparse.ArgumentParser(description=usage)
 
 parser.add_argument('infile', metavar='in.txt', help= 'path to the unfiltered file')
 parser.add_argument('outfile', metavar='out.bed', help= 'path to the beta imputed file')
-parser.add_argument('NA', '--filter_NA', metavar='', help= '[OPTIONAL] The default missing data filterin is 0')
-parser.add_argument('SD', '--filter_SD', metavar='', help= '[OPTIONAL] The default SD filtering is 0')
+parser.add_argument('-NA', '--filter_NA', metavar='', help= '[OPTIONAL] The default missing data filterin is 0')
+parser.add_argument('-SD', '--filter_SD', metavar='', help= '[OPTIONAL] The default SD filtering is 0')
 
 args = parser.parse_args()
 
