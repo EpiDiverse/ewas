@@ -81,7 +81,7 @@ process "bedtools_filtering" {
     maxForks "${params.fork}".toInteger()
    
     input:
-    tuple context, type, samples, path(txt)
+    tuple context, type, samples, path(bed)
     // eg, [CpG, DMRs, [sample1, sample2, sample3, ...], /path/to/DMRs.bed]
 
     output:
