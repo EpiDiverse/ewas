@@ -46,7 +46,7 @@ def main(fin,fout,filter_NA,filter_SD):
             pos = splitline[:3]
             val = splitline[3:]
             spls = len(val)
-            max_NA = spls * float(filter_NA)                       #Calculate max number of NAs
+            max_NA = (spls * float(filter_NA))+0.00001                       #Calculate max number of NAs
             
             ## 3: Calculate position average and st.dev
             if line_num > 1 and line.count('NA') < max_NA:
