@@ -104,6 +104,7 @@ process "bedtools_filtering" {
     awk -f ${baseDir}/bin/replace_zeros.awk bed/${context}.${type}.txt > bed/${context}.${type}_out.txt
     ${baseDir}/bin/beta_impute.py bed/${context}.${type}_out.txt  bed/${context}.${type}.wo_header.bed -NA ${params.filter_NA} -SD ${params.filter_SD}
     cat header.txt bed/${context}.${type}.wo_header.bed > bed/${context}.${type}.bed
+    rm bed/${context}.${type}.wo_header.bed bed/${context}.${type}_out.txt 
     """
 }  
 
