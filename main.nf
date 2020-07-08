@@ -83,8 +83,8 @@ if(params.help){
                                                --DMPs and --DMRs directories [default: 0.05]          
 
               --filter_NA <FLOAT>              Specify the maximum proportion of samples that can contain a missing value before a methylated
-                                               position is removed from the analysis [default: 0] . Please becaraful about the usage of this
-                                               parameter, filtering out more than half of the data is not recommended.
+                                               position is removed from the analysis Please be careful about the usage, filtering out more than 
+                                               half of the data is not recommended.[default: 0] . 
                                                
               --filter_SD <FLOAT>              Specify the maximum standard deviation in methylation between samples to filter individual
                                                positions based on the degree of difference [default: 0] 
