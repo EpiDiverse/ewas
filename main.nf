@@ -16,112 +16,113 @@ if(params.help){
               nextflow run epidiverse/ewas [OPTIONS]...
 
          Options: GENERAL
-              --input [path/to/input/dir]     [REQUIRED] Specify input path for the directory containing outputs from the WGBS pipeline.
-                                                The pipeline searches for bedGraph files in '*/bedGraph/{sample_name}_{context}.bedGraph'
-                                                format, where sample names must correspond to the samplesheet and context can be either
-                                                "CpG", "CHG", or "CHH".
+              --input [path/to/input/dir]      [REQUIRED] Specify input path for the directory containing outputs from the WGBS pipeline.
+                                               The pipeline searches for bedGraph files in '*/bedGraph/{sample_name}_{context}.bedGraph'
+                                               format, where sample names must correspond to the samplesheet and context can be either
+                                               "CpG", "CHG", or "CHH".
 
-              --samples [path/to/samples.tsv] [REQUIRED] Specify the path to the samplesheet file containing information regarding
-                                                sample names and corresponding environment and covariate values. The file must contain
-                                                at least three tab-separated columns: 1) sample names, 2) environment value, 3) covariate
-                                                values, with further columns optional for additional covariates.
+              --samples [path/to/samples.tsv]  [REQUIRED] Specify the path to the samplesheet file containing information regarding
+                                               sample names and corresponding environment and covariate values. The file must contain
+                                               at least three tab-separated columns: 1) sample names, 2) environment value, 3) covariate
+                                               values, with further columns optional for additional covariates.
 
-              --DMPs [path/to/DMPs/dir]       Specify path to the DMR pipeline output directory to run EWAS analyses in addition with
-                                                methylated positions filtered by significant DMPs. The pipeline searches for bed files in
-                                                '*/{context}/metilene/*/*.bed' format where context can be either "CpG", "CHG", or "CHH".
+              --DMPs [path/to/DMPs/dir]        Specify path to the DMR pipeline output directory to run EWAS analyses in addition with
+                                               methylated positions filtered by significant DMPs. The pipeline searches for bed files in
+                                               '*/{context}/metilene/*/*.bed' format where context can be either "CpG", "CHG", or "CHH".
          
-              --DMRs [path/to/DMRs/dir]       Specify path to the DMR pipeline output directory to run EWAS analyses in addition with
-                                                methylated positions filtered by significant DMRs. In addition, the pipeline will call
-                                                the union of all significant regions and attempt to run EWAS with whole regions as markers.
-                                                The pipeline searches for bed files in '*/{context}/metilene/*/*.bed' format where context
-                                                can be either "CpG", "CHG", or "CHH".
+              --DMRs [path/to/DMRs/dir]        Specify path to the DMR pipeline output directory to run EWAS analyses in addition with
+                                               methylated positions filtered by significant DMRs. In addition, the pipeline will call
+                                               the union of all significant regions and attempt to run EWAS with whole regions as markers.
+                                               The pipeline searches for bed files in '*/{context}/metilene/*/*.bed' format where context
+                                               can be either "CpG", "CHG", or "CHH".
 
-              --SNPs [path/to/vcf/dir]        Specify path to the SNP pipeline output directory to enable EWAS analyses Gmodel and GxEmodel
-                                                which attempt to create a genome-wide methQTL map. ONLY SUITABLE FOR DIPLOID ORGANISMS.
-                                                The pipeline searches for VCF files in '*/vcf/{sample_name}.{extension}' where sample names
-                                                must correspond to the samplesheet and the extension can be any standard vcf extension
-                                                readable by 'bcftools' and defined with --extension parameter. Alternatively, the path to a
-                                                single multi-sample VCF file can be provided.
+              --SNPs [path/to/vcf/dir]         Specify path to the SNP pipeline output directory to enable EWAS analyses Gmodel and GxEmodel
+                                               which attempt to create a genome-wide methQTL map. ONLY SUITABLE FOR DIPLOID ORGANISMS.
+                                               The pipeline searches for VCF files in '*/vcf/{sample_name}.{extension}' where sample names
+                                               must correspond to the samplesheet and the extension can be any standard vcf extension
+                                               readable by 'bcftools' and defined with --extension parameter. Alternatively, the path to a
+                                               single multi-sample VCF file can be provided.
 
-              --extension <STR>               Specify the extension to use when searching for VCF files [default: vcf.gz]
+              --extension <STR>                Specify the extension to use when searching for VCF files [default: vcf.gz]
 
-              --output <STR>                  A string that can be given to name the output directory [default: ewas]
+              --output <STR>                   A string that can be given to name the output directory [default: ewas]
 
 
          Options: MODEL DECISION
-              --Emodel                        Run analysis with "E model". Disables other models unless they are also specified. If no
-                                                individual model is specified then all that are possible with the provided inputs will run
-                                                in parallel [default: off]
+              --Emodel                         Run analysis with "E model". Disables other models unless they are also specified. If no
+                                               individual model is specified then all that are possible with the provided inputs will run
+                                               in parallel [default: off]
 
-              --Gmodel                        Run analysis with "G model". Disables other models unless they are also specified. If no
-                                                individual model is specified then all that are possible with the provided inputs will run
-                                                in parallel [default: off]
+              --Gmodel                         Run analysis with "G model". Disables other models unless they are also specified. If no
+                                               individual model is specified then all that are possible with the provided inputs will run
+                                               in parallel [default: off]
 
-              --GxE                           Run analysis with "GxE model". Disables other models unless they are also specified. If no
-                                                individual model is specified then all that are possible with the provided inputs will run
-                                                in parallel [default: off]
+              --GxE                            Run analysis with "GxE model". Disables other models unless they are also specified. If no
+                                               individual model is specified then all that are possible with the provided inputs will run
+                                               in parallel [default: off]
             
-              --noCpG                         Disables EWAS analysis in CpG context. Note: at least one methylation context is required
-                                                for analysis. [default: off]
+              --noCpG                          Disables EWAS analysis in CpG context. Note: at least one methylation context is required
+                                               for analysis. [default: off]
 
-              --noCHG                         Disables EWAS analysis in CHG context. Note: at least one methylation context is required
-                                                for analysis. [default: off]
+              --noCHG                          Disables EWAS analysis in CHG context. Note: at least one methylation context is required
+                                               for analysis. [default: off]
 
-              --noCHH                         Disables EWAS analysis in CHH context. Note: at least one methylation context is required
-                                                for analysis. [default: off]
+              --noCHH                          Disables EWAS analysis in CHH context. Note: at least one methylation context is required
+                                               for analysis. [default: off]
 
-              --all                           If --DMPs and/or --DMRs are provided to the pipeline then raw un-intersected bedGraphs are
-                                                not carried forward for analysis. Enable this parameter to process them alongside the 
-                                                DMP / DMR intersections in parallel [default: off]
+              --all                            If --DMPs and/or --DMRs are provided to the pipeline then raw un-intersected bedGraphs are
+                                               not carried forward for analysis. Enable this parameter to process them alongside the 
+                                               DMP / DMR intersections in parallel [default: off]
 
 
          Options: INPUT FILTERING
-              --coverage <INT>                Specify the minimum coverage threshold to filter individual methylated positions from the
-                                                --input directory before running analyses [default: 0] 
+              --coverage <INT>                 Specify the minimum coverage threshold to filter individual methylated positions from the
+                                               --input directory before running analyses [default: 0] 
             
               --filter_FDR <FLOAT>             Specify the minimum FDR significance threshold to include DMPs and/or DMRs from the respective
-                                                --DMPs and --DMRs directories [default: 0.05]          
+                                               --DMPs and --DMRs directories [default: 0.05]          
 
               --filter_NA <FLOAT>              Specify the maximum proportion of samples that can contain a missing value before a methylated
-                                                position is removed from the analysis [default: 0] 
-
+                                               position is removed from the analysis [default: 0] . Please becaraful about the usage of this
+                                               parameter, filtering out more than half of the data is not recommended.
+                                               
               --filter_SD <FLOAT>              Specify the maximum standard deviation in methylation between samples to filter individual
-                                                positions based on the degree of difference [default: 0] 
+                                               positions based on the degree of difference [default: 0] 
 
-              --proportion <FLOAT>            Minimum proportion of samples that must share a DMP and/or DMR for it to be considered in the
-                                                analysis [default: 0.2]
+              --proportion <FLOAT>             Minimum proportion of samples that must share a DMP and/or DMR for it to be considered in the
+                                               analysis [default: 0.2]
 
-              --merge                         When running EWAS using the union set of DMRs as markers, specify to merge adjacent sub-regions
-                                                into larger regions prior to methylation averaging and subsequent analysis [default: off]
+              --merge                          When running EWAS using the union set of DMRs as markers, specify to merge adjacent sub-regions
+                                               into larger regions prior to methylation averaging and subsequent analysis [default: off]
 
 
          Options: SNP FILTERING
-              --mac <INT>                     Minor allele count [default: 3]
+              --mac <INT>                      Minor allele count [default: 3]
 
 
-              --minQ <INT>                    Minimum quality score [default: 30]
+              --minQ <INT>                     Minimum quality score [default: 30]
 
 
          Options: OUTPUT FILTERING       
               --output_FDR <FLOAT>            Specify the maximum FDR threshold for filtering EWAS post-analysis [default: 0.05]
 
               --Emodel_pv <FLOAT>             Set the p-value to run "E model". Note: this filter is applied prior to FDR calculation
-                                                and should be used cautiously [default: 1]
+                                              and should be used cautiously [default: 1]
 
               --Gmodel_pv <FLOAT>             Set the p-value to run "G model". Note: this filter is applied prior to FDR calculation
-                                                and should be used cautiously [default: 1]
+                                              and should be used cautiously [default: 1]
 
               --GxE_pv <FLOAT>                Set the p-value to run "GxE model". Note: this filter is applied prior to FDR calculation
-                                                and should be used cautiously [default: 1]
+                                              and should be used cautiously [default: 1]
 
 
 
          Options: VISUALISATION
               --kplots <INT>                  Specify the number of plots to generate for the top k significant results in "GxE model"  
-                                                [default: 10]
+                                              [default: 10]
 
               --distance <INT>                Specify the distance threshold to define cis and trans methQTLs in the dotplot generated
-                                                for "G model" output [default: 5000]
+                                              for "G model" output [default: 5000]
 
          Options: ADDITIONAL PARAMS
               --help                          Display this help information and exit
