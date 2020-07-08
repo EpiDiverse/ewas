@@ -101,7 +101,7 @@ process "bedtools_filtering" {
     for(i=4;i<=NF;i++){if(\$i!="NA"){c++;s+=int(\$i*100+0.5);ss+=int(\$i*100+0.5)^2}else{NA++}};
     sd=sqrt((ss-s^2/c)/c)/100; if(sd>${params.filter_SD} && (NA/(NF-3))<=${params.filter_NA}){print}}' >> bed/${context}.${type}.txt
     head -n 1 bed/${context}.${type}.txt > header.txt
-    awk -f ${baseDir}/bin/replace_zeros.awk ${context}.${type}.txt > ${context}.${type}_out.txt
+    awk -f ${baseDir}/bin/replace_zeros.awk bed/${context}.${type}.txt > ${context}.${type}_out.txt
     ${baseDir}/bin/beta_impute.py bed/${context}.${type}_out.txt  bed/${context}.${type}.wo_header.bed -NA ${params.filter_NA} -SD ${params.filter_SD}
     cat header.txt bed/${context}.${type}.wo_header.bed > bed/${context}.${type}.bed
     """
