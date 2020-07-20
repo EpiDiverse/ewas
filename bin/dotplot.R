@@ -56,9 +56,11 @@ gg.dotplot <- function(df, title, contigs){
         theme_minimal() +
         theme(
             plot.title = element_text(hjust = 0.5),
-            axis.text.y=element_text(angle=90,hjust=0.5),
+            axis.text.x=element_text(angle=90,hjust=0.5),
+            axis.text.y=element_text(angle=0,hjust=0.5),
             panel.grid.major=element_blank(),
-            panel.grid.minor=element_blank()
+            panel.grid.minor=element_blank(),
+            panel.grid.major=element_blank()
         )
 
     # add gridlines
