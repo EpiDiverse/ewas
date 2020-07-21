@@ -133,7 +133,7 @@ process "vcftools_extract" {
 
     script:
     """   
-    vcftools --gzvcf ${snp} \\
+    vcftools --gzvcf snps_imputed.gt.vcf.gz \\
     --mac ${params.mac} \\
     --minQ ${params.minQ} \\
     --012 \\
