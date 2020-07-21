@@ -19,6 +19,12 @@ class ParameterChecks {
         assert Double.valueOf(params.max_missing) >= 0.0d && Double.valueOf(params.max_missing) <= 1.0d, "--max_missing parameter must be a decimal in the range of 0 and 1!"
         assert params.mac instanceof Integer && params.mac >= 0, "--mac parameter must be a non-negative integer!"
         assert params.minQ instanceof Integer && params.minQ >= 0, "--minQ parameter must be a non-negative integer!"
+        assert params.burnin instanceof Integer && params.burnin >= 0, "--burnin parameter must be a non-negative integer!"
+	assert params.iterations instanceof Integer && params.iterations >= 0, "--iterations parameter must be a non-negative integer!"	
+        assert params.phase_states instanceof Integer && params.phase_states >= 0, "--phase_states parameter must be a non-negative integer!"	
+        assert params.imp_states instanceof Integer && params.imp_states >= 0, "--imp_states parameter must be a non-negative integer!"	
+	assert params.ne instanceof Integer && params.ne >= 0, "--ne parameter must be a non-negative integer!"	
+	assert params.nthreads_SNP instanceof Integer && params.nthreads_SNP >= 0, "--nthreads_SNP parameter must be a non-negative integer!"			
         assert params.take instanceof Integer && params.take >= 0, "--take parameter must be a non-negative integer!"
         assert params.fork instanceof Integer && params.fork >= 0, "--fork parameter must be a non-negative integer!"
 	}
