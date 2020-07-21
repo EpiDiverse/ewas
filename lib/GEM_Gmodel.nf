@@ -79,7 +79,7 @@ process "vcftools_missing" {
     path snp
     
     output:
-    path "missing_stats.log"
+    path "missing_removed.vcf.gz"
     //file("out.imiss")
     //file("out.log")
     //path "out.log"
@@ -89,10 +89,29 @@ process "vcftools_missing" {
 
     script:
     """
-    vcftools --gzvcf ${snp} --max-missing ${params.max_missing} > missing_stats.log
+    vcftools --gzvcf ${snp} --max-missing ${params.max_missing} --recode --stdout | gzip -c > missing_removed.vcf.gz
     """ 
 } 
 
+process "BEAGLE_SNP_Imputation" {
+
+    label "low"
+    label "finish"
+     
+    input:
+    path "missing_removed.vcf.gz"
+    
+    output:
+    path "snps_imputed.gt.vcf.gz"
+
+    when:
+    params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel || params.GxE)
+
+    script:
+    """
+    java -jar beagle.18May.d20.jar gt=missing_removed.vcf.gz out=snps_imputed.gt
+    """ 
+} 
 
 // bcftools.out
 // extract required format
@@ -102,7 +121,7 @@ process "vcftools_extract" {
     label "finish"
      
     input:
-    path snp
+    path ("snps_imputed.gt.vcf.gz")
     
     output:
     path "snps.txt"
@@ -115,7 +134,6 @@ process "vcftools_extract" {
     script:
     """   
     vcftools --gzvcf ${snp} \\
-    --max-missing 1 \\
     --mac ${params.mac} \\
     --minQ ${params.minQ} \\
     --012 \\
