@@ -20,7 +20,7 @@ class ParameterChecks {
         assert params.mac instanceof Integer && params.mac >= 0, "--mac parameter must be a non-negative integer!"
         assert params.minQ instanceof Integer && params.minQ >= 0, "--minQ parameter must be a non-negative integer!"
         assert params.burnin instanceof Integer && params.burnin >= 0, "--burnin parameter must be a non-negative integer!"
-	assert params.iterations instanceof Integer && params.iterations >= 0, "--iterations parameter must be a non-negative integer!"	
+	assert params.iters instanceof Integer && params.iters >= 0, "--iterations parameter must be a non-negative integer!"	
         assert params.phase_states instanceof Integer && params.phase_states >= 0, "--phase_states parameter must be a non-negative integer!"	
         assert params.imp_states instanceof Integer && params.imp_states >= 0, "--imp_states parameter must be a non-negative integer!"	
 	assert params.ne instanceof Integer && params.ne >= 0, "--ne parameter must be a non-negative integer!"	
