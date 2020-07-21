@@ -240,6 +240,17 @@ log.info "         maximum missing                 : ${params.max_missing}"
 log.info "         minor allele count              : ${params.mac}"
 log.info "         minimum quality score           : ${params.minQ}"
 log.info "" }
+if(params.burnin || params.iterations || params.phase_states || params.imp_states || params.ne || nthreads_SNP){
+log.info "         =================================================="
+log.info "         SNP Imputation with BEAGLE"
+log.info "         =================================================="
+log.info "         burnin iterations                                      : ${params.burnin}"
+log.info "         iterations for genotype phase estimation               : ${params.iterations}"
+log.info "         number of model states for genotype estimation         : ${params.phase_states}"
+log.info "         number of model states for ungenotype estimation       : ${params.imp_states}"
+log.info "         effective population size                              : ${params.ne}"
+log.info "         number of threads of execution                         : ${params.nthreads_SNP}"
+log.info "" }
 log.info "         =================================================="
 log.info "         Output"
 log.info "         =================================================="
