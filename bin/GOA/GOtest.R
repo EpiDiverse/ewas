@@ -17,7 +17,7 @@ make_GO_tests=function(data,file_tree_name_over,file_name_over,file_tree_name_un
                         nodeData(bigg, attr="term") = theTerms
                         write(rev(theTerms), file=file_tree_name_over,append=TRUE,sep=" ")
                         write("\t\t",file=file_tree_name_over,append=TRUE,sep=" ")
-                        pdf(sprintf('%s_%s_tree.pdf',file_tree_name_over,i))
+                        #pdf(sprintf('%s_%s_tree.pdf',file_tree_name_over,i))
                         plotGOTermGraph(bigg, Over, node.shape="ellipse",add.counts=TRUE,node.colors=c(sig="green", not="yellow"),max.nchar = 100)
                         dev.off()
                 }
@@ -39,7 +39,7 @@ make_GO_tests=function(data,file_tree_name_over,file_name_over,file_tree_name_un
                         nodeData(biggUnder, attr="term") = theTerms
                         write(rev(theTerms), file=file_tree_name_under,append=TRUE,sep=" ")
                         write("\t\t",file=file_tree_name_under,append=TRUE,sep=" ")
-                        pdf(sprintf('%s_%s_tree.pdf',file_tree_name_under,j))
+                        #pdf(sprintf('%s_%s_tree.pdf',file_tree_name_under,j))
                         plotGOTermGraph(biggUnder, Under, node.shape="ellipse",add.counts=TRUE,node.colors=c(sig="red", not="yellow"),max.nchar = 100)
                         dev.off()
                 }
