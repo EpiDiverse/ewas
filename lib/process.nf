@@ -142,3 +142,39 @@ process "qqPlot" {
     """ 
 }
 
+process "GO_analysis" {
+
+    label "low"
+    label "finish"
+    tag "${model}:${key}"
+     
+    input:
+    tuple model, key, type, path("${model}/*.txt")
+    
+    output:
+    tuple model, key, type, path("${model}/*.txt")
+
+    when:
+    params.GOA
+
+    script:
+    mkdir BP_${params.output_FDR}
+    mkdir MF_${params.output_FDR}
+    mkdir CC_${params.output_FDR}
+    
+    if (params.fragaria)
+        """
+         > GOA/
+        """
+    else if (params.populus)
+        """
+        
+        """
+     
+    else (params.thlaspi)
+        """
+        
+        """
+    
+}
+
