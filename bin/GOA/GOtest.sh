@@ -16,14 +16,14 @@ R CMD BATCH --vanilla "--args $infile $species $OverTree $Over $UnderTree $Under
 
 if [ -f $Over ]
 then
-	python /home/cansu/Desktop/GO_Wordle/createWordle.py $Over "Enhancement"
+	python ${baseDir}bin/GOA/createWordle.py $Over "Enhancement"
 else
 	echo "No data for $Over"
 fi
 
 if [ -f $Under ]
 then
-	python /home/cansu/Desktop/GO_Wordle/createWordle.py $Under "Suppression"
+	python ${baseDir}bin/GOA/createWordle.py $Under "Suppression"
 else
 	echo "No data for $Under"
 fi
