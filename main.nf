@@ -455,9 +455,11 @@ workflow 'EWAS' {
         // index individual vcf files, optionally rename header
         tabix(SNPs)
         // merge files, normalise, validate sample names in header
-        bcftools(samples, tabix.out[0].collect(), tabix.out[1].collect())
+        bcftools(samples, tabix.out[0].collect(), tabix.out[1].collect(),tabix.out[2].collect())
         // extract missing information
         vcftools_missing(bcftools.out)
+        //SNP imputation with BEAGLE
+        BEAGLE_SNP_Imputation(bcftools.out)
         // extract snps.txt for GEM_GModel
         vcftools_extract(bcftools.out)
 
@@ -499,6 +501,9 @@ workflow 'EWAS' {
 
         // eg. [Emodel, context, type, context.txt, [scaffold.txt, ...], [scaffold.log], ...]]
         calculate_FDR(Emodel_channel.mix(Gmodel_channel, GxE_channel))
+        
+        //GOA
+        GO_analysis(calculate_FDR.out)
         
         // visualisation
         qqPlot(calculate_FDR.out)
