@@ -12,7 +12,7 @@ Under=$6
 GOcat=$7
 Pval=$8
 
-R CMD BATCH --vanilla "--args $infile $species $OverTree $Over $UnderTree $Under $GOcat $Pval" /home/cansu/Desktop/GO_Wordle/GOtest_bin.R 
+R CMD BATCH --vanilla "--args $infile $species $OverTree $Over $UnderTree $Under $GOcat $Pval" ${baseDir}bin/GOA/GOtest_bin.R 
 
 if [ -f $Over ]
 then
