@@ -159,16 +159,16 @@ process "GO_analysis" {
 
     script:
     """
-    mkdir GOA GOA/BP_${model}/${key}.filtered_${params.output_FDR}
-    mkdir GOA GOA/MF_${model}/${key}.filtered_${params.output_FDR}
-    mkdir GOA GOA/CC_${model}/${key}.filtered_${params.output_FDR}
+    mkdir BP_${model}/${key}.filtered_${params.output_FDR}
+    mkdir MF_${model}/${key}.filtered_${params.output_FDR}
+    mkdir CC_${model}/${key}.filtered_${params.output_FDR}
     
     awk -F":" '\$1=\$1' ${model}/${key}.filtered_${params.output_FDR}_FDR.txt | awk -F"-" '\$1=\$1' | awk '{print \$1"\\t"\$2"\\t"\$3}' | sed '1d' > 2${model}/${key}.filtered_${params.output_FDR}_FDR.txt
     bedtools intersect -a ${GOA} -b 2${model}/${key}.filtered_${params.output_FDR}_FDR.txt | awk '\$3=="gene"' | awk -F";" '\$1=\$1' | awk '{gsub(/\ID=/,"",$9)}' | awk '{print \$9}' > 3${model}/${key}.filtered_${params.output_FDR}_FDR.txt
         
-    bash ${baseDir}bin/GOA/GOtest.sh 3${model}/${key}.filtered_${params.output_FDR}_FDR.txt ${species} GOA/BP_${model}/${key}.filtered_${params.output_FDR}/overtree GOA/BP_${model}/${key}.filtered_${params.output_FDR}/over GOA/BP_${model}/${key}.filtered_${params.output_FDR}/undertree GOA/BP_${model}/${key}.filtered_${params.output_FDR}/under BP ${params.output_FDR}
-    bash ${baseDir}bin/GOA/GOtest.sh 3${model}/${key}.filtered_${params.output_FDR}_FDR.txt ${species} GOA/MF_${model}/${key}.filtered_${params.output_FDR}/overtree GOA/MF_${model}/${key}.filtered_${params.output_FDR}/over GOA/MF_${model}/${key}.filtered_${params.output_FDR}/undertree GOA/MF_${model}/${key}.filtered_${params.output_FDR}/under MF ${params.output_FDR}
-    bash ${baseDir}bin/GOA/GOtest.sh 3${model}/${key}.filtered_${params.output_FDR}_FDR.txt ${species} GOA/CC_${model}/${key}.filtered_${params.output_FDR}/overtree GOA/CC_${model}/${key}.filtered_${params.output_FDR}/over GOA/CC_${model}/${key}.filtered_${params.output_FDR}/undertree GOA/CC_${model}/${key}.filtered_${params.output_FDR}/under CC ${params.output_FDR}
+    bash ${baseDir}bin/GOA/GOtest.sh 3${model}/${key}.filtered_${params.output_FDR}_FDR.txt ${species} BP_${model}/${key}.filtered_${params.output_FDR}/overtree BP_${model}/${key}.filtered_${params.output_FDR}/over BP_${model}/${key}.filtered_${params.output_FDR}/undertree BP_${model}/${key}.filtered_${params.output_FDR}/under BP ${params.output_FDR}
+    bash ${baseDir}bin/GOA/GOtest.sh 3${model}/${key}.filtered_${params.output_FDR}_FDR.txt ${species} MF_${model}/${key}.filtered_${params.output_FDR}/overtree MF_${model}/${key}.filtered_${params.output_FDR}/over MF_${model}/${key}.filtered_${params.output_FDR}/undertree MF_${model}/${key}.filtered_${params.output_FDR}/under MF ${params.output_FDR}
+    bash ${baseDir}bin/GOA/GOtest.sh 3${model}/${key}.filtered_${params.output_FDR}_FDR.txt ${species} CC_${model}/${key}.filtered_${params.output_FDR}/overtree CC_${model}/${key}.filtered_${params.output_FDR}/over CC_${model}/${key}.filtered_${params.output_FDR}/undertree CC_${model}/${key}.filtered_${params.output_FDR}/under CC ${params.output_FDR}
     
     """
     
