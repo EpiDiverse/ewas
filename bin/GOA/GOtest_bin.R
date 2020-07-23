@@ -32,14 +32,17 @@ cat(paste("ontology option: ",args[7],"\n",sep=""))
 pvalueCutoff_option <- as.numeric(args[8])
 cat(paste("pvalueCutoff option: ",args[8],"\n",sep=""))
 
+parser= ArgumentParser(description='enter species name')
+parser$add_argument('--species', type=string)
 
-load(paste0("/home/cansu/Desktop/GO_Wordle/db/",species,"/frame.RData"))
-load(paste0("/home/cansu/Desktop/GO_Wordle/db/",species,"/goframeData.RData"))
-load(paste0("/home/cansu/Desktop/GO_Wordle/db/",species,"/goFrame.RData"))
-load(paste0("/home/cansu/Desktop/GO_Wordle/db/",species,"/goAllFrame.RData"))
-load(paste0("/home/cansu/Desktop/GO_Wordle/db/",species,"/gsc.RData"))
-load(paste0("/home/cansu/Desktop/GO_Wordle/db/",species,"/universe.RData"))
-source("/home/cansu/Desktop/GO_Wordle/GOtest.R")
+
+load(paste0("${baseDir}/db",species,"/frame.RData"))
+load(paste0("${baseDir}/db",species,"/goframeData.RData"))
+load(paste0("${baseDir}/db",species,"/goFrame.RData"))
+load(paste0("${baseDir}/db",species,"/goAllFrame.RData"))
+load(paste0("$${baseDir}/db",species,"/gsc.RData"))
+load(paste0("/${baseDir}/db",species,"/universe.RData"))
+source("${baseDir}/bin/GOA/GOtest.R")
 
 #parse options
 data <- read.table(input_file,header=F,sep="\t")
