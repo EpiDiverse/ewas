@@ -503,7 +503,7 @@ workflow 'EWAS' {
         calculate_FDR(Emodel_channel.mix(Gmodel_channel, GxE_channel))
         
         //GOA
-        GO_analysis(calculate_FDR.out)
+        //GO_analysis(calculate_FDR.out)
         
         // visualisation
         qqPlot(calculate_FDR.out)
