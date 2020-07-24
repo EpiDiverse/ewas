@@ -164,7 +164,7 @@ process "GO_analysis" {
     mkdir CC_${model}/${key}.filtered_${params.GO_filter}
     
     awk -F":" '\$1=\$1' ${model}/${key}.filtered_${params.GO_filter}_FDR.txt | awk -F"-" '\$1=\$1' | awk '{print \$1"\\t"\$2"\\t"\$3}' | sed '1d' > 2${model}/${key}.filtered_${params.GO_filter}_FDR.txt
-    bedtools intersect -a ${GOA} -b 2${model}/${key}.filtered_${params.GO_filter}_FDR.txt | awk '\$3=="gene"' | awk -F";" '\$1=\$1' | awk '{gsub(/\\ID=/,"",$9)}' | awk '{print \$9}' > 3${model}/${key}.filtered_${params.GO_filter}_FDR.txt
+    bedtools intersect -a ${GOA} -b 2${model}/${key}.filtered_${params.GO_filter}_FDR.txt | awk '\$3=="gene"' | awk -F";" '\$1=\$1' | awk '{gsub(/\\ID=/,"",\$9)}' | awk '{print \$9}' > 3${model}/${key}.filtered_${params.GO_filter}_FDR.txt
         
     bash ${baseDir}bin/GOA/GOtest.sh 3${model}/${key}.filtered_${params.GO_filter}_FDR.txt ${species} BP_${model}/${key}.filtered_${params.GO_filter}/overtree BP_${model}/${key}.filtered_${params.GO_filter}/over BP_${model}/${key}.filtered_${params.GO_filter}/undertree BP_${model}/${key}.filtered_${params.GO_filter}/under BP ${params.GO_filter}
     bash ${baseDir}bin/GOA/GOtest.sh 3${model}/${key}.filtered_${params.GO_filter}_FDR.txt ${species} MF_${model}/${key}.filtered_${params.GO_filter}/overtree MF_${model}/${key}.filtered_${params.GO_filter}/over MF_${model}/${key}.filtered_${params.GO_filter}/undertree MF_${model}/${key}.filtered_${params.GO_filter}/under MF ${params.GO_filter}
