@@ -1,12 +1,13 @@
-args<-commandArgs(TRUE)
-
 library("AnnotationDbi")
-BiocManager::install("GSEABase")
+#BiocManager::install("GSEABase")
 library("GSEABase")
-BiocManager::install("GOstats")
+#BiocManager::install("GOstats")
 library("GOstats")
-BiocManager::install("Rgraphviz")
+#BiocManager::install("Rgraphviz")
 library("Rgraphviz")
+library("argparser")
+
+args<-commandArgs(trailingOnly=T)
 
 input_file <- as.character(args[1])
 cat(paste("input file: ",args[1],"\n",sep=""))
@@ -33,8 +34,8 @@ pvalueCutoff_option <- as.numeric(args[8])
 cat(paste("pvalueCutoff option: ",args[8],"\n",sep=""))
 
 parser= ArgumentParser(description='enter species name')
-parser$add_argument('--species', type=string)
-
+parser$add_argument('species', metavar='', type="string", help='')
+args= parser.parse_args()
 
 load(paste0("${baseDir}/db",species,"/frame.RData"))
 load(paste0("${baseDir}/db",species,"/goframeData.RData"))
