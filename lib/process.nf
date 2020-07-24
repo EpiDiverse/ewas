@@ -152,8 +152,8 @@ process "GO_analysis" {
     path("${model}/${key}.filtered_${params.output_FDR}_FDR.txt")
     
     output:
-    path("GOA/BP_${model}/${key}.filtered_${params.output_FDR}/BP.txt"), path("GOA/MF_${model}/${key}.filtered_${params.output_FDR}/MF.txt"), path("GOA/CC_${model}/${key}.filtered_${params.output_FDR}/CC.txt")
-
+    path "GOA/BP_${model}/${key}.filtered_${params.output_FDR}/BP.txt"
+//path("GOA/MF_${model}/${key}.filtered_${params.output_FDR}/MF.txt"), path("GOA/CC_${model}/${key}.filtered_${params.output_FDR}/CC.txt")
     when:
     params.GOA
 
