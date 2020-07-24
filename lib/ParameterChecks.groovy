@@ -24,7 +24,9 @@ class ParameterChecks {
         assert params.phase_states instanceof Integer && params.phase_states >= 0, "--phase_states parameter must be a non-negative integer!"	
         assert params.imp_states instanceof Integer && params.imp_states >= 0, "--imp_states parameter must be a non-negative integer!"	
 	assert params.ne instanceof Integer && params.ne >= 0, "--ne parameter must be a non-negative integer!"	
-	assert params.nthreads_SNP instanceof Integer && params.nthreads_SNP >= 0, "--nthreads_SNP parameter must be a non-negative integer!"			
+	assert params.nthreads_SNP instanceof Integer && params.nthreads_SNP >= 0, "--nthreads_SNP parameter must be a non-negative integer!"	
+        assert !(params.GOA && !params.species), "Please specify path to the .gff file with --species parameter when running GO analysis!"
+	assert Double.valueOf(params.GO_filter) >= 0.0d && Double.valueOf(params.GO_filter) <= 1.0d, "Output GO filter must be a decimal in the range of 0 and 1!"
         assert params.take instanceof Integer && params.take >= 0, "--take parameter must be a non-negative integer!"
         assert params.fork instanceof Integer && params.fork >= 0, "--fork parameter must be a non-negative integer!"
 	}
