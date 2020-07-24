@@ -152,7 +152,7 @@ process "GO_analysis" {
     tuple model, key, type,path("${model}/${key}.filtered_${params.output_FDR}_FDR.txt"), path(GOA),path(species)
     
     output:
-    tuple model, key, type, path("GOA/BP_${model}/${key}.filtered_${params.output_FDR}/BP.txt"), path("GOA/MF_${model}/${key}.filtered_${params.output_FDR}/MF.txt"), path("GOA/CC_${model}/${key}.filtered_${params.output_FDR}/CC.txt")
+    tuple model, key, type, path("GOA/BP_${model}/${key}.filtered_${params.output_FDR}/BP.txt"), path("GOA/MF_${model}/${key}.filtered_${params.output_FDR}/MF.txt"), path("GOA/CC_${model}/${key}.filtered_${params.output_FDR}/CC.txt"), path(GOA), path(species)
 
     when:
     params.GOA
