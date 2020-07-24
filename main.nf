@@ -455,7 +455,7 @@ workflow 'EWAS' {
         // index individual vcf files, optionally rename header
         tabix(SNPs)
         // merge files, normalise, validate sample names in header
-        bcftools(samples, tabix.out[0].collect(), tabix.out[1].collect(),tabix.out[2].collect())
+        bcftools(samples, tabix.out[0].collect(), tabix.out[1].collect())
         // extract missing information
         vcftools_missing(bcftools.out)
         //SNP imputation with BEAGLE
