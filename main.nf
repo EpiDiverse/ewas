@@ -360,8 +360,8 @@ if ( workflow.profile.tokenize(",").contains("test") ){
             -Please check given file extension: ${params.extension}"}
     
     
-    GOA = file("${params.GOA}", checkIfExists: true, glob: false)
-    species = file("${params.species}", checkIfExists: true, glob: false)
+    //GOA = file("${params.GOA}", checkIfExists: true, glob: false)
+    //species = file("${params.species}", checkIfExists: true, glob: false)
 
       
       
