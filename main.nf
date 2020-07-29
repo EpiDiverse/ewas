@@ -512,7 +512,7 @@ workflow 'EWAS' {
         calculate_FDR(Emodel_channel.mix(Gmodel_channel, GxE_channel))
         
         //GOA
-        GO_analysis(calculate_FDR.out)
+        //GO_analysis(calculate_FDR.out)
         
         // visualisation
         qqPlot(calculate_FDR.out)
@@ -541,8 +541,8 @@ workflow 'EWAS' {
         calculate_FDR_reg = calculate_FDR.out[0].filter{ it[2] == "region" || it[2] == "merged" }
         calculate_FDR_pos = calculate_FDR.out[0].filter{ it[2] != "region" && it[2] != "merged" }
         
-        GO_analysis_reg  = GO_analysis.out[0].filter{ it[2] == "region" || it[2] == "merged" }
-        GO_analysis_pos  = GO_analysis.out[0].filter{ it[2] == "region" || it[2] == "merged" }
+        //GO_analysis_reg  = GO_analysis.out[0].filter{ it[2] == "region" || it[2] == "merged" }
+        //GO_analysis_pos  = GO_analysis.out[0].filter{ it[2] == "region" || it[2] == "merged" }
         
         qqPlot_png_reg = qqPlot.out.filter{ it[0] == "region" || it[0] == "merged" }
         qqPlot_png_pos = qqPlot.out.filter{ it[0] != "region" && it[0] != "merged" }
@@ -581,8 +581,8 @@ workflow {
         EWAS.out.calculate_FDR_reg to: "${params.output}/regions", mode: 'copy'
         EWAS.out.calculate_FDR_pos to: "${params.output}/positions", mode: 'copy'
         
-        EWAS.out.GO_analysis_reg to: "${params.output}/regions/GOA", mode: 'copy'
-        EWAS.out.GO_analysis_pos to: "${params.output}/positions/GOA", mode: 'copy'
+        //EWAS.out.GO_analysis_reg to: "${params.output}/regions/GOA", mode: 'copy'
+        //EWAS.out.GO_analysis_pos to: "${params.output}/positions/GOA", mode: 'copy'
 
         EWAS.out.qqPlot_png_reg to: "${params.output}/regions", mode: 'copy'
         EWAS.out.qqPlot_png_pos to: "${params.output}/positions", mode: 'copy'
