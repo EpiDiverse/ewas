@@ -408,8 +408,8 @@ workflow 'EWAS' {
         samples
         input_channel
         SNPs
-        GOA
-        species
+        //GOA
+        //species
 
     // outline workflow
     main:
