@@ -468,7 +468,7 @@ workflow 'EWAS' {
         // extract missing information
         vcftools_missing(bcftools.out)
         //SNP imputation with BEAGLE
-        BEAGLE_SNP_Imputation(bcftools.out)
+        //BEAGLE_SNP_Imputation(bcftools.out)
         // extract snps.txt for GEM_GModel
         vcftools_extract(bcftools.out)
 
