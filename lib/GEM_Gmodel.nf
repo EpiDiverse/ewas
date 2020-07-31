@@ -93,6 +93,7 @@ process "vcftools_missing" {
     """ 
 } 
 
+
 process "BEAGLE_SNP_Imputation" {
 
     label "low"
@@ -109,7 +110,7 @@ process "BEAGLE_SNP_Imputation" {
 
     script:
     """
-    java -jar beagle.18May.d20.jar gt=missing_removed.vcf.gz iterations=${params.iters} phase-states=${params.phase_states} imp-states=${params.imp_states} ne=${params.ne} nthreads=${params.nthreads_SNP} out=snps_imputed.gt
+    java -jar beagle.24Aug.3e8.jar gt=missing_removed.vcf.gz iterations=${params.iters} phase-states=${params.phase_states} imp-states=${params.imp_states} ne=${params.ne} nthreads=${params.nthreads_SNP} out=snps_imputed.gt
     """ 
 } 
 
