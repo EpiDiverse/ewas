@@ -468,7 +468,7 @@ workflow 'EWAS' {
         // extract missing information
         vcftools_missing(bcftools.out)
         //SNP imputation with BEAGLE
-        //BEAGLE_SNP_Imputation(bcftools.out)
+        BEAGLE_SNP_Imputation(bcftools.out)
         // extract snps.txt for GEM_GModel
         vcftools_extract(bcftools.out)
 
@@ -532,7 +532,7 @@ workflow 'EWAS' {
         parsing_cov = parsing.out[1]
         parsing_gxe = GxE ? parsing.out[2] : Channel.empty()
         vcftools_extract_out = vcftools_extract.out
-        //BEAGLE_SNP_Imputation_out = BEAGLE_SNP_Imputation.out 
+        BEAGLE_SNP_Imputation_out = BEAGLE_SNP_Imputation.out 
 
         bedtools_unionbedg_out = bedtools_sorting.out
         bedtools_intersect_out = bedtools_intersect.out
