@@ -1,6 +1,7 @@
-name: ewas
+name: endor_gem
 channels:
   - r
+  - anaconda
   - bioconda/label/cf201901
   - conda-forge
   - bioconda
@@ -37,7 +38,7 @@ dependencies:
   - bioconductor-s4vectors=0.24.0=r36h516909a_0
   - bwidget=1.9.14=0
   - bzip2=1.0.8=h516909a_2
-  - ca-certificates=2020.6.20=hecda079_0
+  - ca-certificates=2020.6.24=0
   - cairo=1.16.0=hfb77d84_1002
   - certifi=2019.11.28=py27h8c360ce_1
   - curl=7.65.3=hf8cf82a_0
@@ -62,6 +63,7 @@ dependencies:
   - harfbuzz=2.4.0=h9f30f68_3
   - htslib=1.9=h4da6232_3
   - icu=64.2=he1b5a44_1
+  - java-jdk=7.0.91=1
   - jpeg=9c=h14c3975_1001
   - kiwisolver=1.1.0=py27h9e3301b_1
   - krb5=1.16.4=h2fd8d38_0
@@ -93,8 +95,8 @@ dependencies:
   - numpy=1.16.5=py27h95a1406_0
   - olefile=0.46=py_0
   - openblas=0.3.6=h6e990d7_6
-  - openjdk=11.0.1=h516909a_1016
-  - openssl=1.1.1g=h516909a_0
+  - openjdk=8.0.152=h7b6447c_3
+  - openssl=1.1.1g=h516909a_1
   - pango=1.42.4=ha030887_1
   - parallel=20200122=0
   - pcre=8.43=he1b5a44_0
