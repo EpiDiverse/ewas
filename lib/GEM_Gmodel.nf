@@ -93,7 +93,6 @@ process "vcftools_missing" {
     """ 
 } 
 
-/*
 
 process "BEAGLE_SNP_Imputation" {
 
@@ -115,18 +114,18 @@ process "BEAGLE_SNP_Imputation" {
     """ 
 } 
 
-*/
+
 
 // bcftools.out
 // extract required format
-// path ("snps_imputed.gt.vcf.gz")
+
 process "vcftools_extract" {
 
     label "low"
     label "finish"
      
     input:
-    path ("missing_removed.vcf.gz")
+    path ("snps_imputed.gt.vcf.gz")
     
     output:
     path "snps.txt"
