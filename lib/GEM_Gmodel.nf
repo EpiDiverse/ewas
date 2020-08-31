@@ -113,7 +113,7 @@ process "BEAGLE_SNP_Imputation" {
     java -jar beagle.18May20.3e8.jar gt=missing_removed.vcf.gz iterations=${params.iters} phase-states=${params.phase_states} imp-states=${params.imp_states} ne=${params.ne} nthreads=${params.nthreads_SNP} out=snps_imputed.gt
    
     """ 
- 
+} 
 
 // bcftools.out
 // extract required format
