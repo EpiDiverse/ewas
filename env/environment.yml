@@ -11,7 +11,6 @@ dependencies:
   - argparse=1.4.0=py27_0
   - bcftools=1.9=h68d8f2e_9
   - beagle=5.1_24Aug19.3e8=0
-  - beagle=5.1_18May20.d20=0
   - bedtools=2.29.2=hc088bd4_0
   - binutils_impl_linux-64=2.33.1=h53a641e_8
   - binutils_linux-64=2.33.1=h9595d00_16
