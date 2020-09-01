@@ -15,7 +15,7 @@ dependencies:
   - backports.functools_lru_cache=1.6.1=py_0
   - backports_abc=0.5=py_1
   - bcftools=1.8=h4da6232_3
-  - beagle=4.1_21Jan17.6cc.jar=1
+  - beagle=5.1_24Aug19.3e8=0
   - bedtools=2.29.2=hc088bd4_0
   - binutils_impl_linux-64=2.34=h53a641e_7
   - binutils_linux-64=2.34=hc952b39_20
@@ -66,7 +66,7 @@ dependencies:
   - java-jdk=7.0.91=1
   - jpeg=9d=h516909a_0
   - kiwisolver=1.1.0=py27h9e3301b_1
-  - krb5=1.17.1=hfafb76e_2
+  - krb5=1.17.1=hfafb76e_3
   - lcms2=2.11=hbd6801e_0
   - ld_impl_linux-64=2.34=h53a641e_7
   - libblas=3.8.0=11_openblas
