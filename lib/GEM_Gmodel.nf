@@ -110,7 +110,7 @@ process "BEAGLE_SNP_Imputation" {
 
     script:
     """
-    java -jar /share/beagle-5.1_24Aug19.3e8-0/beagle.jar gt=missing_removed.vcf.gz iterations=${params.iters} phase-states=${params.phase_states} imp-states=${params.imp_states} ne=${params.ne} nthreads=${params.nthreads_SNP} out=snps_imputed.gt
+    java -jar beagle.jar gt=missing_removed.vcf.gz iterations=${params.iters} phase-states=${params.phase_states} imp-states=${params.imp_states} ne=${params.ne} nthreads=${params.nthreads_SNP} out=snps_imputed.gt
    
     """ 
 } 
