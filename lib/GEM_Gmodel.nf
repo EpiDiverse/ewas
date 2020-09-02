@@ -89,7 +89,7 @@ process "vcftools_missing" {
 
     script:
     """
-    vcftools --gzvcf ${snp} --max-missing ${params.max_missing} --recode --stdout | tar -zchvf > missing_removed.vcf.gz
+    vcftools --gzvcf ${snp} --max-missing ${params.max_missing} --recode --stdout | gzip -c > missing_removed.vcf.gz
     """ 
 } 
 
