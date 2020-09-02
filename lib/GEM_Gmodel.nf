@@ -95,7 +95,7 @@ process "vcftools_missing" {
 
 
 process "BEAGLE_SNP_Imputation" {
-
+    conda '/home/cansu/.nextflow/assets/epidiverse/ewas/env/environment.yml' 
     label "low"
     label "finish"
      
@@ -110,7 +110,7 @@ process "BEAGLE_SNP_Imputation" {
 
     script:
     """
-    java -jar beagle.18May20.d20.jar gt=missing_removed.vcf.gz iterations=${params.iters} phase-states=${params.phase_states} imp-states=${params.imp_states} ne=${params.ne} nthreads=${params.nthreads_SNP} out=snps_imputed.gt
+    java -jar beagle.jar gt=missing_removed.vcf.gz iterations=${params.iters} phase-states=${params.phase_states} imp-states=${params.imp_states} ne=${params.ne} nthreads=${params.nthreads_SNP} out=snps_imputed.gt
    
     """ 
 } 
