@@ -99,7 +99,7 @@ process "BEAGLE_SNP_Imputation" {
     label "low"
     label "finish"
     
-    beforeScript "conda env create -f $baseDir/env/environment.yml; set +u; source activate ewas"
+    beforeScript "conda env create -f $baseDir/env/environment.yml -n ewas; set +u; source activate ewas"
     afterScript "set +u; source deactivate"
     
     input:
