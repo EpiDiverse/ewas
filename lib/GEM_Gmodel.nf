@@ -79,7 +79,7 @@ process "vcftools_missing" {
     path snp
     
     output:
-    path "missing_removed.vcf.gz"
+    path "out.recode.vcf"
     //file("out.imiss")
     //file("out.log")
     //path "out.log"
@@ -89,7 +89,7 @@ process "vcftools_missing" {
 
     script:
     """
-    vcftools --gzvcf ${snp} --max-missing ${params.max_missing} --recode --stdout | bgzip > missing_removed.vcf.gz
+    vcftools --gzvcf ${snp} --max-missing ${params.max_missing} --recode 
     """ 
 } 
 
@@ -113,7 +113,7 @@ process "BEAGLE_SNP_Imputation" {
     
     script:
     """
-    java -jar $baseDir/bin/beagle.18May20.d20.jar gt=missing_removed.vcf.gz iterations=${params.iters} phase-states=${params.phase_states} imp-states=${params.imp_states} ne=${params.ne} nthreads=${params.nthreads_SNP} out=snps_imputed.gt
+    java -jar $baseDir/bin/beagle.18May20.d20.jar gt=out.recode.vcf iterations=${params.iters} phase-states=${params.phase_states} imp-states=${params.imp_states} ne=${params.ne} nthreads=${params.nthreads_SNP} out=snps_imputed.gt
    
     """ 
 } 
