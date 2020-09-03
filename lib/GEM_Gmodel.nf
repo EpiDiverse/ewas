@@ -100,7 +100,7 @@ process "BEAGLE_SNP_Imputation" {
     label "finish"
     
     beforeScript "set +u; source activate ewas"
-    afterScript  "set +u; source deactivate"
+    afterScript "set +u; source deactivate"
     
     input:
     path "missing_removed.vcf.gz"
