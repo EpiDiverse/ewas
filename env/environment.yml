@@ -1,4 +1,4 @@
-name: ewas2
+name: ewas
 channels:
   - r
   - anaconda
