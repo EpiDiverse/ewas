@@ -99,8 +99,8 @@ process "BEAGLE_SNP_Imputation" {
     label "low"
     label "finish"
     
-    beforeScript "conda env create -f  ~/.nextflow/assets/epidiverse/ewas/env/environment.yml; set +u; source activate ewas"
-    afterScript "set +u; source deactivate"
+    beforeScript "set +u; source activate ewas"
+    afterScript  "set +u; source deactivate"
     
     input:
     path "missing_removed.vcf.gz"
