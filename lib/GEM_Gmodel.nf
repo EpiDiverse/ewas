@@ -99,8 +99,7 @@ process "BEAGLE_SNP_Imputation" {
     label "low"
     label "finish"
     
-    conda env create -f /home/cansu/.nextflow/assets/epidiverse/ewas/env/environment.yml
-    beforeScript "set +u; source activate ewas"
+    beforeScript "conda env create -f /home/cansu/.nextflow/assets/epidiverse/ewas/env/environment.yml; set +u; source activate ewas"
     afterScript "set +u; source deactivate"
     
     input:
