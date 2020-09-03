@@ -99,7 +99,7 @@ process "BEAGLE_SNP_Imputation" {
     label "low"
     label "finish"
     
-    beforeScript "set +u; source activate ewas2"
+    beforeScript "set +u; source activate ewas"
     afterScript  "set +u; source deactivate"
     
     input:
