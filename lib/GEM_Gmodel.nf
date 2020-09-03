@@ -98,7 +98,10 @@ process "BEAGLE_SNP_Imputation" {
     
     label "low"
     label "finish"
-     
+    
+    beforeScript "set +u; source activate ewas"
+    afterScript "set +u; source deactivate"
+    
     input:
     path "missing_removed.vcf.gz"
     
@@ -107,10 +110,10 @@ process "BEAGLE_SNP_Imputation" {
 
     when:
     params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel || params.GxE)
-
+    
     script:
     """
-    java -jar ./work/conda/$CONDA_DEFAULT_ENV/share/beagle-5.1_24Aug19.3e8-0/beagle.jar gt=missing_removed.vcf.gz iterations=${params.iters} phase-states=${params.phase_states} imp-states=${params.imp_states} ne=${params.ne} nthreads=${params.nthreads_SNP} out=snps_imputed.gt
+    java -jar $CONDA_DEFAULT_ENV/share/beagle-5.1_24Aug19.3e8-0/beagle.jar gt=missing_removed.vcf.gz iterations=${params.iters} phase-states=${params.phase_states} imp-states=${params.imp_states} ne=${params.ne} nthreads=${params.nthreads_SNP} out=snps_imputed.gt
    
     """ 
 } 
