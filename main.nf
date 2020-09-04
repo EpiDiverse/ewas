@@ -1,7 +1,7 @@
 #!/usr/bin/env nextflow
 
 // DSL2 BRANCH
-nextflow.preview.dsl=2
+nextflow.enable.dsl=2
 
 // PRINT HELP AND EXIT
 if(params.help){
@@ -259,7 +259,7 @@ log.info ""
 // STAGE SAMPLES CHANNEL
 samples_channel = Channel
     .from(file("${params.samples}").readLines())
-    .ifEmpty{ exit 1, "ERROR: samples file is missing or invalid. Please remember to use the --samples parameter." }
+    .ifEmpty{ exit 1, "ERROR: samples file is missing. Please remember to use the --samples parameter." }
     .map { line ->
         def field = line.toString().tokenize('\t').take(1)
         return tuple(field[0].replaceAll("\\s",""))}
@@ -374,9 +374,10 @@ input_channel = single_channel.mix(DMPs_channel, DMRs_channel)
 ////////////////////
 
 // INCLUDES
-include './lib/process.nf' params(params)
-include './lib/GEM_Emodel.nf' params(params)
-include './lib/GEM_Gmodel.nf' params(params)
+include {parsing;split_scaffolds;calculate_FDR,qqPlot} from './lib/process.nf' params(params)
+include {filtering;bedtools_unionbedg;bedtools_filtering;bedtools_sorting;bedtools_intersect;filter_regions;bedtools_merge;average_over_regions; \
+GEM_Emodel;manhattan;} from './lib/GEM_Emodel.nf' params(params)
+include {tabix;bcftools;vcftools_missing;vcftools_extract;GEM_Gmodel;GEM_GxEmodel;dotPlot;topKplots} from './lib/GEM_Gmodel.nf' params(params)
 include checkLines from './lib/functions.nf'
 
 // SUB-WORKFLOWS
@@ -495,7 +496,7 @@ workflow 'EWAS' {
         kplots_channel = calculate_FDR.out.filter{ it[0] == "GxE" }.map{ it.tail() }.combine(GxE_plot, by:0).combine(GxE_head, by:0)
         topKplots(kplots_channel, vcftools_extract.out, parsing.out[2])
 
-
+/*
     // emit results
     emit:
         parsing_env = parsing.out[0]
@@ -522,7 +523,7 @@ workflow 'EWAS' {
         dotPlot_zip_pos = dotPlot.out[1].filter{ it[0] != "region" && it[0] != "merged" }
         topKplots_png_reg = topKplots.out.filter{ it[0] == "region" || it[0] == "merged" }
         topKplots_png_pos = topKplots.out.filter{ it[0] != "region" && it[0] != "merged" }
-
+*/
 
 }
 
@@ -532,7 +533,7 @@ workflow {
     // call sub-workflows
     main:
         EWAS(samples, input_channel, SNPs)
-
+/*
     // publish files
     publish:
         EWAS.out.parsing_env to: "${params.output}/input", mode: 'copy'
@@ -559,7 +560,7 @@ workflow {
         EWAS.out.dotPlot_zip_pos to: "${params.output}/positions", mode: 'copy'
         EWAS.out.topKplots_png_reg to: "${params.output}/regions", mode: 'copy'
         EWAS.out.topKplots_png_pos to: "${params.output}/positions", mode: 'copy'
-
+*/
 }
 
 
