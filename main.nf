@@ -383,7 +383,7 @@ include checkLines from './lib/functions.nf'
 workflow 'EWAS' {
 
     // get the initial files / Channels
-    get:
+    take:
         samples
         input_channel
         SNPs
@@ -534,7 +534,7 @@ workflow {
         EWAS(samples, input_channel, SNPs)
 
     // publish files
-    publish:
+    publishDir:
         EWAS.out.parsing_env to: "${params.output}/input", mode: 'copy'
         EWAS.out.parsing_cov to: "${params.output}/input", mode: 'copy'
         EWAS.out.parsing_gxe to: "${params.output}/input", mode: 'copy'
