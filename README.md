@@ -24,13 +24,13 @@ ii. Install one of [`docker`](https://docs.docker.com/engine/installation/), [`s
 iii. Download the pipeline and test it on a minimal dataset with a single command
 
 ```bash
-nextflow run epidiverse/ewas -profile test,<docker|singularity|conda>
+nextflow NXF_VER=20.07.1 run epidiverse/ewas -profile test,<docker|singularity|conda>
 ```
 
 iv. Start running your own analysis!
 
 ```bash
-nextflow run epidiverse/ewas -profile <docker|singularity|conda> \
+nextflow NXF_VER=20.07.1 run epidiverse/ewas -profile <docker|singularity|conda> \
 --input /path/to/wgbs/directory --samples /path/to/samples.tsv
 ```
 
