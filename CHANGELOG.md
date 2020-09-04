@@ -1,7 +1,10 @@
 # EpiDiverse/ewas
 ---
 # Releases
-
+## v1.0
+* Bring in line with Nextflow 20.07.1 revisions
+* Allow for multiple RG during alignment
+* Updated output directory structure
 ---
 # Prereleases
 ## v0.1.0dev - 
