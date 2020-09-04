@@ -8,7 +8,11 @@ process "parsing" {
     tag "${samples.getName()}"
 
     maxForks "${params.fork}".toInteger()
-
+    
+    publishDir "${params.output}", patern: "env.txt" , mode: 'move', enabled: params.input ? true : false
+    publishDir "${params.output}", patern: "cov.txt" , mode: 'move', enabled: params.input ? true : false
+    publishDir "${params.output}", patern: "gxe.txt" , mode: 'move', enabled: params.input ? true : false
+    
     input:
     path samples
 
@@ -84,7 +88,9 @@ process "calculate_FDR" {
     label "high"
     label "finish"
     tag "${model}:${key}"
-     
+    
+    publishDir "${params.output}/${model}", patern: "*.txt" , mode: 'move', enabled: params.input ? true : false
+    
     input:
     tuple model, key, context, type, path(results), path(logs)
     //tuple model, key, contexts, types, path(results), path(logs)
@@ -125,7 +131,9 @@ process "qqPlot" {
     label "low"
     label "ignore"
     tag "${key}"
-     
+    
+    publishDir "${params.output}/${model}", patern: "*.png" , mode: 'move', enabled: params.input ? true : false
+    
     input:
     tuple model, key, type, path(result)
     // eg. [Emodel, CpG.bedGraph, bedGraph, [/paths/... ,/paths/...]]
