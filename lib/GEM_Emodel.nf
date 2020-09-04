@@ -16,7 +16,7 @@ process "filtering" {
     // eg. [CpG, DMPs, sample, /path/to/CpG.bedGraph]
 
     output:
-    tuple context, type, sample, path("${sample}.filtered.bed")
+    tuple val(context), val(type), val(sample), path("${sample}.filtered.bed")
     // eg. [CpG, DMPs, sample, sample.txt]
 
     when:
@@ -61,7 +61,7 @@ process "bedtools_unionbedg" {
     // eg, [CpG, [DMRs, DMRs, DMRs, ...], [sample1, sample2, sample3, ...], [path1, path2, path3, ...]]
 
     output:
-    tuple context, val("${types.unique().join("")}"), samples, path("${context}.${types.unique().join("")}.bed")
+    tuple val(context), val("${types.unique().join("")}"), val(samples), path("${context}.${types.unique().join("")}.bed")
     // eg. [CpG, [DMRs, DMRs, DMRs, ...], [sample1, sample2, sample3, ...], /path/to/CpG.DMRs.bed]
 
     when:
@@ -92,7 +92,7 @@ process "bedtools_filtering" {
     // eg, [CpG, DMRs, [sample1, sample2, sample3, ...], /path/to/DMRs.bed]
 
     output:
-    tuple context, type, samples, path("bed/${context}.${type}.bed")
+    tuple val(context), val(type), val(samples), path("bed/${context}.${type}.bed")
     // eg. [CpG, DMRs, [sample1, sample2, sample3, ...], /path/to/DMRs.bed]
 
     when:
@@ -128,7 +128,7 @@ process "bedtools_sorting" {
     // eg, [CpG, DMRs, [sample1, sample2, sample3, ...], /path/to/DMRs.bed]
 
     output:
-    tuple context, type, path("bed/${context}.${type}.bed")
+    tuple val(context), val(type), path("bed/${context}.${type}.bed")
     // eg. [CpG, DMRs, /path/to/DMRs.bed]
 
     when:
@@ -166,7 +166,7 @@ process "bedtools_intersect" {
     // eg. [CpG, bedGraph, CpG.bedGraph.bed, DMPs, CpG.DMPs.bed]
 
     output:
-    tuple context, type, path("${context}.${type}.bed")
+    tuple val(context), val(type), path("${context}.${type}.bed")
 
     when:
     params.input
@@ -196,7 +196,7 @@ process "filter_regions" {
     // eg. [CpG, bedGraph, CpG.bedGraph.bed, DMRs, CpG.DMRs.bed]
 
     output:
-    tuple context, bedGraph, path(methylation), val("region"), path("filtered.txt")
+    tuple val(context), val(bedGraph), path(methylation), val("region"), path("filtered.txt")
      
     when:    
     params.input
@@ -227,7 +227,7 @@ process "bedtools_merge" {
     // eg. [CpG, bedGraph, CpG.bedGraph.bed, DMRs, CpG.DMRs.bed]
 
     output:
-    tuple context, bedGraph, path(methylation), val("merged"), path("${context}.merged.txt")
+    tuple val(context), val(bedGraph), path(methylation), val("merged"), path("${context}.merged.txt")
      
     when:    
     params.input && params.merge
@@ -260,7 +260,7 @@ process "average_over_regions" {
     // eg. [CpG, bedGraph, CpG.bedGraph.bed, DMRs, CpG.DMRs.bed]
 
     output:
-    tuple context, type, path("${context}.${type}.bed")
+    tuple val(context), val(type), path("${context}.${type}.bed")
 
     when:
     params.input
@@ -337,8 +337,8 @@ process "manhattan" {
     // eg. [Emodel, CpG.bedGraph, bedGraph, [/paths/... ,/paths/...]]
     
     output:
-    tuple type, path("*.png") optional true
-    tuple type, path("*.zip") optional true
+    tuple val(type), path("*.png") optional true
+    tuple val(type), path("*.zip") optional true
 
     when:
     params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel)
