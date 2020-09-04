@@ -534,7 +534,7 @@ workflow {
         EWAS(samples, input_channel, SNPs)
 
     // publish files
-    publishDir:
+    publish:
         EWAS.out.parsing_env to: "${params.output}/input", mode: 'copy'
         EWAS.out.parsing_cov to: "${params.output}/input", mode: 'copy'
         EWAS.out.parsing_gxe to: "${params.output}/input", mode: 'copy'
