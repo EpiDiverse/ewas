@@ -12,7 +12,7 @@ process "filtering" {
     //publishDir "${params.output}", mode: 'copy', enabled: params.input ? true:false
     
     input:
-    tuple context, type, sample, path(bed)
+    tuple val(context), val(type), val(sample), path(bed)
     // eg. [CpG, DMPs, sample, /path/to/CpG.bedGraph]
 
     output:
@@ -57,7 +57,7 @@ process "bedtools_unionbedg" {
     publishDir "${params.output}", pattern: ${context}.${types.unique().join("")}.unfilter.bed, mode: 'copy', enabled: true
     
     input:
-    tuple context, types, samples, path(beds)
+    tuple val(context), val(types), val(samples), path(beds)
     // eg, [CpG, [DMRs, DMRs, DMRs, ...], [sample1, sample2, sample3, ...], [path1, path2, path3, ...]]
 
     output:
@@ -88,7 +88,7 @@ process "bedtools_filtering" {
   
     
     input:
-    tuple context, type, samples, path(bed)
+    tuple val(context), val(type), val(samples), path(bed)
     // eg, [CpG, DMRs, [sample1, sample2, sample3, ...], /path/to/DMRs.bed]
 
     output:
@@ -124,7 +124,7 @@ process "bedtools_sorting" {
     //publishDir "${params.output}", mode: 'copy', enabled: params.input ? true:false
     
     input:
-    tuple context, type, samples, path(bed)
+    tuple val(context), val(type), val(samples), path(bed)
     // eg, [CpG, DMRs, [sample1, sample2, sample3, ...], /path/to/DMRs.bed]
 
     output:
@@ -162,7 +162,7 @@ process "bedtools_intersect" {
     //publishDir "${params.output}", mode: 'copy', enabled: params.input ? true:false
     
     input:
-    tuple context, bedGraph, path("methylation.txt"), type, path("differential.txt")
+    tuple val(context), val(bedGraph), path("methylation.txt"), val(type), path("differential.txt")
     // eg. [CpG, bedGraph, CpG.bedGraph.bed, DMPs, CpG.DMPs.bed]
 
     output:
@@ -192,7 +192,7 @@ process "filter_regions" {
     //publishDir "${params.output}", mode: 'copy', enabled: params.input ? true:false
      
     input:
-    tuple context, bedGraph, path(methylation), type, path(differential)
+    tuple val(context), val(bedGraph), path(methylation), val(type), path(differential)
     // eg. [CpG, bedGraph, CpG.bedGraph.bed, DMRs, CpG.DMRs.bed]
 
     output:
@@ -223,7 +223,7 @@ process "bedtools_merge" {
     //publishDir "${params.output}", mode: 'copy', enabled: params.input && params.merge ? true:false
     
     input:
-    tuple context, bedGraph, path(methylation), type, path(differential)
+    tuple val(context), val(bedGraph), path(methylation), val(type), path(differential)
     // eg. [CpG, bedGraph, CpG.bedGraph.bed, DMRs, CpG.DMRs.bed]
 
     output:
@@ -256,7 +256,7 @@ process "average_over_regions" {
     publishDir "${params.output}", pattern: ${context}.${type}.bed, mode: 'move', enabled:true
  
     input:
-    tuple context, bedGraph, path("methylation.txt"), type, path("differential.txt")
+    tuple val(context), val(bedGraph), path("methylation.txt"), val(type), path("differential.txt")
     // eg. [CpG, bedGraph, CpG.bedGraph.bed, DMRs, CpG.DMRs.bed]
 
     output:
@@ -294,7 +294,7 @@ process "GEM_Emodel" {
             enabled: params.input && (!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel ? true : false
             
     input:
-    tuple context, type, path(meth)
+    tuple val(context), val(type), path(meth)
     path envs
     path covs
     
@@ -333,7 +333,7 @@ process "manhattan" {
             enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
     
     input:
-    tuple model, key, type, path(txt)
+    tuple val(model), val(key), val(type), path(txt)
     // eg. [Emodel, CpG.bedGraph, bedGraph, [/paths/... ,/paths/...]]
     
     output:
