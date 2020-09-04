@@ -100,7 +100,10 @@ process "vcftools_extract" {
 
     label "low"
     label "finish"
-     
+    
+    publishDir "${params.output}", patern: "snps.txt" , mode: 'move', \
+            enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel || params.GxE) ? true : false
+    
     input:
     path snp
     
@@ -134,7 +137,12 @@ process "GEM_Gmodel" {
     label "low"
     label "finish"
     tag "${context}.${type} - ${meth.baseName}"
-
+    
+    publishDir "${params.output}/output", patern: "*.txt" , mode: 'move', \
+            enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel) ? true : false
+    publishDir "${params.output}/output", patern: "*.log" , mode: 'move', \
+            enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel) ? true : false
+    
     input:
     tuple context, type, path(meth)
     path snps
@@ -165,7 +173,12 @@ process "GEM_GxEmodel" {
     label "low"
     label "finish"
     tag "${context}.${type} - ${meth.baseName}"
-
+    
+    publishDir "${params.output}/output", patern: "*.txt" , mode: 'move', \
+            enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) ? true : false
+    publishDir "${params.output}/output", patern: "*.log" , mode: 'move', \
+            enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) ? true : false
+    
     input:
     tuple context, type, path(meth)
     path snps
@@ -215,7 +228,12 @@ process "dotPlot" {
     label "low"
     label "ignore"
     tag "${key}"
-     
+    
+    publishDir "${params.output}", patern: "${model}/*.png" , mode: 'move', \
+            enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel) ? true : false
+    publishDir "${params.output}", patern: "${model}/*.zip" , mode: 'move', \
+            enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel) ? true : false        
+    
     input:
     tuple model, key, type, path(result)
     
@@ -247,7 +265,10 @@ process "topKplots" {
     label "low"
     label "ignore"
     tag "${key}"
-     
+    
+    publishDir "${params.output}/GxE/${key}", patern: "*.png" , mode: 'move', \
+            enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) && params.kplots > 0 ? true : false
+    
     input:
     //tuple key, type, path(result), path(scaffolds)
     // eg. [CHG.region, region, [path/to/CHG.region.txt, /path/to/filtered.txt], path/to/CHG.region.txt]
