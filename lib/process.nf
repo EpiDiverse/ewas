@@ -152,7 +152,7 @@ process "qqPlot" {
     publishDir "${params.output}/regions", pattern: "${model}/${context}.region.pval_hist.png" , mode: 'copy', enabled: params.input && (params.DMRs || params.merge) ? true : false
     
     input:
-    tuple val(model), val(key), val(type), path(result)
+    tuple val(model), val(key), val(type), val(context), path(result)
     // eg. [Emodel, CpG.bedGraph, bedGraph, [/paths/... ,/paths/...]]
     
     output:
