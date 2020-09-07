@@ -53,7 +53,7 @@ process "bedtools_unionbedg" {
     tag "${context}.${types.unique().join("")}"
 
     maxForks "${params.fork}".toInteger()
-    publishDir "${params.output}", pattern: "${context}.${types.unique().join("")}.bed", mode: 'copy', enabled: true
+    publishDir "${params.output}/input/bed", pattern: "${context}.${types.unique().join("")}.bed", mode: 'copy', enabled: true
     
     input:
     tuple val(context), val(types), val(samples), path(beds)
@@ -83,7 +83,7 @@ process "bedtools_filtering" {
 
     maxForks "${params.fork}".toInteger()
      
-    publishDir "${params.output}", pattern: "${context}.${type}.bed", mode: 'move', enabled: true
+    publishDir "${params.output}/input/bed", pattern: "${context}.${type}.bed", mode: 'copy', enabled: true
   
     
     input:
@@ -252,7 +252,7 @@ process "average_over_regions" {
 
     maxForks "${params.fork}".toInteger()
 
-    publishDir "${params.output}", pattern: "${context}.${type}.bed", mode: 'move', enabled:true
+    publishDir "${params.output}/regions", pattern: "${context}.${type}.bed", mode: 'copy', enabled:true
  
     input:
     tuple val(context), val(bedGraph), path("methylation.txt"), val(type), path("differential.txt")
@@ -286,12 +286,15 @@ process "GEM_Emodel" {
     label "finish"
     tag "${context}.${type} - ${meth.baseName}"
      
-    publishDir "${params.output}", patern: "${context}.${type}.txt" , mode: 'copy', \
+    publishDir "${params.output}positions/EModel", patern: "${context}.${type}.txt" , mode: 'copy', \
             enabled: params.input && (!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel ? true : false
-    
-    publishDir "${params.output}", patern: "${context}.${type}.log" , mode: 'copy', \
+    publishDir "${params.output}regions/EModel", patern: "${context}.${type}.txt" , mode: 'copy', \
+            enabled: (params.input && (!params.Emodel && !params.Gmodel && !params.GxE)) && params.DMRs || params.Emodel ? true : false        
+    publishDir "${params.output}/positions/EModel", patern: "${context}.${type}.log" , mode: 'copy', \
             enabled: params.input && (!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel ? true : false
-            
+    publishDir "${params.output}/regions/EModel", patern: "${context}.${type}.log" , mode: 'copy', \
+            enabled: (params.input && (!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) && params.DMRs ? true : false  
+      
     input:
     tuple val(context), val(type), path(meth)
     path envs
@@ -325,12 +328,14 @@ process "manhattan" {
     label "ignore"
     tag "${key}"
     
-    publishDir "${params.output}", patern: "*.png" , mode: 'copy', \
+    publishDir "${params.output}/positions/Emodel", patern: "*.png" , mode: 'copy', \
             enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
-    
-    publishDir "${params.output}", patern: "*.zip" , mode: 'copy', \
+    publishDir "${params.output}/positions/Emodel", patern: "*.zip" , mode: 'copy', \
             enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
-    
+    publishDir "${params.output}/regions/Emodel", patern: "*.png" , mode: 'copy', \
+            enabled: (params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel)) && params.DMRs ? true : false
+    publishDir "${params.output}/regions/Emodel", patern: "*.zip" , mode: 'copy', \
+            enabled: (params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel)) && params.DMRs ? true : false    
     input:
     tuple val(model), val(key), val(type), path(txt)
     // eg. [Emodel, CpG.bedGraph, bedGraph, [/paths/... ,/paths/...]]
