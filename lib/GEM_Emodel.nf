@@ -27,7 +27,7 @@ process "filtering" {
         """
         tail -n+2 ${bed} |
         awk 'BEGIN{OFS=\"\\t\"} {if((\$5+\$6)>=${params.coverage}) {printf \"%s\\t%s\\t%s\\t%1.2f\\n\", \$1,\$2,\$3,(\$4/100)}}' |
-        sort -k1,1 -k2,2n > ${sampl12230.dsl2_trials_deve}.filtered.bed
+        sort -k1,1 -k2,2n > ${sample}.filtered.bed
         """  
     else
         """
