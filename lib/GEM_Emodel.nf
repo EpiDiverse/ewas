@@ -292,11 +292,11 @@ process "GEM_Emodel" {
     tag "${context}.${type} - ${meth.baseName}"
      
     publishDir "${params.output}positions/Emodel", patern: "${context}.${type}.txt" , mode: 'copy', \
-            enabled: params.input && (!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel ? true : false
-    publishDir "${params.output}regions/Emodel", patern: "${context}.${type}.txt" , mode: 'copy', \
-            enabled: (params.input && (!params.Emodel && !params.Gmodel && !params.GxE)) && params.DMRs || params.Emodel ? true : false        
+            enabled: params.input && (!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel ? true : false      
     publishDir "${params.output}positions/Emodel", patern: "${context}.${type}.log" , mode: 'copy', \
             enabled: params.input && (!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel ? true : false
+    publishDir "${params.output}regions/Emodel", patern: "${context}.${type}.txt" , mode: 'copy', \
+            enabled: (params.input && (!params.Emodel && !params.Gmodel && !params.GxE)) && params.DMRs || params.Emodel ? true : false         
     publishDir "${params.output}regions/Emodel", patern: "${context}.${type}.log" , mode: 'copy', \
             enabled: (params.input && (!params.Emodel && !params.Gmodel && !params.GxE)) && params.DMRs || params.Emodel ? true : false  
             
