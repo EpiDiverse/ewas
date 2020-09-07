@@ -291,14 +291,10 @@ process "GEM_Emodel" {
     label "finish"
     tag "${context}.${type} - ${meth.baseName}"
      
-    publishDir "${params.output}positions/EModel", patern: "${context}.${type}.txt" , mode: 'copy', \
+    publishDir "${params.output}positions/Emodel", patern: "${context}.${type}.txt" , mode: 'copy', \
             enabled: params.input && (!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel ? true : false
-    publishDir "${params.output}regions/EModel", patern: "${context}.${type}.txt" , mode: 'copy', \
+    publishDir "${params.output}regions/Emodel", patern: "${context}.${type}.txt" , mode: 'copy', \
             enabled: (params.input && (!params.Emodel && !params.Gmodel && !params.GxE)) && params.DMRs || params.Emodel ? true : false        
-    publishDir "${params.output}/positions/EModel", patern: "${context}.${type}.log" , mode: 'copy', \
-            enabled: params.input && (!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel ? true : false
-    publishDir "${params.output}/regions/EModel", patern: "${context}.${type}.log" , mode: 'copy', \
-            enabled: (params.input && (!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) && params.DMRs ? true : false  
       
     input:
     tuple val(context), val(type), path(meth)
@@ -307,8 +303,8 @@ process "GEM_Emodel" {
     
     output:
     //tuple context, type, path("output/*.txt"), path("output/*.log")
-    path "output/${context}.${type}.txt"
-    path "output/${context}.${type}.log"
+    path "${context}.${type}.txt"
+    path "${context}.${type}.log"
    
     when:
     params.input && (!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel
