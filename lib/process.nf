@@ -140,16 +140,7 @@ process "qqPlot" {
     label "ignore"
     tag "${key}"
     
-    
-    //publishDir "${params.output}/regions", pattern: "${model}/${context}.region.png" , mode: 'copy', enabled: params.input && (params.DMRs || params.merge) ? true : false
-    //publishDir "${params.output}/positions", pattern: "${model}/${context}.DMRs.qqplot.png" , mode: 'copy', enabled: params.input ? true : false
-    //publishDir "${params.output}/positions", pattern: "${model}/${context}.DMPs.png" , mode: 'copy', enabled: params.input  ? true : false
-    //publishDir "${params.output}/positions", pattern: "${model}/${context}.bedGraph.png" , mode: 'copy', enabled: params.input ? true : false
-    
-    publishDir "${params.output}/positions", pattern: "${model}/${context}.DMRs..png" , mode: 'copy', enabled: params.input ? true : false
-    //publishDir "${params.output}/positions", pattern: "${model}/${context}.DMRs.pval_hist.png" , mode: 'copy', enabled: params.input ? true : false
-    publishDir "${params.output}/regions", pattern: "${model}/${context}.region..png" , mode: 'copy', enabled: params.input && (params.DMRs || params.merge) ? true : false
-    //publishDir "${params.output}/regions", pattern: "${model}/${context}.region.pval_hist.png" , mode: 'copy', enabled: params.input && (params.DMRs || params.merge) ? true : false
+    publishDir "${params.output}/positions", pattern: "${model}/${context}.DMRs.qqplot.png" , mode: 'copy', enabled: params.input && params.DMRs ? true : false
     
     input:
     tuple val(model), val(key), val(type), path(result)
