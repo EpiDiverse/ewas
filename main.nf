@@ -236,6 +236,8 @@ log.info ""
 log.info "         Input Filtering"
 log.info "         =================================================="
 log.info "         coverage                        : ${params.coverage}"
+log.info "         NA filtering                    : ${params.filter_NA}"
+log.info "         SD filtering                    : ${params.filter_SD}"
 if(params.DMPs || params.DMRs){
 log.info "         input FDR                       : ${params.filter_FDR}"
 log.info "         overlap proportion              : ${params.proportion}" }
