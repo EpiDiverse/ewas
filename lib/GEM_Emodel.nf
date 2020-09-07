@@ -53,7 +53,7 @@ process "bedtools_unionbedg" {
     tag "${context}.${types.unique().join("")}"
 
     maxForks "${params.fork}".toInteger()
-    publishDir "${params.output}", pattern: "${context}.${types.unique().join("")}.unfilter.bed", mode: 'copy', enabled: true
+    publishDir "${params.output}", pattern: "${context}.${types.unique().join("")}.bed", mode: 'copy', enabled: true
     
     input:
     tuple val(context), val(types), val(samples), path(beds)
@@ -83,7 +83,7 @@ process "bedtools_filtering" {
 
     maxForks "${params.fork}".toInteger()
      
-    publishDir "${params.output}/bed", pattern: "${context}.${type}.bed", mode: 'move', enabled: true
+    publishDir "${params.output}", pattern: "${context}.${type}.bed", mode: 'move', enabled: true
   
     
     input:
@@ -286,10 +286,10 @@ process "GEM_Emodel" {
     label "finish"
     tag "${context}.${type} - ${meth.baseName}"
      
-    publishDir "${params.output}/output", patern: "${context}.${type}.txt" , mode: 'copy', \
+    publishDir "${params.output}", patern: "${context}.${type}.txt" , mode: 'copy', \
             enabled: params.input && (!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel ? true : false
     
-    publishDir "${params.output}/output", patern: "${context}.${type}.log" , mode: 'copy', \
+    publishDir "${params.output}", patern: "${context}.${type}.log" , mode: 'copy', \
             enabled: params.input && (!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel ? true : false
             
     input:
