@@ -91,8 +91,8 @@ process "calculate_FDR" {
     
     publishDir "${params.output}/regions", pattern: "${model}/${context}.region.filtered_${params.output_FDR}_FDR.txt}" , mode: 'copy', enabled: params.input && (params.DMRs || params.merge) ? true : false
     publishDir "${params.output}/regions", pattern: "${model}/${context}.region.txt" , mode: 'copy', enabled: params.input && (params.DMRs || params.merge) ? true : false 
-    publishDir "${params.output}/positions", pattern: "${model}/${context}.${type}.filtered_${params.output_FDR}_FDR.txt" , mode: 'copy', enabled: params.input ? true : false
-    publishDir "${params.output}/positions", pattern: "${model}/${context}.${type}.txt" , mode: 'copy', enabled: params.input  ? true : false
+    publishDir "${params.output}/positions", pattern: "${model}/${context}.DMRs.filtered_${params.output_FDR}_FDR.txt" , mode: 'copy', enabled: params.input ? true : false
+    publishDir "${params.output}/positions", pattern: "${model}/${context}.DMRs.txt" , mode: 'copy', enabled: params.input  ? true : false
     
  
     
