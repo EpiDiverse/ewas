@@ -295,7 +295,11 @@ process "GEM_Emodel" {
             enabled: params.input && (!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel ? true : false
     publishDir "${params.output}regions/Emodel", patern: "${context}.${type}.txt" , mode: 'copy', \
             enabled: (params.input && (!params.Emodel && !params.Gmodel && !params.GxE)) && params.DMRs || params.Emodel ? true : false        
-      
+    publishDir "${params.output}positions/Emodel", patern: "${context}.${type}.log" , mode: 'copy', \
+            enabled: params.input && (!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel ? true : false
+    publishDir "${params.output}regions/Emodel", patern: "${context}.${type}.log" , mode: 'copy', \
+            enabled: (params.input && (!params.Emodel && !params.Gmodel && !params.GxE)) && params.DMRs || params.Emodel ? true : false  
+            
     input:
     tuple val(context), val(type), path(meth)
     path envs
