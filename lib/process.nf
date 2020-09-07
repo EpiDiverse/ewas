@@ -89,7 +89,8 @@ process "calculate_FDR" {
     label "finish"
     tag "${model}:${key}"
     
-    publishDir "${params.output}", patern: "${model}/*.txt" , mode: 'copy', enabled: params.input ? true : false
+    publishDir "${params.output}/positions", patern: "${model}/*.txt" , mode: 'copy', enabled: params.input ? true : false
+    publishDir "${params.output}/regions", patern: "${model}/*.txt" , mode: 'copy', enabled: params.input && (params.DMRs || params.merge) ? true : false
     
     input:
     tuple val(model), val(key), val(context), val(type), path(results), path(logs)
