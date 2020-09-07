@@ -141,10 +141,10 @@ process "qqPlot" {
     tag "${key}"
     
     
-    publishDir "${params.output}/regions", pattern: "${model}/${context}.region*.png" , mode: 'copy', enabled: params.input && (params.DMRs || params.merge) ? true : false
-    publishDir "${params.output}/positions", pattern: "${model}/${context}.DMRs*.png" , mode: 'copy', enabled: params.input ? true : false
-    publishDir "${params.output}/positions", pattern: "${model}/${context}.DMPs*.png" , mode: 'copy', enabled: params.input  ? true : false
-    publishDir "${params.output}/positions", pattern: "${model}/${context}.bedGraph*.png" , mode: 'copy', enabled: params.input ? true : false
+    publishDir "${params.output}/regions", pattern: "${model}/${context}.region/*.png" , mode: 'copy', enabled: params.input && (params.DMRs || params.merge) ? true : false
+    publishDir "${params.output}/positions", pattern: "${model}/${context}.DMRs/*.png" , mode: 'copy', enabled: params.input ? true : false
+    publishDir "${params.output}/positions", pattern: "${model}/${context}.DMPs/*.png" , mode: 'copy', enabled: params.input  ? true : false
+    publishDir "${params.output}/positions", pattern: "${model}/${context}.bedGraph/*.png" , mode: 'copy', enabled: params.input ? true : false
     
     //publishDir "${params.output}/positions", patern: "${model}/${context}.${key}.*png" , mode: 'copy', enabled: params.input ? true : false
     //publishDir "${params.output}/regions", patern: "${model}/${context}.region.*png" , mode: 'copy', enabled: params.input && (params.DMRs || params.merge) ? true : false
