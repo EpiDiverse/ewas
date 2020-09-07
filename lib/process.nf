@@ -132,12 +132,8 @@ process "qqPlot" {
     label "ignore"
     tag "${key}"
     
-    publishDir "${params.output}/positions/Emodel", patern: "${model}/*.png" , mode: 'copy', enabled: params.input && params.Emodel ? true : false
-    publishDir "${params.output}/regions/Emodel", patern: "${model}/*.png" , mode: 'copy', enabled: params.input && params.Emodel && params.DMRs ? true : false
-    publishDir "${params.output}/positions/Gmodel", patern: "${model}/*.png" , mode: 'copy', enabled: params.input && params.Gmodel ? true : false
-    publishDir "${params.output}/regions/Gmodel", patern: "${model}/*.png" , mode: 'copy', enabled: params.input && params.Gmodel && params.DMRs ? true : false
-    publishDir "${params.output}/positions/GxE", patern: "${model}/*.png" , mode: 'copy', enabled: params.input && params.GxE ? true : false
-    publishDir "${params.output}/regions/GxE", patern: "${model}/*.png" , mode: 'copy', enabled: params.input && params.GxE && params.DMRs ? true : false
+    publishDir "${params.output}/positions", patern: "${model}/*.png" , mode: 'copy', enabled: params.input && params.Emodel ? true : false
+    publishDir "${params.output}/regions", patern: "${model}/*.png" , mode: 'copy', enabled: params.input && params.DMRs ? true : false
     
     input:
     tuple val(model), val(key), val(type), path(result)
