@@ -27,7 +27,7 @@ process "filtering" {
         """
         tail -n+2 ${bed} |
         awk 'BEGIN{OFS=\"\\t\"} {if((\$5+\$6)>=${params.coverage}) {printf \"%s\\t%s\\t%s\\t%1.2f\\n\", \$1,\$2,\$3,(\$4/100)}}' |
-        sort -k1,1 -k2,2n > ${sample}.filtered.bed
+        sort -k1,1 -k2,2n > ${sampl12230.dsl2_trials_deve}.filtered.bed
         """  
     else
         """
@@ -296,9 +296,9 @@ process "GEM_Emodel" {
     publishDir "${params.output}/positions/Emodel", patern: "${context}.${type}.log" , mode: 'copy', \
             enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
     publishDir "${params.output}/regions/Emodel", patern: "${context}.${type}.txt" , mode: 'copy', \
-            enabled: (params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) && params.DMRs) ? true : false         
+            enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) && (params.DMRs || params.merge) ? true : false         
     publishDir "${params.output}/regions/Emodel", patern: "${context}.${type}.log" , mode: 'copy', \
-            enabled: (params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) && params.DMRs) ? true : false  
+            enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) && (params.DMRs || params.merge) ? true : false  
             
     input:
     tuple val(context), val(type), path(meth)
