@@ -138,9 +138,9 @@ process "GEM_Gmodel" {
     label "finish"
     tag "${context}.${type} - ${meth.baseName}"
     
-    publishDir "${params.output}/output", patern: "*.txt" , mode: 'move', \
+    publishDir "${params.output}", patern: "*.txt" , mode: 'move', \
             enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel) ? true : false
-    publishDir "${params.output}/output", patern: "*.log" , mode: 'move', \
+    publishDir "${params.output}", patern: "*.log" , mode: 'move', \
             enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel) ? true : false
     
     input:
@@ -174,9 +174,9 @@ process "GEM_GxEmodel" {
     label "finish"
     tag "${context}.${type} - ${meth.baseName}"
     
-    publishDir "${params.output}/output", patern: "*.txt" , mode: 'move', \
+    publishDir "${params.output}", patern: "*.txt" , mode: 'move', \
             enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) ? true : false
-    publishDir "${params.output}/output", patern: "*.log" , mode: 'move', \
+    publishDir "${params.output}", patern: "*.log" , mode: 'move', \
             enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) ? true : false
     
     input:
@@ -266,7 +266,7 @@ process "topKplots" {
     label "ignore"
     tag "${key}"
     
-    publishDir "${params.output}/GxE/${key}", patern: "*.png" , mode: 'move', \
+    publishDir "${params.output}", patern: "GxE/${key}/*.png" , mode: 'move', \
             enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) && params.kplots > 0 ? true : false
     
     input:
