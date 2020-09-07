@@ -156,7 +156,7 @@ process "qqPlot" {
     // eg. [Emodel, CpG.bedGraph, bedGraph, [/paths/... ,/paths/...]]
     
     output:
-    tuple val(type), path("${model}/*.png") optional true
+    tuple val(type), val(context), path("${model}/*.png") optional true
 
     when:
     params.input
