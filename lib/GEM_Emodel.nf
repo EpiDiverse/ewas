@@ -331,13 +331,13 @@ process "manhattan" {
     label "ignore"
     tag "${key}"
     
-    publishDir "${params.output}/positions/Emodel", patern: "*.png" , mode: 'copy', \
+    publishDir "${params.output}/positions/Emodel", pattern: "*.png" , mode: 'copy', \
             enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
-    publishDir "${params.output}/positions/Emodel", patern: "*.zip" , mode: 'copy', \
+    publishDir "${params.output}/positions/Emodel", pattern: "*.zip" , mode: 'copy', \
             enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
-    publishDir "${params.output}/regions/Emodel", patern: "*.png" , mode: 'copy', \
+    publishDir "${params.output}/regions/Emodel", pattern: "*.png" , mode: 'copy', \
             enabled: (params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel)) && params.DMRs ? true : false
-    publishDir "${params.output}/regions/Emodel", patern: "*.zip" , mode: 'copy', \
+    publishDir "${params.output}/regions/Emodel", pattern: "*.zip" , mode: 'copy', \
             enabled: (params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel)) && params.DMRs ? true : false    
     input:
     tuple val(model), val(key), val(type), path(txt)
