@@ -291,14 +291,12 @@ process "GEM_Emodel" {
     label "finish"
     tag "${context}.${type} - ${meth.baseName}"
      
-    //publishDir "${params.output}/positions/Emodel", patern: "${context}.${key}.txt" , mode: 'copy', \
-    //        enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false         
-    //publishDir "${params.output}/positions/Emodel", patern: "${context}.${type}.log" , mode: 'copy', \
-    //        enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
-    publishDir "${params.output}/regions/Emodel", patern: "${context}.region.txt" , mode: 'copy', \
-            enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) && (params.DMRs || params.merge) ? true : false         
-    //publishDir "${params.output}/regions/Emodel", patern: "${context}.${type}.log" , mode: 'copy', \
-    //        enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) && (params.DMRs || params.merge) ? true : false  
+//    publishDir "${params.output}/positions/Emodel", patern: "${context}.${key}.txt" , mode: 'copy', \
+//            enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false         
+
+//    publishDir "${params.output}/regions/Emodel", patern: "${context}.region.txt" , mode: 'copy', \
+//            enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) && (params.DMRs || params.merge) ? true : false         
+
             
     input:
     tuple val(context), val(type), path(meth)
