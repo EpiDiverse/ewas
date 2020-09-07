@@ -9,9 +9,9 @@ process "parsing" {
 
     maxForks "${params.fork}".toInteger()
     
-    publishDir "${params.output}", patern: "env.txt" , mode: 'move', enabled: params.input ? true : false
-    publishDir "${params.output}", patern: "cov.txt" , mode: 'move', enabled: params.input ? true : false
-    publishDir "${params.output}", patern: "gxe.txt" , mode: 'move', enabled: params.input ? true : false
+    publishDir "${params.output}", patern: "input/env.txt" , mode: 'move', enabled: params.input ? true : false
+    publishDir "${params.output}", patern: "input/cov.txt" , mode: 'move', enabled: params.input ? true : false
+    publishDir "${params.output}", patern: "input/gxe.txt" , mode: 'move', enabled: params.input ? true : false
     
     input:
     path samples
