@@ -53,8 +53,7 @@ process "bedtools_unionbedg" {
     tag "${context}.${types.unique().join("")}"
 
     maxForks "${params.fork}".toInteger()
-     
-    publishDir "${params.output}", pattern: ${context}.${types.unique().join("")}.unfilter.bed, mode: 'copy', enabled: true
+    publishDir "${params.output}", pattern: "${context}.${types.unique().join("")}.unfilter.bed", mode: 'copy', enabled: true
     
     input:
     tuple val(context), val(types), val(samples), path(beds)
@@ -253,7 +252,7 @@ process "average_over_regions" {
 
     maxForks "${params.fork}".toInteger()
 
-    publishDir "${params.output}", pattern: ${context}.${type}.bed, mode: 'move', enabled:true
+    publishDir "${params.output}", pattern: "${context}.${type}.bed", mode: 'move', enabled:true
  
     input:
     tuple val(context), val(bedGraph), path("methylation.txt"), val(type), path("differential.txt")
