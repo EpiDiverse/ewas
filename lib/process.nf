@@ -9,9 +9,9 @@ process "parsing" {
 
     maxForks "${params.fork}".toInteger()
     
-    publishDir "${params.output}/input", patern: "env.txt" , mode: 'copy', enabled: params.input ? true : false
-    publishDir "${params.output}/input", patern: "cov.txt" , mode: 'copy', enabled: params.input ? true : false
-    publishDir "${params.output}/input", patern: "gxe.txt" , mode: 'copy', enabled: params.input ? true : false
+    publishDir "${params.output}/input", pattern: "env.txt" , mode: 'copy', enabled: params.input ? true : false
+    publishDir "${params.output}/input", pattern: "cov.txt" , mode: 'copy', enabled: params.input ? true : false
+    publishDir "${params.output}/input", pattern: "gxe.txt" , mode: 'copy', enabled: params.input ? true : false
     
     input:
     path samples
@@ -89,12 +89,12 @@ process "calculate_FDR" {
     label "finish"
     tag "${model}:${key}"
     
-    publishDir "${params.output}/regions", patern: "${model}/${context}.region.filtered_${params.output_FDR}_FDR.txt}" , mode: 'copy', enabled: params.input && (params.DMRs || params.merge) ? true : false
-    publishDir "${params.output}/regions", patern: "${model}/${context}.region.txt" , mode: 'copy', enabled: params.input && (params.DMRs || params.merge) ? true : false 
-    publishDir "${params.output}/positions", patern: "${model}/${context}.DMRs.filtered_${params.output_FDR}_FDR.txt" , mode: 'copy', enabled: params.input ? true : false
-    publishDir "${params.output}/positions", patern: "${model}/${context}.DMRs.txt" , mode: 'copy', enabled: params.input  ? true : false
+    publishDir "${params.output}/regions", pattern: "${model}/${context}.region.filtered_${params.output_FDR}_FDR.txt}" , mode: 'copy', enabled: params.input && (params.DMRs || params.merge) ? true : false
+    publishDir "${params.output}/regions", pattern: "${model}/${context}.region.txt" , mode: 'copy', enabled: params.input && (params.DMRs || params.merge) ? true : false 
+    publishDir "${params.output}/positions", pattern: "${model}/${context}.${type}.filtered_${params.output_FDR}_FDR.txt" , mode: 'copy', enabled: params.input ? true : false
+    publishDir "${params.output}/positions", pattern: "${model}/${context}.${type}.txt" , mode: 'copy', enabled: params.input  ? true : false
     
-    //publishDir "${params.output}/regions", patern: "${model}/*.txt" , mode: 'copy', enabled: params.input && (params.DMRs || params.merge) ? true : false
+ 
     
     input:
     tuple val(model), val(key), val(context), val(type), path(results), path(logs)
@@ -137,10 +137,10 @@ process "qqPlot" {
     label "ignore"
     tag "${key}"
     
-    publishDir "${params.output}/regions", patern: "${model}/${context}.*png}" , mode: 'copy', enabled: params.input && (params.DMRs || params.merge) ? true : false
-    publishDir "${params.output}/regions", patern: "${model}/${context}.region.*png" , mode: 'copy', enabled: params.input && (params.DMRs || params.merge) ? true : false 
-    publishDir "${params.output}/positions", patern: "${model}/${key}.filtered_${params.output_FDR}_FDR.*png" , mode: 'copy', enabled: params.input ? true : false
-    publishDir "${params.output}/positions", patern: "${model}/${key}.*png" , mode: 'copy', enabled: params.input  ? true : false
+    publishDir "${params.output}/regions", pattern: "${model}/${context}.*png}" , mode: 'copy', enabled: params.input && (params.DMRs || params.merge) ? true : false
+    publishDir "${params.output}/regions", pattern: "${model}/${context}.region.*png" , mode: 'copy', enabled: params.input && (params.DMRs || params.merge) ? true : false 
+    publishDir "${params.output}/positions", pattern: "${model}/${key}.filtered_${params.output_FDR}_FDR.*png" , mode: 'copy', enabled: params.input ? true : false
+    publishDir "${params.output}/positions", pattern: "${model}/${key}.*png" , mode: 'copy', enabled: params.input  ? true : false
     
     
     //publishDir "${params.output}/positions", patern: "${model}/${context}.${key}.*png" , mode: 'copy', enabled: params.input ? true : false
