@@ -62,10 +62,10 @@ process "split_scaffolds" {
     tag "${context}.${type}"
      
     input:
-    tuple context, type, path(bed)
+    tuple val(context), val(type), path(bed)
     
     output:
-    tuple context, type, path("output/*.bed")
+    tuple val(context), val(type), path("output/*.bed")
 
     when:
     params.input
@@ -92,11 +92,11 @@ process "calculate_FDR" {
     publishDir "${params.output}/${model}", patern: "*.txt" , mode: 'move', enabled: params.input ? true : false
     
     input:
-    tuple model, key, context, type, path(results), path(logs)
+    tuple val(model), val(key), val(context), val(type), path(results), path(logs)
     //tuple model, key, contexts, types, path(results), path(logs)
     
     output:
-    tuple model, key, type, path("${model}/*.txt")
+    tuple val(model), val(key), val(type), path("${model}/*.txt")
     //tuple model, key, val("${types.unique().join("")}"), path("${model}/*.txt")
     //tuple model, key, val("${types.unique().join("")}"), path("input/*.txt"), path("${model}/${key}.filtered_${params.output_FDR}_FDR.txt")
 
@@ -135,11 +135,11 @@ process "qqPlot" {
     publishDir "${params.output}/${model}", patern: "*.png" , mode: 'move', enabled: params.input ? true : false
     
     input:
-    tuple model, key, type, path(result)
+    tuple val(model), val(key), val(type), path(result)
     // eg. [Emodel, CpG.bedGraph, bedGraph, [/paths/... ,/paths/...]]
     
     output:
-    tuple type, path("${model}/*.png") optional true
+    tuple val(type), path("${model}/*.png") optional true
 
     when:
     params.input
