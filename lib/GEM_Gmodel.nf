@@ -161,10 +161,10 @@ process "GEM_Gmodel" {
     label "finish"
     tag "${context}.${type} - ${meth.baseName}"
     
-    publishDir "${params.output}/positions/Gmodel", pattern: "*.txt" , mode: 'copy', \
-            enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel) ? true : false
-    publishDir "${params.output}/regions/Gmodel", pattern: "*.txt" , mode: 'copy', \
-            enabled: (params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel)) && params.DMRs ? true : false
+    //publishDir "${params.output}/positions/Gmodel", pattern: "*.txt" , mode: 'copy', \
+    //        enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel) ? true : false
+    //publishDir "${params.output}/regions/Gmodel", pattern: "*.txt" , mode: 'copy', \
+    //        enabled: (params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel)) && params.DMRs ? true : false
     
     input:
     tuple val(context), val(type), path(meth)
@@ -197,10 +197,10 @@ process "GEM_GxEmodel" {
     label "finish"
     tag "${context}.${type} - ${meth.baseName}"
     
-    publishDir "${params.output}/positions/GxE", pattern: "*.txt" , mode: 'copy', \
-            enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) ? true : false
-    publishDir "${params.output}/regions/GxE", pattern: "*.txt" , mode: 'copy', \
-            enabled: (params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE)) && params.DMRs ? true : false
+    //publishDir "${params.output}/positions/GxE", pattern: "*.txt" , mode: 'copy', \
+    //        enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) ? true : false
+    //publishDir "${params.output}/regions/GxE", pattern: "*.txt" , mode: 'copy', \
+    //        enabled: (params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE)) && params.DMRs ? true : false
     
     input:
     tuple val(context), val(type), path(meth)
