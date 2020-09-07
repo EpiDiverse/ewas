@@ -272,7 +272,7 @@ process "topKplots" {
     input:
     //tuple key, type, path(result), path(scaffolds)
     // eg. [CHG.region, region, [path/to/CHG.region.txt, /path/to/filtered.txt], path/to/CHG.region.txt]
-    tuple key, type, path(results), path("meth.txt"), path(header)
+    tuple val(key), val(type), path(results), path("meth.txt"), path(header)
     path snp
     path gxe
     
