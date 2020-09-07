@@ -89,9 +89,8 @@ process "calculate_FDR" {
     label "finish"
     tag "${model}:${key}"
     
-    publishDir "${params.output}/regions", patern: "${model}/${context}.region.filtered_${params.output_FDR}_FDR.txt"}" , mode: 'copy', enabled: params.input && (params.DMRs || params.merge) ? true : false 
+    publishDir "${params.output}/regions", patern: "${model}/${context}.region.filtered_${params.output_FDR}_FDR.txt"}" , mode: 'copy', enabled: params.input && (params.DMRs || params.merge) ? true : false
     publishDir "${params.output}/regions", patern: "${model}/${key}.txt"}" , mode: 'copy', enabled: params.input && (params.DMRs || params.merge) ? true : false 
-    
     publishDir "${params.output}/positions", patern: "${model}/${key}.filtered_${params.output_FDR}_FDR.txt"}" , mode: 'copy', enabled: params.input ? true : false
     publishDir "${params.output}/positions", patern: "${model}/${key}.txt"}" , mode: 'copy', enabled: params.input  ? true : false
     
