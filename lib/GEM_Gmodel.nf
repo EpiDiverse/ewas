@@ -124,7 +124,7 @@ process "vcftools_extract" {
     label "low"
     label "finish"
     
-    publishDir "${params.output}/input", patern: "snps.txt" , mode: 'copy', \
+    publishDir "${params.output}/input", pattern: "snps.txt" , mode: 'copy', \
             enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel || params.GxE) ? true : false
     
     input:
@@ -161,9 +161,9 @@ process "GEM_Gmodel" {
     label "finish"
     tag "${context}.${type} - ${meth.baseName}"
     
-    publishDir "${params.output}/positions/Gmodel", patern: "*.txt" , mode: 'copy', \
+    publishDir "${params.output}/positions/Gmodel", pattern: "*.txt" , mode: 'copy', \
             enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel) ? true : false
-    publishDir "${params.output}/regions/Gmodel", patern: "*.txt" , mode: 'copy', \
+    publishDir "${params.output}/regions/Gmodel", pattern: "*.txt" , mode: 'copy', \
             enabled: (params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel)) && params.DMRs ? true : false
     
     input:
@@ -197,9 +197,9 @@ process "GEM_GxEmodel" {
     label "finish"
     tag "${context}.${type} - ${meth.baseName}"
     
-    publishDir "${params.output}/positions/GxE", patern: "*.txt" , mode: 'copy', \
+    publishDir "${params.output}/positions/GxE", pattern: "*.txt" , mode: 'copy', \
             enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) ? true : false
-    publishDir "${params.output}/regions/GxE", patern: "*.txt" , mode: 'copy', \
+    publishDir "${params.output}/regions/GxE", pattern: "*.txt" , mode: 'copy', \
             enabled: (params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE)) && params.DMRs ? true : false
     
     input:
@@ -252,9 +252,9 @@ process "dotPlot" {
     label "ignore"
     tag "${key}"
     
-    publishDir "${params.output}/Gmodel/positions", patern: "${model}/*.png" , mode: 'copy', \
+    publishDir "${params.output}/Gmodel/positions", pattern: "${model}/*.png" , mode: 'copy', \
             enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel) ? true : false
-    publishDir "${params.output}/Gmodel/regions", patern: "${model}/*.zip" , mode: 'copy', \
+    publishDir "${params.output}/Gmodel/regions", pattern: "${model}/*.zip" , mode: 'copy', \
             enabled: (params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel)) && params.DMRs ? true : false        
     
     input:
@@ -289,9 +289,9 @@ process "topKplots" {
     label "ignore"
     tag "${key}"
     
-    publishDir "${params.output}/positions/GxE", patern: "GxE/${key}/*.png" , mode: 'copy', \
+    publishDir "${params.output}/positions/GxE", pattern: "GxE/${key}/*.png" , mode: 'copy', \
             enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) && params.kplots > 0 ? true : false
-    publishDir "${params.output}/regions/GxE", patern: "GxE/${key}/*.png" , mode: 'copy', \
+    publishDir "${params.output}/regions/GxE", pattern: "GxE/${key}/*.png" , mode: 'copy', \
             enabled: (params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) && params.kplots > 0) && params.DMRs ? true : false
             
     input:
