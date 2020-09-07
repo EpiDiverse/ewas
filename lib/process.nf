@@ -89,7 +89,7 @@ process "calculate_FDR" {
     label "finish"
     tag "${model}:${key}"
     
-    publishDir "${params.output}/${model}", patern: "*.txt" , mode: 'move', enabled: params.input ? true : false
+    publishDir "${params.output}", patern: "${model}/*.txt" , mode: 'move', enabled: params.input ? true : false
     
     input:
     tuple val(model), val(key), val(context), val(type), path(results), path(logs)
@@ -132,7 +132,7 @@ process "qqPlot" {
     label "ignore"
     tag "${key}"
     
-    publishDir "${params.output}/${model}", patern: "*.png" , mode: 'move', enabled: params.input ? true : false
+    publishDir "${params.output}", patern: "${model}/*.png" , mode: 'move', enabled: params.input ? true : false
     
     input:
     tuple val(model), val(key), val(type), path(result)
