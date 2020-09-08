@@ -331,21 +331,21 @@ process "manhattan" {
     label "ignore"
     tag "${key}"
     
-    publishDir "${params.output}/positions", pattern: "${model}/*.bedGraph.filtered_${params.output_FDR}_FDR.png" , mode: 'copy', \
+    publishDir "${params.output}/positions", pattern: "${model}/.bedGraph.filtered_${params.output_FDR}_FDR.png" , mode: 'copy', \
             enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
-    publishDir "${params.output}/positions", pattern: "${model}/*.bedGraph.filtered_${params.output_FDR}_FDR.zip" , mode: 'copy', \
+    publishDir "${params.output}/positions", pattern: "${model}/.bedGraph.filtered_${params.output_FDR}_FDR.zip" , mode: 'copy', \
             enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
-    publishDir "${params.output}/positions", pattern: "${model}/*.DMRs.filtered_${params.output_FDR}_FDR.png" , mode: 'copy', \
+    publishDir "${params.output}/positions", pattern: "${model}/.DMRs.filtered_${params.output_FDR}_FDR.png" , mode: 'copy', \
             enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
-    publishDir "${params.output}/positions", pattern: "${model}/*.DMRs.filtered_${params.output_FDR}_FDR.zip" , mode: 'copy', \
+    publishDir "${params.output}/positions", pattern: "${model}/.DMRs.filtered_${params.output_FDR}_FDR.zip" , mode: 'copy', \
             enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false 
-    publishDir "${params.output}/positions", pattern: "${model}/*.DMPs.filtered_${params.output_FDR}_FDR.png" , mode: 'copy', \
+    publishDir "${params.output}/positions", pattern: "${model}/.DMPs.filtered_${params.output_FDR}_FDR.png" , mode: 'copy', \
             enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
-    publishDir "${params.output}/positions", pattern: "${model}/*.DMPs.filtered_${params.output_FDR}_FDR.zip" , mode: 'copy', \
+    publishDir "${params.output}/positions", pattern: "${model}/.DMPs.filtered_${params.output_FDR}_FDR.zip" , mode: 'copy', \
             enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false         
-    publishDir "${params.output}/regions", pattern: "${model}/*.region.filtered_${params.output_FDR}_FDR.png" , mode: 'copy', \
+    publishDir "${params.output}/regions", pattern: "${model}/.region.filtered_${params.output_FDR}_FDR.png" , mode: 'copy', \
             enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
-    publishDir "${params.output}/regions", pattern: "${model}/*.region.filtered_${params.output_FDR}_FDR.zip" , mode: 'copy', \
+    publishDir "${params.output}/regions", pattern: "${model}/.region.filtered_${params.output_FDR}_FDR.zip" , mode: 'copy', \
             enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
     input:
     tuple val(model), val(key), val(type), path(txt)
