@@ -140,8 +140,8 @@ process "qqPlot" {
     label "ignore"
     tag "${key}"
     
-    publishDir "${params.output}/positions", pattern: "${model}/${context}.DMRs*.png" , mode: 'copy', enabled: params.input ? true : false
-    publishDir "${params.output}/regions", pattern: "${model}/${context}.region*.png" , mode: 'copy', enabled: params.input && params.DMRs ? true : false
+    publishDir "${params.output}/positions", pattern: "${model}/*.png" , mode: 'copy', enabled: params.input ? true : false
+    publishDir "${params.output}/regions", pattern: "${model}/*.png" , mode: 'copy', enabled: params.input && params.DMRs ? true : false
     
     input:
     //tuple val(model), val(key), val(context), val(type), path(result)
