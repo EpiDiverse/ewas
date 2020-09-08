@@ -142,7 +142,7 @@ process "qqPlot" {
     
     //publishDir "${params.output}/positions", pattern: "${model}/*.png" , mode: 'copy', enabled: params.input ? true : false
     publishDir "${params.output}/regions", pattern: "${model}/.region.qqplot.png" , mode: 'copy', enabled: params.input && (params.DMRs || params.merge) ? true : false
-    publishDir "${params.output}/regions", pattern: "${model}/.region.pval_hist.png" , mode: 'copy', enabled: params.input && params.DMRs || params.merge) ? true : false
+    publishDir "${params.output}/regions", pattern: "${model}/.region.pval_hist.png" , mode: 'copy', enabled: params.input && (params.DMRs || params.merge) ? true : false
     
     input:
     //tuple val(model), val(key), val(context), val(type), path(result)
