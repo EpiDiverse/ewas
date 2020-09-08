@@ -140,10 +140,9 @@ process "qqPlot" {
     label "ignore"
     tag "${key}"
     
-    publishDir "${params.output}/positions/${model}", pattern: "CpG*.pval_hist.png" , mode: 'copy', \
+    publishDir "${params.output}/positions/${model}", pattern: "${key}*.png" , mode: 'copy', \
             enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
-    publishDir "${params.output}/positions/${model}", pattern: "CpG*.qqplot.png" , mode: 'copy', \
-            enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
+
     input:
     //tuple val(model), val(key), val(context), val(type), path(result)
     tuple val(model), val(key), val(type), path(result)
