@@ -293,34 +293,22 @@ process "topKplots" {
     label "ignore"
     tag "${key}"
     
-    publishDir "${params.output}/regions/GxE", pattern: "CpG.region/*.png" , mode: 'copy', \ 
-            enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) && params.kplots > 0 ? true : false
-    publishDir "${params.output}/regions/GxE", pattern: "CHG.region/*.png" , mode: 'copy', \ 
-            enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) && params.kplots > 0 ? true : false
-    publishDir "${params.output}/regions/GxE", pattern: "CHH.region/*.png" , mode: 'copy', \ 
-            enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) && params.kplots > 0 ? true : false
+    publishDir "${params.output}/regions/GxE", pattern: "CpG.region/*.png" , mode: 'copy', enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) && params.kplots > 0 ? true : false
+    publishDir "${params.output}/regions/GxE", pattern: "CHG.region/*.png" , mode: 'copy', enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) && params.kplots > 0 ? true : false
+    publishDir "${params.output}/regions/GxE", pattern: "CHH.region/*.png" , mode: 'copy', enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) && params.kplots > 0 ? true : false
     
-    publishDir "${params.output}/positions/GxE", pattern: "CpG.bedGraph/*.png" , mode: 'copy', \ 
-            enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) && params.kplots > 0 ? true : false
-    publishDir "${params.output}/positions/GxE", pattern: "CHG.bedGraph/*.png" , mode: 'copy', \ 
-            enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) && params.kplots > 0 ? true : false
-    publishDir "${params.output}/positions/GxE", pattern: "CHH.bedGraph/*.png" , mode: 'copy', \ 
-            enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) && params.kplots > 0 ? true : false
+    publishDir "${params.output}/positions/GxE", pattern: "CpG.bedGraph/*.png" , mode: 'copy', enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) && params.kplots > 0 ? true : false
+    publishDir "${params.output}/positions/GxE", pattern: "CHG.bedGraph/*.png" , mode: 'copy', enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) && params.kplots > 0 ? true : false
+    publishDir "${params.output}/positions/GxE", pattern: "CHH.bedGraph/*.png" , mode: 'copy', enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) && params.kplots > 0 ? true : false
   
-    publishDir "${params.output}/positions/GxE", pattern: "CpG.DMRs/*.png" , mode: 'copy', \ 
-            enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) && params.kplots > 0 ? true : false
-    publishDir "${params.output}/positions/GxE", pattern: "CHG.DMRs/*.png" , mode: 'copy', \ 
-            enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) && params.kplots > 0 ? true : false
-    publishDir "${params.output}/positions/GxE", pattern: "CHH.DMRs/*.png" , mode: 'copy', \ 
-            enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) && params.kplots > 0 ? true : false
+    publishDir "${params.output}/positions/GxE", pattern: "CpG.DMRs/*.png" , mode: 'copy', enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) && params.kplots > 0 ? true : false
+    publishDir "${params.output}/positions/GxE", pattern: "CHG.DMRs/*.png" , mode: 'copy', enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) && params.kplots > 0 ? true : false
+    publishDir "${params.output}/positions/GxE", pattern: "CHH.DMRs/*.png" , mode: 'copy', enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) && params.kplots > 0 ? true : false
  
  
-    publishDir "${params.output}/positions/GxE", pattern: "CpG.DMPs/*.png" , mode: 'copy', \ 
-            enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) && params.kplots > 0 ? true : false
-    publishDir "${params.output}/positions/GxE", pattern: "CHG.DMPs/*.png" , mode: 'copy', \ 
-            enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) && params.kplots > 0 ? true : false
-    publishDir "${params.output}/positions/GxE", pattern: "CHH.DMPs/*.png" , mode: 'copy', \ 
-            enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) && params.kplots > 0 ? true : false
+    publishDir "${params.output}/positions/GxE", pattern: "CpG.DMPs/*.png" , mode: 'copy', enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) && params.kplots > 0 ? true : false
+    publishDir "${params.output}/positions/GxE", pattern: "CHG.DMPs/*.png" , mode: 'copy', enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) && params.kplots > 0 ? true : false
+    publishDir "${params.output}/positions/GxE", pattern: "CHH.DMPs/*.png" , mode: 'copy', enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) && params.kplots > 0 ? true : false
     
     
     input:
