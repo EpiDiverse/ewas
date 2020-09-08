@@ -140,8 +140,8 @@ process "qqPlot" {
     label "ignore"
     tag "${key}"
     
-    publishDir "${params.output}/positions/${model}", pattern: "${context}.DMRs*" , mode: 'copy', enabled: params.input ? true : false
-    publishDir "${params.output}/regions/${model}", pattern: "${context}.region*" , mode: 'copy', enabled: params.input && params.DMRs ? true : false
+    publishDir "${params.output}/positions/${model}", pattern: ".DMRs.pval_hist.png" , mode: 'copy', enabled: params.input ? true : false
+    publishDir "${params.output}/regions/${model}", pattern: ".region.pval_hist.png" , mode: 'copy', enabled: params.input && params.DMRs ? true : false
     
     input:
     tuple val(model), val(key), val(type), val(context), path(result)
@@ -156,6 +156,6 @@ process "qqPlot" {
     script:
     """
     mkdir ${model}
-    Rscript ${baseDir}/bin/QQplot.R ${context}.${type}.txt ${model}/${context}.${type}
+    Rscript ${baseDir}/bin/QQplot.R ${key}.txt ${model}/${key}
     """ 
 }
