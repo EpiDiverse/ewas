@@ -140,15 +140,17 @@ process "qqPlot" {
     label "ignore"
     tag "${key}"
     
-    publishDir "${params.output}/positions/", pattern: "*${model}/*.png" , mode: 'copy', enabled: params.input ? true : false
-    publishDir "${params.output}/regions/", pattern: "*${model}/*.png" , mode: 'copy', enabled: params.input && params.DMRs ? true : false
+    publishDir "${params.output}/positions/${model}", pattern: "${context}.DMRs*.png" , mode: 'copy', enabled: params.input ? true : false
+    publishDir "${params.output}/regions/${model}", pattern: "${context}.region*.png" , mode: 'copy', enabled: params.input && params.DMRs ? true : false
     
     input:
-    tuple val(model), val(key), val(type), path(result)
+    tuple val(context), val(type), path(result)
+    //tuple val(model), val(key), val(type), path(result)
     // eg. [Emodel, CpG.bedGraph, bedGraph, [/paths/... ,/paths/...]]
     
     output:
-    tuple val(model), val(key), val(type), path("${model}/*.png") optional true
+    tuple val(context), val(type), path("${model}/*.png") optional true
+    //tuple val(model), val(key), val(type), path("${model}/*.png") optional true
 
     when:
     params.input
