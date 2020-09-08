@@ -252,10 +252,23 @@ process "dotPlot" {
     label "ignore"
     tag "${key}"
     
-    publishDir "${params.output}/Gmodel/positions", pattern: "${model}/*.png" , mode: 'copy', \
-            enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel) ? true : false
-    publishDir "${params.output}/Gmodel/regions", pattern: "${model}/*.zip" , mode: 'copy', \
-            enabled: (params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel)) && params.DMRs ? true : false        
+    
+    publishDir "${params.output}/Gmodel/positions", pattern: "${model}/*.bedGraph.filtered_${params.output_FDR}_FDR.png" , mode: 'copy', \ 
+    enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel) ? true : false
+    publishDir "${params.output}/Gmodel/positions", pattern: "${model}/*.bedGraph.filtered_${params.output_FDR}_FDR.zip" , mode: 'copy', \ 
+    enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel) ? true : false    
+    publishDir "${params.output}/Gmodel/positions", pattern: "${model}/*.DMPs.filtered_${params.output_FDR}_FDR.png" , mode: 'copy', \ 
+    enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel) ? true : false
+    publishDir "${params.output}/Gmodel/positions", pattern: "${model}/*.DMPs.filtered_${params.output_FDR}_FDR.zip" , mode: 'copy', \ 
+    enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel) ? true : false    
+    publishDir "${params.output}/Gmodel/positions", pattern: "${model}/*.DMRs.filtered_${params.output_FDR}_FDR.png" , mode: 'copy', \ 
+    enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel) ? true : false
+    publishDir "${params.output}/Gmodel/positions", pattern: "${model}/*.DMRs.filtered_${params.output_FDR}_FDR.zip" , mode: 'copy', \ 
+    enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel) ? true : false        
+    publishDir "${params.output}/Gmodel/regions", pattern: "${model}/*.region.filtered_${params.output_FDR}_FDR.png" , mode: 'copy', \ 
+    enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel) ? true : false
+    publishDir "${params.output}/Gmodel/regions", pattern: "${model}/*.region.filtered_${params.output_FDR}_FDR.zip" , mode: 'copy', \ 
+    enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel) ? true : false        
     
     input:
     tuple val(model), val(key), val(type), path(result)
@@ -289,11 +302,36 @@ process "topKplots" {
     label "ignore"
     tag "${key}"
     
-    publishDir "${params.output}/positions/GxE", pattern: "GxE/${key}/*.png" , mode: 'copy', \
-            enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) && params.kplots > 0 ? true : false
-    publishDir "${params.output}/regions/GxE", pattern: "GxE/${key}/*.png" , mode: 'copy', \
-            enabled: (params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) && params.kplots > 0) && params.DMRs ? true : false
-            
+    publishDir "${params.output}/regions/GxE", pattern: "CpG.region/*.png" , mode: 'copy', \ 
+    enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) && params.kplots > 0 ? true : false
+    publishDir "${params.output}/regions/GxE", pattern: "CHG.region/*.png" , mode: 'copy', \ 
+    enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) && params.kplots > 0 ? true : false
+    publishDir "${params.output}/regions/GxE", pattern: "CHH.region/*.png" , mode: 'copy', \ 
+    enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) && params.kplots > 0 ? true : false
+    
+    publishDir "${params.output}/positions/GxE", pattern: "CpG.bedGraph/*.png" , mode: 'copy', \ 
+    enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) && params.kplots > 0 ? true : false
+    publishDir "${params.output}/positions/GxE", pattern: "CHG.bedGraph/*.png" , mode: 'copy', \ 
+    enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) && params.kplots > 0 ? true : false
+    publishDir "${params.output}/positions/GxE", pattern: "CHH.bedGraph/*.png" , mode: 'copy', \ 
+    enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) && params.kplots > 0 ? true : false
+  
+    publishDir "${params.output}/positions/GxE", pattern: "CpG.DMRs/*.png" , mode: 'copy', \ 
+    enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) && params.kplots > 0 ? true : false
+    publishDir "${params.output}/positions/GxE", pattern: "CHG.DMRs/*.png" , mode: 'copy', \ 
+    enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) && params.kplots > 0 ? true : false
+    publishDir "${params.output}/positions/GxE", pattern: "CHH.DMRs/*.png" , mode: 'copy', \ 
+    enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) && params.kplots > 0 ? true : false
+ 
+ 
+    publishDir "${params.output}/positions/GxE", pattern: "CpG.DMPs/*.png" , mode: 'copy', \ 
+    enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) && params.kplots > 0 ? true : false
+    publishDir "${params.output}/positions/GxE", pattern: "CHG.DMPs/*.png" , mode: 'copy', \ 
+    enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) && params.kplots > 0 ? true : false
+    publishDir "${params.output}/positions/GxE", pattern: "CHH.DMPs/*.png" , mode: 'copy', \ 
+    enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) && params.kplots > 0 ? true : false
+    
+    
     input:
     //tuple key, type, path(result), path(scaffolds)
     // eg. [CHG.region, region, [path/to/CHG.region.txt, /path/to/filtered.txt], path/to/CHG.region.txt]
