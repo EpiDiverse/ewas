@@ -335,7 +335,11 @@ process "manhattan" {
             enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
     publishDir "${params.output}/positions/${model}", pattern: "*.bedGraph.filtered_${params.output_FDR}_FDR.zip" , mode: 'copy', \
             enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
-              
+    publishDir "${params.output}/positions/${model}", pattern: "*.DMRs.filtered_${params.output_FDR}_FDR.png" , mode: 'copy', \
+            enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
+    publishDir "${params.output}/positions/${model}", pattern: "*.DMRs.filtered_${params.output_FDR}_FDR.zip" , mode: 'copy', \
+            enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
+            
     //publishDir "${params.output}/regions", pattern: "${model}/.region.filtered_${params.output_FDR}_FDR.png" , mode: 'copy', \
     //        enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
     //publishDir "${params.output}/regions", pattern: "${model}/.region.filtered_${params.output_FDR}_FDR.zip" , mode: 'copy', \
