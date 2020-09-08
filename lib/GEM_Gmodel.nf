@@ -89,7 +89,7 @@ process "vcftools_missing" {
 
     script:
     """
-    vcftools --gzvcf ${snp} --max-missing ${params.max_missing} --recode --stdout | gzip -c > out.recode.vcf.gz
+    vcftools --gzvcf ${snp} --max-missing ${params.max_missing} --recode | bgzip > out.recode.vcf.gz
     """ 
 } 
 
