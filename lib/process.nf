@@ -144,12 +144,12 @@ process "qqPlot" {
     publishDir "${params.output}/regions/${model}", pattern: "${context}.region*.png" , mode: 'copy', enabled: params.input && params.DMRs ? true : false
     
     input:
-    tuple val(context), val(type), path(result)
+    tuple val(model), val(context), val(type), path(result)
     //tuple val(model), val(key), val(type), path(result)
     // eg. [Emodel, CpG.bedGraph, bedGraph, [/paths/... ,/paths/...]]
     
     output:
-    tuple val(context), val(type), path("${model}/*.png") optional true
+    tuple val(model), val(context), val(type), path("${model}/*.png") optional true
     //tuple val(model), val(key), val(type), path("${model}/*.png") optional true
 
     when:
@@ -158,6 +158,6 @@ process "qqPlot" {
     script:
     """
     mkdir ${model}
-    Rscript ${baseDir}/bin/QQplot.R ${key}.txt ${model}/${key}
+    Rscript ${baseDir}/bin/QQplot.R ${context}.${type}.txt ${model}/${context}.${type}
     """ 
 }
