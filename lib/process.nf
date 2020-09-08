@@ -140,7 +140,7 @@ process "qqPlot" {
     label "ignore"
     tag "${key}"
     
-    publishDir "${params.output}/positions/${model}", pattern: ".CpG.bedGraph*.png" , mode: 'copy', \
+    publishDir "${params.output}/positions/${model}", pattern: "*.png" , mode: 'copy', \
             enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
 
     input:
