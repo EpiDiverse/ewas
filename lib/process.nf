@@ -156,6 +156,6 @@ process "qqPlot" {
     script:
     """
     mkdir ${model}
-    Rscript ${baseDir}/bin/QQplot.R ${type}.txt ${model}/${type}
+    Rscript ${baseDir}/bin/QQplot.R ${context}.${type}.txt ${model}/${context}.${type}
     """ 
 }
