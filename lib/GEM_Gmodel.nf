@@ -89,10 +89,12 @@ process "vcftools_missing" {
 
     script:
     """
-    vcftools --gzvcf ${snp} --max-missing ${params.max_missing} --recode | bgzip -c > out.recode.vcf.gz
+    vcftools --gzvcf ${snp} --max-missing ${params.max_missing} --recode
+    
     """ 
 } 
 
+// | bgzip -c > out.recode.vcf.gz
 
 process "BEAGLE_SNP_Imputation" {
     
@@ -103,7 +105,7 @@ process "BEAGLE_SNP_Imputation" {
     //afterScript "set +u; source deactivate"
     
     input:
-    path "out.recode.vcf.gz"
+    path "out.recode.vcf"
     
     output:
     path "snps_imputed.gt.vcf.gz"
@@ -113,7 +115,7 @@ process "BEAGLE_SNP_Imputation" {
     
     script:
     """
-    beagle gt=out.recode.vcf.gz iterations=${params.iters} phase-states=${params.phase_states} imp-states=${params.imp_states} ne=${params.ne} nthreads=${params.nthreads_SNP} out=snps_imputed.gt
+    beagle gt=out.recode.vcf iterations=${params.iters} phase-states=${params.phase_states} imp-states=${params.imp_states} ne=${params.ne} nthreads=${params.nthreads_SNP} out=snps_imputed.gt
    
     """ 
 } 
