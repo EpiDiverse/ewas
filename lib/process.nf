@@ -149,6 +149,9 @@ process "qqPlot" {
     publishDir "${params.output}/positions", pattern: "${model}/CpG.DMRs*.png" , mode: 'copy', \
     enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
     
+    publishDir "${params.output}/regions", pattern: "${model}/CpG.region*.png" , mode: 'copy', \
+    enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
+    
     input:
     //tuple val(model), val(key), val(context), val(type), path(result)
     tuple val(model), val(key), val(type), path(result)
