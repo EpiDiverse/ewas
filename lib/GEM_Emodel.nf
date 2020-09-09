@@ -53,7 +53,7 @@ process "bedtools_unionbedg" {
     tag "${context}.${types.unique().join("")}"
 
     maxForks "${params.fork}".toInteger()
-    publishDir "${params.output}/input/bed", pattern: "${context}.unfilter.bed", mode: 'copy', enabled: true
+    publishDir "${params.output}/input/bed", pattern: "${context}.${types.unique().join("")}.bed", mode: 'copy', enabled: true
     
     input:
     tuple val(context), val(types), val(samples), path(beds)
@@ -83,7 +83,7 @@ process "bedtools_filtering" {
 
     maxForks "${params.fork}".toInteger()
      
-    publishDir "${params.output}/input/bed", pattern: "${context}.${type}.bed", mode: 'copy', enabled: true
+    publishDir "${params.output}/input/bed", pattern: "${context}.${type}.bed", mode: 'copy', params.input ? true:false
   
     
     input:
