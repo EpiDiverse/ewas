@@ -133,14 +133,14 @@ process "calculate_FDR" {
 
 
 // GEM_Emodel.out[0]
-// process to generate manhattan plots from Emodel
+// process to generate Q-Q plots from Emodel
 process "qqPlot" {
 
     label "low"
     label "ignore"
     tag "${key}"
     
-    publishDir "${params.output}/positions/${model}", pattern: "${key}/*.png" , mode: 'copy', \
+    publishDir "${params.output}/positions/Emodel", pattern: "${key}/*.png" , mode: 'copy', \
             enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
 
     input:
