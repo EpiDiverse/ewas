@@ -140,9 +140,6 @@ process "qqPlot" {
     label "ignore"
     tag "${key}"
     
-    //publishDir "${params.output}/positions/Emodel", pattern: "${key}/*.png" , mode: 'copy', \
-    //        enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
-    
     publishDir "${params.output}/positions", pattern: "${model}/CpG.bedGraph*.png" , mode: 'copy', \
     enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
     
@@ -151,6 +148,25 @@ process "qqPlot" {
     
     publishDir "${params.output}/regions", pattern: "${model}/CpG.region*.png" , mode: 'copy', \
     enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
+
+    publishDir "${params.output}/positions", pattern: "${model}/CHG.bedGraph*.png" , mode: 'copy', \
+    enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
+    
+    publishDir "${params.output}/positions", pattern: "${model}/CHG.DMRs*.png" , mode: 'copy', \
+    enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
+    
+    publishDir "${params.output}/regions", pattern: "${model}/CHG.region*.png" , mode: 'copy', \
+    enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
+    
+    publishDir "${params.output}/positions", pattern: "${model}/CHH.bedGraph*.png" , mode: 'copy', \
+    enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
+    
+    publishDir "${params.output}/positions", pattern: "${model}/CHH.DMRs*.png" , mode: 'copy', \
+    enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
+    
+    publishDir "${params.output}/regions", pattern: "${model}/CHH.region*.png" , mode: 'copy', \
+    enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false    
+    
     
     input:
     //tuple val(model), val(key), val(context), val(type), path(result)
