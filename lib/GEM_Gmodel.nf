@@ -252,14 +252,14 @@ process "dotPlot" {
     label "ignore"
     tag "${key}"
     
-    publishDir "${params.output}/Gmodel/positions", pattern: "*.bedGraph.filtered_${params.output_FDR}_FDR.png" , mode: 'copy', enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel) ? true : false
-    publishDir "${params.output}/Gmodel/positions", pattern: "*.bedGraph.filtered_${params.output_FDR}_FDR.zip" , mode: 'copy', enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel) ? true : false    
-    publishDir "${params.output}/Gmodel/positions", pattern: "*.DMPs.filtered_${params.output_FDR}_FDR.png" , mode: 'copy', enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel) ? true : false
-    publishDir "${params.output}/Gmodel/positions", pattern: "*.DMPs.filtered_${params.output_FDR}_FDR.zip" , mode: 'copy', enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel) ? true : false    
-    publishDir "${params.output}/Gmodel/positions", pattern: "*.DMRs.filtered_${params.output_FDR}_FDR.png" , mode: 'copy', enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel) ? true : false
-    publishDir "${params.output}/Gmodel/positions", pattern: "*.DMRs.filtered_${params.output_FDR}_FDR.zip" , mode: 'copy', enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel) ? true : false        
-    publishDir "${params.output}/Gmodel/regions", pattern: "*.region.filtered_${params.output_FDR}_FDR.png" , mode: 'copy', enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel) ? true : false
-    publishDir "${params.output}/Gmodel/regions", pattern: "*.region.filtered_${params.output_FDR}_FDR.zip" , mode: 'copy', enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel) ? true : false        
+    publishDir "${params.output}/positions", pattern: "${model}/*.bedGraph.filtered_${params.output_FDR}_FDR.png" , mode: 'copy', enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel) ? true : false
+    publishDir "${params.output}/positions", pattern: "${model}/*.bedGraph.filtered_${params.output_FDR}_FDR.zip" , mode: 'copy', enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel) ? true : false    
+    publishDir "${params.output}/positions/Gmodel", pattern: "*.DMPs.filtered_${params.output_FDR}_FDR.png" , mode: 'copy', enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel) ? true : false
+    publishDir "${params.output}/positions/Gmodel", pattern: "*.DMPs.filtered_${params.output_FDR}_FDR.zip" , mode: 'copy', enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel) ? true : false    
+    publishDir "${params.output}/positions/Gmodel", pattern: "*.DMRs.filtered_${params.output_FDR}_FDR.png" , mode: 'copy', enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel) ? true : false
+    publishDir "${params.output}/positions/Gmodel", pattern: "*.DMRs.filtered_${params.output_FDR}_FDR.zip" , mode: 'copy', enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel) ? true : false        
+    publishDir "${params.output}/positions/Gmodel", pattern: "*.region.filtered_${params.output_FDR}_FDR.png" , mode: 'copy', enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel) ? true : false
+    publishDir "${params.output}/positions/Gmodel", pattern: "*.region.filtered_${params.output_FDR}_FDR.zip" , mode: 'copy', enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel) ? true : false        
     
     input:
     tuple val(model), val(key), val(type), path(result)
