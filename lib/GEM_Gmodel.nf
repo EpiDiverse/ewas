@@ -280,8 +280,9 @@ process "dotPlot" {
     c=(cpos[1]+cpos[2])/2; s=(spos[1]+spos[2])/2;
     if(cpg[1]!=snp[1]){d="trans"} else {if(abs(c-s)>${params.distance}){d="trans"} else {d="cis"}};
     print cpg[1],c,snp[1],s,d}}' ${key}.filtered_${params.output_FDR}_FDR.txt > ${model}/${key}.txt
+    cp ${key}.filtered_${params.output_FDR}_FDR.txt ${model}/${key}.filtered_${params.output_FDR}_FDR.txt
     
-    Rscript ${baseDir}/bin/dotplot.R ${model}/${key}.txt ${model}/${key}.filtered_${params.output_FDR}_FDR 10
+    Rscript ${baseDir}/bin/dotplot.R ${model}/${key}.txt ${model}/${key}.filtered_${params.output_FDR}_FDR.txt 10
     """ 
 }
 
