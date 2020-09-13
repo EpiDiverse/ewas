@@ -450,20 +450,26 @@ workflow 'EWAS' {
 
         // bedtools_intersect for intersecting individual methylation info based on DMPs/DMRs
         bedtools_intersect(bedGraph_DMPs.mix(bedGraph_DMRs))
+
+
         // filter regions based on bootstrap values
         filter_regions(bedGraph_DMRs)
         filter_regions_output = filter_regions.out.filter{ checkLines(it[4]) > 1 }
         filter_regions.out.filter{ checkLines(it[4]) <= 1 }.subscribe {
             log.warn "filter_regions: no data left to analyse after filtering: ${it[0]}.${it[1]}.bed"
         }
-        
         // bedtools_merge for optionally combining filtered sub-regions
         bedtools_merge(filter_regions_output)
         // average_over_regions for calculating average methylation over defined regions
         average_over_regions(filter_regions_output.mix(bedtools_merge.out))
+        average_over_regions_output = average_over_regions.out.filter{ checkLines(it[3]) > 1 }
+        average_over_regions.out.filter{ checkLines(it[3]) <= 1 }.subscribe {
+            log.warn "average_over_regions: no data left to analyse after intersection: ${it[0]}.${it[1]}.bed"
+        }
+
         // stage channels for downstream processes
         bedGraph_channel = params.all || (!params.DMPs && !params.DMRs) ? bedtools_sorting.out.filter{it[1] == "bedGraph"} : Channel.empty()
-        meth_channel = bedGraph_channel.mix(bedtools_intersect.out, average_over_regions.out)
+        meth_channel = bedGraph_channel.mix(bedtools_intersect.out, average_over_regions_output)
 
         // SNPs
         // index individual vcf files, optionally rename header

@@ -272,7 +272,7 @@ process "average_over_regions" {
     script:
     """
     tail -q -n+2 differential.txt methylation.txt | cut -f1 | uniq | sort | uniq > index.txt
-    ${baseDir}/bin/average_over_bed.py <(tail -n+2 differential.txt) methylation.txt index.txt > ${context}.${type}.bed
+    ${baseDir}/bin/average_over_bed.py <(bedtools intersect -a differential.txt -b methylation.txt -u -sorted) methylation.txt index.txt > ${context}.${type}.bed
     """
 
 } 
