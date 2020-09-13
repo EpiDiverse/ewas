@@ -462,8 +462,8 @@ workflow 'EWAS' {
         bedtools_merge(filter_regions_output)
         // average_over_regions for calculating average methylation over defined regions
         average_over_regions(filter_regions_output.mix(bedtools_merge.out))
-        average_over_regions_output = average_over_regions.out.filter{ checkLines(it[3]) > 1 }
-        average_over_regions.out.filter{ checkLines(it[3]) <= 1 }.subscribe {
+        average_over_regions_output = average_over_regions.out.filter{ checkLines(it[2]) > 1 }
+        average_over_regions.out.filter{ checkLines(it[2]) <= 1 }.subscribe {
             log.warn "average_over_regions: no data left to analyse after intersection: ${it[0]}.${it[1]}.bed"
         }
 
