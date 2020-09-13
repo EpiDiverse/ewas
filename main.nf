@@ -113,22 +113,6 @@ if(params.help){
               --GxE_pv <FLOAT>                Set the p-value to run "GxE model". Note: this filter is applied prior to FDR calculation
                                               and should be used cautiously [default: 1]
 
-       
-       Options: SNP IMPUTATION
-            --burnin <INT>                   Number  of  burnin  iterations used  to  estimate  an  initial haplotype frequency model for 
-                                             inferring genotype phase [default: 6]
-            
-	        --iters  <INT>                   Number of iterations used to estimate genotype phase [default: 12]
-            
-	        --phase_states                   Number of model states used to estimate genotype phase [default: 280] 
-            
-	        --imp_states                     Number of model states used to impute  ungenotyped markers [default: 1600]
-            
-	        --ne                             Effective  population  size. A smaller "ne" parameter is required for accurate imputation with 
-                                             smaller or inbred population [default: 1000000]
-            
-	        --nthreads_SNP                   Number of threads of execution [default: 4]
-
          Options: VISUALISATION
               --kplots <INT>                  Specify the number of plots to generate for the top k significant results in "GxE model"  
                                                 [default: 10]
@@ -252,17 +236,17 @@ log.info "         maximum missing                 : ${params.max_missing}"
 log.info "         minor allele count              : ${params.mac}"
 log.info "         minimum quality score           : ${params.minQ}"
 log.info "" }
-if(params.burnin || params.iterations || params.phase_states || params.imp_states || params.ne || nthreads_SNP){
-log.info "         =================================================="
-log.info "         SNP Imputation with BEAGLE"
-log.info "         =================================================="
-log.info "         burnin iterations                                      : ${params.burnin}"
-log.info "         iterations for genotype phase estimation               : ${params.iters}"
-log.info "         number of model states for genotype estimation         : ${params.phase_states}"
-log.info "         number of model states for ungenotype estimation       : ${params.imp_states}"
-log.info "         effective population size                              : ${params.ne}"
-log.info "         number of threads of execution                         : ${params.nthreads_SNP}"
-log.info "" }
+//if(params.burnin || params.iterations || params.phase_states || params.imp_states || params.ne || nthreads_SNP){
+//log.info "         =================================================="
+//log.info "         SNP Imputation with BEAGLE"
+//log.info "         =================================================="
+//log.info "         burnin iterations                                      : ${params.burnin}"
+//log.info "         iterations for genotype phase estimation               : ${params.iters}"
+//log.info "         number of model states for genotype estimation         : ${params.phase_states}"
+//log.info "         number of model states for ungenotype estimation       : ${params.imp_states}"
+//log.info "         effective population size                              : ${params.ne}"
+//log.info "         number of threads of execution                         : ${params.nthreads_SNP}"
+//log.info "" }
 log.info "         =================================================="
 log.info "         =================================================="
 log.info "         Output"
@@ -450,7 +434,6 @@ workflow 'EWAS' {
 
         // bedtools_intersect for intersecting individual methylation info based on DMPs/DMRs
         bedtools_intersect(bedGraph_DMPs.mix(bedGraph_DMRs))
-
 
         // filter regions based on bootstrap values
         filter_regions(bedGraph_DMRs)
