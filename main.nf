@@ -433,7 +433,7 @@ workflow 'EWAS' {
         // filtering bedGraph union bed files based on SD and NA
         bedtools_filtering(bedGraph_combined.filter{ it[3].size() == 1 }.mix(bedtools_unionbedg.out.filter{ it[1] == "bedGraph" }))
         bedtools_filtering_output = bedtools_filtering.out.filter{ checkLines(it[3]) > 1 }
-        bedtools_filtering.out.filter{ checkLines(it[3]) <= 1 }.subscribe {
+        bedtools_filtering.out.filter{ checkLines(it[4]) <= 1 }.subscribe {
             log.warn "no data left to analyse after filtering: ${it[0]}.${it[1]}.bed"
         }
 
