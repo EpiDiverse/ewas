@@ -8,7 +8,11 @@ process "parsing" {
     tag "${samples.getName()}"
 
     maxForks "${params.fork}".toInteger()
-
+    
+    publishDir "${params.output}/input", pattern: "env.txt" , mode: 'copy', enabled: params.input ? true : false
+    publishDir "${params.output}/input", pattern: "cov.txt" , mode: 'copy', enabled: params.input ? true : false
+    publishDir "${params.output}/input", pattern: "gxe.txt" , mode: 'copy', enabled: params.input ? true : false
+    
     input:
     path samples
 
@@ -58,10 +62,10 @@ process "split_scaffolds" {
     tag "${context}.${type}"
      
     input:
-    tuple context, type, path(bed)
+    tuple val(context), val(type), path(bed)
     
     output:
-    tuple context, type, path("output/*.bed")
+    tuple val(context), val(type), path("output/*.bed")
 
     when:
     params.input
@@ -84,13 +88,23 @@ process "calculate_FDR" {
     label "high"
     label "finish"
     tag "${model}:${key}"
-     
+    
+    publishDir "${params.output}/regions", pattern: "${model}/${context}.region.filtered_${params.output_FDR}_FDR.txt" , mode: 'copy', enabled: params.input && (params.DMRs || params.merge) ? true : false
+    publishDir "${params.output}/regions", pattern: "${model}/${context}.region.txt" , mode: 'copy', enabled: params.input && (params.DMRs || params.merge) ? true : false 
+    publishDir "${params.output}/positions", pattern: "${model}/${context}.DMRs.filtered_${params.output_FDR}_FDR.txt" , mode: 'copy', enabled: params.input ? true : false
+    publishDir "${params.output}/positions", pattern: "${model}/${context}.DMRs.txt" , mode: 'copy', enabled: params.input  ? true : false
+    publishDir "${params.output}/positions", pattern: "${model}/${context}.DMPs.filtered_${params.output_FDR}_FDR.txt" , mode: 'copy', enabled: params.input ? true : false
+    publishDir "${params.output}/positions", pattern: "${model}/${context}.DMPs.txt" , mode: 'copy', enabled: params.input  ? true : false
+    publishDir "${params.output}/positions", pattern: "${model}/${context}.bedGraph.filtered_${params.output_FDR}_FDR.txt" , mode: 'copy', enabled: params.input ? true : false
+    publishDir "${params.output}/positions", pattern: "${model}/${context}.bedGraph.txt" , mode: 'copy', enabled: params.input  ? true : false
+ 
+    
     input:
-    tuple model, key, context, type, path(results), path(logs)
+    tuple val(model), val(key), val(context), val(type), path(results), path(logs)
     //tuple model, key, contexts, types, path(results), path(logs)
     
     output:
-    tuple model, key, type, path("${model}/*.txt")
+    tuple val(model), val(key), val(type), path("${model}/*.txt")
     //tuple model, key, val("${types.unique().join("")}"), path("${model}/*.txt")
     //tuple model, key, val("${types.unique().join("")}"), path("input/*.txt"), path("${model}/${key}.filtered_${params.output_FDR}_FDR.txt")
 
@@ -119,19 +133,49 @@ process "calculate_FDR" {
 
 
 // GEM_Emodel.out[0]
-// process to generate manhattan plots from Emodel
+// process to generate Q-Q plots from Emodel
 process "qqPlot" {
 
     label "low"
     label "ignore"
     tag "${key}"
-     
+    
+    publishDir "${params.output}/positions", pattern: "${model}/CpG.bedGraph*.png" , mode: 'copy', \
+    enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
+    
+    publishDir "${params.output}/positions", pattern: "${model}/CpG.DMRs*.png" , mode: 'copy', \
+    enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
+    
+    publishDir "${params.output}/regions", pattern: "${model}/CpG.region*.png" , mode: 'copy', \
+    enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
+
+    publishDir "${params.output}/positions", pattern: "${model}/CHG.bedGraph*.png" , mode: 'copy', \
+    enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
+    
+    publishDir "${params.output}/positions", pattern: "${model}/CHG.DMRs*.png" , mode: 'copy', \
+    enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
+    
+    publishDir "${params.output}/regions", pattern: "${model}/CHG.region*.png" , mode: 'copy', \
+    enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
+    
+    publishDir "${params.output}/positions", pattern: "${model}/CHH.bedGraph*.png" , mode: 'copy', \
+    enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
+    
+    publishDir "${params.output}/positions", pattern: "${model}/CHH.DMRs*.png" , mode: 'copy', \
+    enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
+    
+    publishDir "${params.output}/regions", pattern: "${model}/CHH.region*.png" , mode: 'copy', \
+    enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false    
+    
+    
     input:
-    tuple model, key, type, path(result)
+    //tuple val(model), val(key), val(context), val(type), path(result)
+    tuple val(model), val(key), val(type), path(result)
     // eg. [Emodel, CpG.bedGraph, bedGraph, [/paths/... ,/paths/...]]
     
     output:
-    tuple type, path("${model}/*.png") optional true
+    //tuple val(model), val(key), val(type), path("${model}/*.png")
+    tuple val(model), val(key), val(type), path("${model}/*.png") optional true
 
     when:
     params.input
