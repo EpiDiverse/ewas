@@ -433,8 +433,8 @@ workflow 'EWAS' {
         // filtering bedGraph union bed files based on SD and NA
         bedtools_filtering(bedGraph_combined.filter{ it[3].size() == 1 }.mix(bedtools_unionbedg.out.filter{ it[1] == "bedGraph" }))
         bedtools_filtering_output = bedtools_filtering.out.filter{ checkLines(it[3]) > 1 }
-        bedtools_filtering.out.filter{ checkLines(it[4]) <= 1 }.subscribe {
-            log.warn "no data left to analyse after filtering: ${it[0]}.${it[1]}.bed"
+        bedtools_filtering.out.filter{ checkLines(it[3]) <= 1 }.subscribe {
+            log.warn "bedtools_filtering: no data left to analyse after filtering: ${it[0]}.${it[1]}.bed"
         }
 
         // sorting on union bed files
@@ -452,10 +452,15 @@ workflow 'EWAS' {
         bedtools_intersect(bedGraph_DMPs.mix(bedGraph_DMRs))
         // filter regions based on bootstrap values
         filter_regions(bedGraph_DMRs)
+        filter_regions_output = filter_regions.out.filter{ checkLines(it[4]) > 1 }
+        filter_regions.out.filter{ checkLines(it[4]) <= 1 }.subscribe {
+            log.warn "filter_regions: no data left to analyse after filtering: ${it[0]}.${it[1]}.bed"
+        }
+        
         // bedtools_merge for optionally combining filtered sub-regions
-        bedtools_merge(filter_regions.out)
+        bedtools_merge(filter_regions_output)
         // average_over_regions for calculating average methylation over defined regions
-        average_over_regions(filter_regions.out.mix(bedtools_merge.out))
+        average_over_regions(filter_regions_output.mix(bedtools_merge.out))
         // stage channels for downstream processes
         bedGraph_channel = params.all || (!params.DMPs && !params.DMRs) ? bedtools_sorting.out.filter{it[1] == "bedGraph"} : Channel.empty()
         meth_channel = bedGraph_channel.mix(bedtools_intersect.out, average_over_regions.out)
