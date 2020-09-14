@@ -102,7 +102,7 @@ if(params.help){
 
 
          Options: Gene Ontology(GO) Analysis
-              --GOA                            Path to .gff file with standard format that has name of chromosome/scaffold (the first column),
+              --goa                            Path to .gff file with standard format that has name of chromosome/scaffold (the first column),
                                                name of program generated this feature (the second column), feature type name, e.g. Gene, Variation,
                                                Similarity (the third column), start (fourth column), end positions (fifth column), score, a floating
                                                point (the sixth column), strand (the seventh column), frame (the eighth column) and attribute (the 
@@ -253,7 +253,7 @@ if(params.GOA && params.species || params.GO_filter){
 log.info "         =================================================="
 log.info "         Gene Ontology Analysis"
 log.info "         =================================================="
-log.info "         path to .gff file               : ${params.GOA}"
+log.info "         path to .gff file               : ${params.goa}"
 log.info "         name of species                 : ${params.species}"
 log.info "         output GO p-value               : ${params.GO_filter}"
 log.info "" }
