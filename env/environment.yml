@@ -11,7 +11,22 @@ dependencies:
   - bedtools=2.29.2=hc088bd4_0
   - binutils_impl_linux-64=2.34=h2122c62_9
   - binutils_linux-64=2.34=h47ac705_27
+  - bioconductor-annotate=1.66.0=r40_0
+  - bioconductor-annotationdbi=1.50.0=r40_0
+  - bioconductor-annotationforge=1.30.1=r40_0
+  - bioconductor-biobase=2.48.0=r40h037d062_0
+  - bioconductor-biocgenerics=0.34.0=r40_0
+  - bioconductor-category=2.54.0=r40_0
   - bioconductor-gem=1.14.0=r40_0
+  - bioconductor-genefilter=1.70.0=r40hc6cf775_0
+  - bioconductor-go.db=3.11.4=r40_0
+  - bioconductor-gostats=2.54.0=r40_0
+  - bioconductor-graph=1.66.0=r40h037d062_0
+  - bioconductor-gseabase=1.50.0=r40_0
+  - bioconductor-iranges=2.22.1=r40h037d062_0
+  - bioconductor-rbgl=1.64.0=r40h5f743cb_0
+  - bioconductor-rgraphviz=2.32.0=r40h5f743cb_0
+  - bioconductor-s4vectors=0.26.0=r40h037d062_0
   - bwidget=1.9.14=0
   - bzip2=1.0.8=h516909a_3
   - c-ares=1.16.1=h516909a_3
@@ -19,10 +34,12 @@ dependencies:
   - cairo=1.16.0=h3fc0475_1005
   - certifi=2020.6.20=py38h32f6830_0
   - curl=7.71.1=he644dc0_5
+  - cycler=0.10.0=py_2
   - datamash=1.7=h516909a_0
   - fontconfig=2.13.1=h1056068_1002
   - freetype=2.10.2=he06d7ca_0
   - fribidi=1.0.10=h516909a_0
+  - future=0.18.2=py38h32f6830_1
   - gcc_impl_linux-64=7.5.0=hda68d29_13
   - gcc_linux-64=7.5.0=hf34d7eb_27
   - gettext=0.19.8.1=hc5be6a0_1002
@@ -38,7 +55,9 @@ dependencies:
   - icu=67.1=he1b5a44_0
   - jpeg=9d=h516909a_0
   - kernel-headers_linux-64=2.6.32=h77966d4_13
+  - kiwisolver=1.2.0=py38hbf85e49_0
   - krb5=1.17.1=hfafb76e_3
+  - lcms2=2.11=hbd6801e_0
   - ld_impl_linux-64=2.34=hc38a660_9
   - libblas=3.8.0=17_openblas
   - libcblas=3.8.0=17_openblas
@@ -64,17 +83,22 @@ dependencies:
   - libxml2=2.9.10=h68273f3_2
   - lz4-c=1.9.2=he1b5a44_3
   - make=4.3=h516909a_0
+  - matplotlib-base=3.3.1=py38h91b0d89_1
   - ncurses=6.2=he1b5a44_1
   - numpy=1.19.1=py38hbc27379_2
+  - olefile=0.46=py_0
   - openssl=1.1.1g=h516909a_1
   - pango=1.42.4=h7062337_4
   - pcre=8.44=he1b5a44_0
   - pcre2=10.35=h2f06484_0
   - perl=5.30.3=h516909a_1
+  - pillow=7.2.0=py38h9776b28_1
   - pip=20.2.3=py_0
   - pixman=0.38.0=h516909a_1003
   - pthread-stubs=0.4=h14c3975_1001
+  - pyparsing=2.4.7=pyh9f0ad1d_0
   - python=3.8.5=h1103e12_7_cpython
+  - python-dateutil=2.8.1=py_0
   - python_abi=3.8=1_cp38
   - r-argparse=2.0.1=r40h6115d3f_2
   - r-askpass=1.1=r40hcdcec82_2
@@ -82,6 +106,11 @@ dependencies:
   - r-backports=1.1.9=r40hcdcec82_0
   - r-base=4.0.2=he766273_1
   - r-base64enc=0.1_3=r40hcdcec82_1004
+  - r-bh=1.72.0_3=r40h6115d3f_1
+  - r-bit=4.0.4=r40hcdcec82_0
+  - r-bit64=4.0.5=r40hcdcec82_0
+  - r-bitops=1.0_6=r40hcdcec82_1004
+  - r-blob=1.2.1=r40h6115d3f_1
   - r-callr=3.4.4=r40h6115d3f_0
   - r-cli=2.0.2=r40h6115d3f_1
   - r-clipr=0.7.0=r40h6115d3f_1
@@ -90,6 +119,7 @@ dependencies:
   - r-crosstalk=1.1.0.1=r40h6115d3f_1
   - r-curl=4.3=r40hcdcec82_1
   - r-data.table=1.12.8=r40hcdcec82_1
+  - r-dbi=1.1.0=r40h6115d3f_1
   - r-desc=1.2.0=r40h6115d3f_1003
   - r-digest=0.6.25=r40h0357c0b_2
   - r-dplyr=1.0.2=r40h0357c0b_0
@@ -119,6 +149,7 @@ dependencies:
   - r-magrittr=1.5=r40h6115d3f_1003
   - r-mass=7.3_53=r40hcdcec82_0
   - r-matrix=1.2_18=r40h7fa42b6_3
+  - r-memoise=1.1.0=r40h6115d3f_1004
   - r-mgcv=1.8_33=r40h7fa42b6_0
   - r-mime=0.9=r40hcdcec82_1
   - r-munsell=0.5.0=r40h6115d3f_1003
@@ -128,6 +159,7 @@ dependencies:
   - r-pkgbuild=1.1.0=r40h6115d3f_0
   - r-pkgconfig=2.0.3=r40h6115d3f_1
   - r-pkgload=1.1.0=r40h0357c0b_0
+  - r-plogr=0.2.0=r40h6115d3f_1003
   - r-plotly=4.9.2.1=r40h6115d3f_1
   - r-praise=1.0.0=r40h6115d3f_1004
   - r-prettyunits=1.1.1=r40h6115d3f_1
@@ -138,11 +170,14 @@ dependencies:
   - r-r6=2.4.1=r40h6115d3f_1
   - r-rcolorbrewer=1.1_2=r40h6115d3f_1003
   - r-rcpp=1.0.4.6=r40h0357c0b_1
+  - r-rcurl=1.98_1.2=r40hcdcec82_1
   - r-readr=1.3.1=r40h0357c0b_1004
   - r-rlang=0.4.7=r40hcdcec82_0
   - r-rprojroot=1.3_2=r40h6115d3f_1003
+  - r-rsqlite=2.2.0=r40h0357c0b_2
   - r-rstudioapi=0.11=r40h6115d3f_1
   - r-scales=1.1.1=r40h6115d3f_0
+  - r-survival=3.2_3=r40hcdcec82_0
   - r-sys=3.4=r40hcdcec82_0
   - r-testthat=2.3.2=r40h0357c0b_1
   - r-tibble=3.0.3=r40hcdcec82_0
@@ -152,18 +187,23 @@ dependencies:
   - r-vctrs=0.3.4=r40hcdcec82_0
   - r-viridislite=0.3.0=r40h6115d3f_1003
   - r-withr=2.2.0=r40h6115d3f_1
+  - r-xml=3.99_0.3=r40hcdcec82_1
+  - r-xtable=1.8_4=r40h6115d3f_3
   - r-yaml=2.2.1=r40hcdcec82_1
   - r-zeallot=0.1.0=r40h6115d3f_1002
   - r-zip=2.1.1=r40hcdcec82_0
   - readline=8.0=he28a2e2_2
   - sed=4.8=hbfbb72e_0
   - setuptools=49.6.0=py38h32f6830_0
+  - six=1.15.0=pyh9f0ad1d_0
   - sqlite=3.33.0=h4cf870e_0
   - sysroot_linux-64=2.12=h77966d4_13
   - tk=8.6.10=hed695b0_0
   - tktable=2.10=h555a92e_3
+  - tornado=6.0.4=py38h1e0a361_1
   - vcftools=0.1.16=he513fc3_4
   - wheel=0.35.1=pyh9f0ad1d_0
+  - wordcloud=1.8.0=py38h1e0a361_0
   - xorg-kbproto=1.0.7=h14c3975_1002
   - xorg-libice=1.0.10=h516909a_0
   - xorg-libsm=1.2.3=h84519dc_1000
