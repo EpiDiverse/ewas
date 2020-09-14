@@ -187,6 +187,7 @@ process "qqPlot" {
     """ 
 }
 
+/*
 process "GO_analysis" {
     
     //label "low"
@@ -237,3 +238,4 @@ process "GO_analysis" {
     
     """
  }   
+*/
