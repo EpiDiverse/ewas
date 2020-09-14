@@ -406,7 +406,7 @@ input_channel = single_channel.mix(DMPs_channel, DMRs_channel)
 ////////////////////
 
 // INCLUDES
-include {parsing;split_scaffolds;calculate_FDR;qqPlot;GO_analysis} from './lib/process.nf' params(params)
+include {parsing;split_scaffolds;calculate_FDR;qqPlot} from './lib/process.nf' params(params)
 include {filtering;bedtools_unionbedg;bedtools_filtering;bedtools_sorting;bedtools_intersect;filter_regions;bedtools_merge;average_over_regions;GEM_Emodel;manhattan;} from './lib/GEM_Emodel.nf' params(params)
 include {tabix;bcftools;vcftools_missing;vcftools_extract;GEM_Gmodel;GEM_GxEmodel;dotPlot;topKplots} from './lib/GEM_Gmodel.nf' params(params)
 include {checkLines} from './lib/functions.nf'
@@ -528,7 +528,7 @@ workflow 'EWAS' {
         
         // visualisation
         qqPlot(calculate_FDR.out)
-        GO_analysis(calculate_FDR.out)
+        //GO_analysis(calculate_FDR.out)
         manhattan(calculate_FDR.out.filter{ it[0] == "Emodel" })
         dotPlot(calculate_FDR.out.filter{ it[0] == "Gmodel" })
         //kplots_channel = calculate_FDR.out.filter{ it[0] == "GxE" }.map{ it.tail() }.combine(GEM_GxEmodel.out[1].map{ tuple( it[0] + "." + it[1], it.last()) }.groupTuple(), by:0)
