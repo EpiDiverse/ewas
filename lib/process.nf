@@ -199,7 +199,7 @@ process "GO_analysis" {
     
     input:
     path(goa)
-    path("${model}/${key}.filtered_${params.output_FDR}_FDR.txt")
+    //path("${model}/${key}.filtered_${params.output_FDR}_FDR.txt")
  
     
     output:
