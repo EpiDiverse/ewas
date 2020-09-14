@@ -297,7 +297,7 @@ samples_channel = Channel
         return tuple(field[0].replaceAll("\\s",""))}
 
 //stage gff file with goa channel
-goa = Channel.fromPath(params.goa)
+goa = "${params.goa}/.gff"
 
 
 // STAGE TEST PROFILE 
@@ -422,6 +422,7 @@ workflow 'EWAS' {
         samples
         input_channel
         SNPs
+        goa
 
     // outline workflow
     main:
