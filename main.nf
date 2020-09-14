@@ -297,9 +297,7 @@ samples_channel = Channel
         return tuple(field[0].replaceAll("\\s",""))}
 
 //stage gff file with goa channel
-goa = !params.goa ? Channel.empty() : 
-        Channel
-            .from(file("${params.goa}"), size:1, type: "file")
+goa = Channel.fromPath(params.goa)
 
 
 // STAGE TEST PROFILE 
