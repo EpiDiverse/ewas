@@ -198,12 +198,11 @@ process "GO_analysis" {
     
     
     input:
-    path(goa)
-    //path("${model}/${key}.filtered_${params.output_FDR}_FDR.txt")
- 
+    tuple val(model), val(key), val(context), val(type), path(goa), path("${key}.filtered_${params.output_FDR}_FDR.txt")
+
     
     output:
-    path ("2${goa}")
+    path ("2${key}.filtered_${params.output_FDR}_FDR.txt")
     //path("${model}/GOA/3${key}.filtered_${params.output_FDR}_FDR.txt")
  
 
@@ -212,7 +211,7 @@ process "GO_analysis" {
     
     script:
     """
-    head -n 1 ${goa} > 2${goa}
+    bedtools intersect -a ${goa} -b ${key}.filtered_${params.output_FDR}_FDR.txt > 2${key}.filtered_${params.output_FDR}_FDR.txt.txt
     
     """
  }   
