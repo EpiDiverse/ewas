@@ -297,7 +297,7 @@ samples_channel = Channel
         return tuple(field[0].replaceAll("\\s",""))}
 
 //stage gff file with goa channel
-goa = "${params.goa}/.gff"
+goa = "${params.goa}"
 
 
 // STAGE TEST PROFILE 
