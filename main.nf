@@ -532,7 +532,7 @@ workflow 'EWAS' {
         
         // visualisation
         qqPlot(calculate_FDR.out)
-        GO_analysis(calculate_FDR.out[0].combine(go.out[0]), by:0))
+        GO_analysis(calculate_FDR.out[0].combine(go.out[0], by:0))
         manhattan(calculate_FDR.out.filter{ it[0] == "Emodel" })
         dotPlot(calculate_FDR.out.filter{ it[0] == "Gmodel" })
         //kplots_channel = calculate_FDR.out.filter{ it[0] == "GxE" }.map{ it.tail() }.combine(GEM_GxEmodel.out[1].map{ tuple( it[0] + "." + it[1], it.last()) }.groupTuple(), by:0)
