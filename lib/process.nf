@@ -203,7 +203,7 @@ process "GO_analysis" {
  
     
     output:
-    2${goa}
+    path ("2${goa}")
     //path("${model}/GOA/3${key}.filtered_${params.output_FDR}_FDR.txt")
  
 
