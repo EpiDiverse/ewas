@@ -193,15 +193,15 @@ process "GO_analysis" {
     label "finish"
     //tag "${model}:${key}"
     
-    publishDir "${params.output}/positions/GOA", pattern: "${model}/*_FDR.txt" , mode: 'copy', \
+    publishDir "${params.output}/positions/${model}/GOA", pattern: "*.txt" , mode: 'copy', \
     enabled: params.GOA && params.species ? true : false
 
  
     input:
-    path("${model}/*_FDR.txt")
+    tuple val(model), val(key), val(type), path("${model}/${key}.filtered_${params.output_FDR}_FDR.txt")
     
     output:
-    path ("${model}/3*_FDR.txt")
+    path ("${model}/GOA/3${key}.filtered_${params.output_FDR}_FDR.txt")
   //path "GOA/BP_${model}/${key}.filtered_${params.output_FDR}/BP.txt"
   //path("GOA/MF_${model}/${key}.filtered_${params.output_FDR}/MF.txt"), path("GOA/CC_${model}/${key}.filtered_${params.output_FDR}/CC.txt")
 
@@ -210,10 +210,9 @@ process "GO_analysis" {
     
     script:
     """
-    mkdir-p ${model}/${key}.filtered_${params.GO_filter}
-    
-    awk -F":" '\$1=\$1' ${model}/*_FDR.txt | awk -F"-" '\$1=\$1' | awk '{print \$1"\\t"\$2"\\t"\$3}' | sed '1d' > ${model}/2*_FDR.txt
-    bedtools intersect -a ${GOA} -b ${model}/2*_FDR.txt | awk '\$3=="gene"' | awk -F";" '\$1=\$1' | awk '{gsub(/\\ID=/,"",\$9)}' | awk '{print \$9}' > ${model}/3*_FDR.txt
+    mkdir GOA
+    awk -F":" '\$1=\$1' ${model}/${key}.filtered_${params.output_FDR}_FDR.txt | awk -F"-" '\$1=\$1' | awk '{print \$1"\\t"\$2"\\t"\$3}' | sed '1d' > ${model}/2${key}.filtered_${params.output_FDR}_FDR.txt
+    bedtools intersect -a ${GOA} -b ${model}/2${key}.filtered_${params.output_FDR}_FDR.txt | awk '\$3=="gene"' | awk -F";" '\$1=\$1' | awk '{gsub(/\\ID=/,"",\$9)}' | awk '{print \$9}' > ${model}GOA/3${key}.filtered_${params.output_FDR}_FDR.txt
     
     """
  }   
