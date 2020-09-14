@@ -192,12 +192,28 @@ process "GO_analysis" {
     label "low"
     label "finish"
     tag "${model}:${key}"
-     
+    
+    publishDir "${params.output}/positions/GOA", pattern: "BP_${model}/${key}.filtered_${params.output_FDR}/BP.txt" , mode: 'copy', \
+    enabled: params.GOA && params.species ? true : false
+    publishDir "${params.output}/positions/GOA", pattern: "MF_${model}/${key}.filtered_${params.output_FDR}/MF.txt" , mode: 'copy', \
+    enabled: params.GOA && params.species ? true : false
+    publishDir "${params.output}/positions/GOA", pattern: "CC_${model}/${key}.filtered_${params.output_FDR}/CC.txt" , mode: 'copy', \
+    enabled: params.GOA && params.species ? true : false
+    
+    publishDir "${params.output}/regions/GOA", pattern: "BP_${model}/${key}.filtered_${params.output_FDR}/BP.txt" , mode: 'copy', \
+    enabled: params.GOA && params.species ? true : false
+    publishDir "${params.output}/regions/GOA", pattern: "MF_${model}/${key}.filtered_${params.output_FDR}/MF.txt" , mode: 'copy', \
+    enabled: params.GOA && params.species ? true : false
+    publishDir "${params.output}/regions/GOA", pattern: "CC_${model}/${key}.filtered_${params.output_FDR}/CC.txt" , mode: 'copy', \
+    enabled: params.GOA && params.species ? true : false 
+ 
     input:
     path("${model}/${key}.filtered_${params.output_FDR}_FDR.txt")
     
     output:
     path "GOA/BP_${model}/${key}.filtered_${params.output_FDR}/BP.txt"
+    path "GOA/MF_${model}/${key}.filtered_${params.output_FDR}/MF.txt"
+    path "GOA/MF_${model}/${key}.filtered_${params.output_FDR}/MF.txt"
   //path("GOA/MF_${model}/${key}.filtered_${params.output_FDR}/MF.txt"), path("GOA/CC_${model}/${key}.filtered_${params.output_FDR}/CC.txt")
 
     when:
