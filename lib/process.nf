@@ -212,11 +212,12 @@ process "GO_analysis" {
     
     script:
     """
-    bedtools intersect -a ${goa} -b ${key}.filtered_${params.output_FDR}_FDR.txt > 2${key}.filtered_${params.output_FDR}_FDR.txt.txt
+    bedtools intersect -a ${goa} -b ${key}.txt > 2${key}.txt
     
     """
  }   
 
+//bedtools intersect -a ${goa} -b ${key}.filtered_${params.output_FDR}_FDR.txt > 2${key}.filtered_${params.output_FDR}_FDR.txt.txt
 /*
   mkdir GOA
     awk -F":" '\$1=\$1' ${model}/${key}.filtered_${params.output_FDR}_FDR.txt | awk -F"-" '\$1=\$1' | awk '{print \$1"\\t"\$2"\\t"\$3}' | sed '1d' > ${model}/2${key}.filtered_${params.output_FDR}_FDR.txt
