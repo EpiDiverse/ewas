@@ -296,6 +296,11 @@ samples_channel = Channel
         def field = line.toString().tokenize('\t').take(1)
         return tuple(field[0].replaceAll("\\s",""))}
 
+//stage gff file with goa channel
+goa = !params.goa ? Channel.empty() : 
+        Channel
+            .from(file("${params.goa}"), size:1, type: "file")
+
 
 // STAGE TEST PROFILE 
 if ( workflow.profile.tokenize(",").contains("test") ){
