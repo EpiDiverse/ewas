@@ -234,3 +234,6 @@ process "GO_analysis" {
     cat BP_${model}/${key}.filtered_${params.GO_filter}/*.txt > BP.txt
     cat MF_${model}/${key}.filtered_${params.GO_filter}/*.txt > MF.txt
     cat BCC_${model}/${key}.filtered_${params.GO_filter}/*.txt > CC.txt
+    
+    """
+ }   
