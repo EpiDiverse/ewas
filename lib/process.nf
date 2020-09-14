@@ -201,7 +201,7 @@ process "GO_analysis" {
     tuple val(model), val(key), val(type), path("${model}/${key}.filtered_${params.output_FDR}_FDR.txt")
     
     output:
-    path ("${model}/GOA/3${key}.filtered_${params.output_FDR}_FDR.txt")
+    tuple val(model), val(key), val(type), path ("${model}/GOA/3${key}.filtered_${params.output_FDR}_FDR.txt")
   //path "GOA/BP_${model}/${key}.filtered_${params.output_FDR}/BP.txt"
   //path("GOA/MF_${model}/${key}.filtered_${params.output_FDR}/MF.txt"), path("GOA/CC_${model}/${key}.filtered_${params.output_FDR}/CC.txt")
 
