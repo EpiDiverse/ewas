@@ -194,7 +194,7 @@ process "GO_analysis" {
     //tag "${model}:${key}"
     
     publishDir "${params.output}/positions/${model}/GOA", pattern: "*.txt" , mode: 'copy', \
-    enabled: params.GOA && params.species ? true : false
+    enabled: params.goa && params.species ? true : false
 
  
     input:
@@ -206,13 +206,13 @@ process "GO_analysis" {
   //path("GOA/MF_${model}/${key}.filtered_${params.output_FDR}/MF.txt"), path("GOA/CC_${model}/${key}.filtered_${params.output_FDR}/CC.txt")
 
     when:
-    params.GOA
+    params.goa
     
     script:
     """
     mkdir GOA
     awk -F":" '\$1=\$1' ${model}/${key}.filtered_${params.output_FDR}_FDR.txt | awk -F"-" '\$1=\$1' | awk '{print \$1"\\t"\$2"\\t"\$3}' | sed '1d' > ${model}/2${key}.filtered_${params.output_FDR}_FDR.txt
-    bedtools intersect -a ${GOA} -b ${model}/2${key}.filtered_${params.output_FDR}_FDR.txt | awk '\$3=="gene"' | awk -F";" '\$1=\$1' | awk '{gsub(/\\ID=/,"",\$9)}' | awk '{print \$9}' > ${model}/GOA/3${key}.filtered_${params.output_FDR}_FDR.txt
+    bedtools intersect -a ${GOA} -b ${model}/2${key}.filtered_${params.output_FDR}_FDR.txt | awk '\$3=="gene"' | awk -F";" '\$1=\$1' | awk '{gsub(/\\ID=/,"",\$9)}' | awk '{print \$9}' > ${model}/GOA/3${key}.filtered_${params.goa}_FDR.txt
     
     """
  }   
