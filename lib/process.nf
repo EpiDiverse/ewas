@@ -191,18 +191,19 @@ process "GO_analysis" {
     
     //label "low"
     label "finish"
-    //tag "${model}:${key}"
+    tag "${model}:${key}"
     
     publishDir "${params.output}/positions/${model}/GOA", pattern: "${model}/GOA/3${key}.filtered_${params.output_FDR}_FDR.txt" , mode: 'copy', \
     enabled: params.goa && params.species ? true : false
     
     
     input:
-    tuple val(model), val(key), val(context), val(type), path(goa), path("${model}/${key}.filtered_${params.output_FDR}_FDR.txt")
+    path(goa)
+    path("${model}/${key}.filtered_${params.output_FDR}_FDR.txt")
  
     
     output:
-    tuple val(model), val(key), val(type), path("${model}/GOA/3${key}.filtered_${params.output_FDR}_FDR.txt")
+    path("${model}/GOA/3${key}.filtered_${params.output_FDR}_FDR.txt")
  
 
     when:
