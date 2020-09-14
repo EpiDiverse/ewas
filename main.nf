@@ -533,7 +533,7 @@ workflow 'EWAS' {
         
         // visualisation
         qqPlot(calculate_FDR.out)
-        GO_analysis(calculate_FDR.out[0],goa)
+        GO_analysis(goa, calculate_FDR.out[0].collect())
         //GO_analysis(goa)
         manhattan(calculate_FDR.out.filter{ it[0] == "Emodel" })
         dotPlot(calculate_FDR.out.filter{ it[0] == "Gmodel" })
