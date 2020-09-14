@@ -189,9 +189,9 @@ process "qqPlot" {
 
 process "GO_analysis" {
     
-    label "low"
+    //label "low"
     label "finish"
-    tag "${model}:${key}"
+    //tag "${model}:${key}"
     
     publishDir "${params.output}/positions/GOA", pattern: "BP_${model}/${key}.filtered_${params.output_FDR}/BP.txt" , mode: 'copy', \
     enabled: params.GOA && params.species ? true : false
