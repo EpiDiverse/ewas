@@ -192,10 +192,7 @@ process "GO_analysis" {
     //label "low"
     //label "finish"
     tag "${model}:${key}"
-    MAX=5
-    errorStrategy { task.exitStatus == 143 ? 'retry' : (task.attempt == MAX ? 'ignore' : 'retry') }
-    maxRetries MAX
-    
+
     //publishDir "${params.output}/positions/${model}/GOA", pattern: "${model}/GOA/3${key}.filtered_${params.output_FDR}_FDR.txt" , mode: 'copy', \
     //enabled: params.goa && params.species ? true : false
     
