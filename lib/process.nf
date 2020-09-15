@@ -198,7 +198,7 @@ process "GO_analysis" {
     input:
     path(goa)
     val(species)
-    tuple val(model), val(key), val(type), path("${key}.filtered*")
+    tuple val(model), val(key), val(type), path("${key}.filtered*.txt")
 
     
     output:
@@ -209,9 +209,9 @@ process "GO_analysis" {
     
     script:
     """
-    awk -F":" '\$1=\$1' ${key}.filtered* | awk -F"-" '\$1=\$1' | awk '{print \$1"\\t"\$2"\\t"\$3}' | sed '1d' > 2${key}.filtered*
-    bedtools intersect -a ${goa} -b 2${key}.filtered* | awk '\$3=="gene"' | awk -F";" '\$1=\$1' | awk '{gsub(/\\ID=/,"",\$9)}1' | awk '{print \$9}' > 3${key}.filtered*
-    bash ${baseDir}bin/GOA/GOtest.sh 3${key}.filtered* ${species} BP_${model}/${key}.filtered_${params.GO_filter}/overtree BP_${model}/${key}.filtered_${params.GO_filter}/over BP_${model}/${key}.filtered_${params.GO_filter}/undertree BP_${model}/${key}.filtered_${params.GO_filter}/under BP ${params.GO_filter}
+    awk -F":" '\$1=\$1' ${key}.filtered*.txt | awk -F"-" '\$1=\$1' | awk '{print \$1"\\t"\$2"\\t"\$3}' | sed '1d' > 2${key}.filtered*.txt
+    bedtools intersect -a ${goa} -b 2${key}.filtered*.txt | awk '\$3=="gene"' | awk -F";" '\$1=\$1' | awk '{gsub(/\\ID=/,"",\$9)}1' | awk '{print \$9}' > 3${key}.filtered*.txt
+    bash ${baseDir}bin/GOA/GOtest.sh 3${key}.filtered*.txt ${species} BP_${model}/${key}.filtered_${params.GO_filter}/overtree BP_${model}/${key}.filtered_${params.GO_filter}/over BP_${model}/${key}.filtered_${params.GO_filter}/undertree BP_${model}/${key}.filtered_${params.GO_filter}/under BP ${params.GO_filter}
     cat BP_${model}/*.txt > BP.txt
     """
  }   
