@@ -197,7 +197,7 @@ process "GO_analysis" {
     
     input:
     path(goa)
-    tuple val(model), val(key), val(type), val(species), path("${key}.filtered_${params.output_FDR}_FDR.txt")
+    tuple val(model), val(key), val(type), val("species"), path("${key}.filtered_${params.output_FDR}_FDR.txt")
 
     
     output:
