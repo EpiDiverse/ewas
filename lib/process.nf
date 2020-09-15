@@ -212,7 +212,7 @@ process "GO_analysis" {
     
     script:
     """
-    bedtools intersect -a ${goa} -b ${key}.txt > 2${key}.txt
+    bedtools intersect -a ${goa} -b ${key}.filtered_${params.output_FDR}_FDR.txt > 2${key}.filtered_${params.output_FDR}_FDR.txt
     
     """
  }   
