@@ -249,7 +249,7 @@ log.info "         maximum missing                 : ${params.max_missing}"
 log.info "         minor allele count              : ${params.mac}"
 log.info "         minimum quality score           : ${params.minQ}"
 log.info "" }
-if(params.GOA && params.species || params.GO_filter){
+if(params.goa && params.species || params.GO_filter){
 log.info "         =================================================="
 log.info "         Gene Ontology Analysis"
 log.info "         =================================================="
