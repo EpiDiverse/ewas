@@ -208,8 +208,8 @@ process "GO_analysis" {
     
     script:
     """
-    awk -F":" '\$1=\$1' ${model}/${key}.filtered_${params.output_FDR}_FDR.txt | awk -F"-" '\$1=\$1' | awk '{print \$1"\\t"\$2"\\t"\$3}' | sed '1d' > ${model}/2${key}.filtered_${params.output_FDR}_FDR.txt
-    bedtools intersect -a ${goa} -b ${model}/2${key}.filtered_${params.output_FDR}_FDR.txt | awk '\$3=="gene"' | awk -F";" '\$1=\$1' | awk '{gsub(/\\ID=/,"",\$9)}' | awk '{print \$9}' > ${model}/GOA/3${key}.filtered_${params.goa}_FDR.txt
+    awk -F":" '\$1=\$1' ${key}.filtered_${params.output_FDR}_FDR.txt | awk -F"-" '\$1=\$1' | awk '{print \$1"\\t"\$2"\\t"\$3}' | sed '1d' > 2${key}.filtered_${params.output_FDR}_FDR.txt
+    bedtools intersect -a ${goa} -b ${model}/2${key}.filtered_${params.output_FDR}_FDR.txt | awk '\$3=="gene"' | awk -F";" '\$1=\$1' | awk '{gsub(/\\ID=/,"",\$9)}' | awk '{print \$9}' > 3${key}.filtered_${params.goa}_FDR.txt
     
     """
  }   
