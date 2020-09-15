@@ -169,12 +169,10 @@ process "qqPlot" {
     
     
     input:
-    //tuple val(model), val(key), val(context), val(type), path(result)
     tuple val(model), val(key), val(type), path(result)
     // eg. [Emodel, CpG.bedGraph, bedGraph, [/paths/... ,/paths/...]]
     
     output:
-    //tuple val(model), val(key), val(type), path("${model}/*.png")
     tuple val(model), val(key), val(type), path("${model}/*.png") optional true
 
     when:
@@ -199,19 +197,19 @@ process "GO_analysis" {
     
     input:
     path(goa)
-    tuple val(model), val(key), path(goa), path("${key}.filtered_${params.output_FDR}_FDR.txt")
+    tuple val(model), val(key), val(type), path("${key}.filtered_${params.output_FDR}_FDR.txt")
 
     
     output:
-    //tuple val(model), val(key), path ("2${key}.filtered_${params.output_FDR}_FDR.txt")
-    tuple val(model), val(key), path("2${key}.filtered_${params.output_FDR}_FDR.txt") optional true
+    tuple val(model), val(key), val(type), path("2${key}.filtered_${params.output_FDR}_FDR.txt") optional true
 
     when:
     params.goa
     
     script:
     """
-    bedtools intersect -a ${goa} -b ${key}.filtered_${params.output_FDR}_FDR.txt > 2${key}.filtered_${params.output_FDR}_FDR.txt
+    awk -F":" '\$1=\$1' ${model}/${key}.filtered_${params.output_FDR}_FDR.txt | awk -F"-" '\$1=\$1' | awk '{print \$1"\\t"\$2"\\t"\$3}' | sed '1d' > ${model}/2${key}.filtered_${params.output_FDR}_FDR.txt
+    bedtools intersect -a ${goa} -b ${model}/2${key}.filtered_${params.output_FDR}_FDR.txt | awk '\$3=="gene"' | awk -F";" '\$1=\$1' | awk '{gsub(/\\ID=/,"",\$9)}' | awk '{print \$9}' > ${model}/GOA/3${key}.filtered_${params.goa}_FDR.txt
     
     """
  }   
