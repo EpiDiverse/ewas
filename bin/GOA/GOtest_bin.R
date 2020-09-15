@@ -41,8 +41,8 @@ load(paste0("${baseDir}/db",species,"/frame.RData"))
 load(paste0("${baseDir}/db",species,"/goframeData.RData"))
 load(paste0("${baseDir}/db",species,"/goFrame.RData"))
 load(paste0("${baseDir}/db",species,"/goAllFrame.RData"))
-load(paste0("$${baseDir}/db",species,"/gsc.RData"))
-load(paste0("/${baseDir}/db",species,"/universe.RData"))
+load(paste0("${baseDir}/db",species,"/gsc.RData"))
+load(paste0("${baseDir}/db",species,"/universe.RData"))
 source("${baseDir}/bin/GOA/GOtest.R")
 
 #parse options
