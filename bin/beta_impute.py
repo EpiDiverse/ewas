@@ -109,6 +109,10 @@ if __name__ == '__main__':
 ## END OF SCRIPT
 ################
 
+<<<<<<< HEAD
 #print(line, sep="\t", file=fout)
 #fin.close()
 #fout.close()
+=======
+
+>>>>>>> 3ed2bddd5686fcd937992d9f55274d29ea7fd703

@@ -8,13 +8,15 @@ process "filtering" {
     tag "${context}.${type}"
 
     maxForks "${params.fork}".toInteger()
-   
+    
+    //publishDir "${params.output}", mode: 'copy', enabled: params.input ? true:false
+    
     input:
-    tuple context, type, sample, path(bed)
+    tuple val(context), val(type), val(sample), path(bed)
     // eg. [CpG, DMPs, sample, /path/to/CpG.bedGraph]
 
     output:
-    tuple context, type, sample, path("${sample}.filtered.bed")
+    tuple val(context), val(type), val(sample), path("${sample}.filtered.bed")
     // eg. [CpG, DMPs, sample, sample.txt]
 
     when:
@@ -51,13 +53,14 @@ process "bedtools_unionbedg" {
     tag "${context}.${types.unique().join("")}"
 
     maxForks "${params.fork}".toInteger()
-   
+    publishDir "${params.output}/input/bed", pattern: "${context}.${types.unique().join("")}.bed", mode: 'copy', enabled: true
+    
     input:
-    tuple context, types, samples, path(beds)
+    tuple val(context), val(types), val(samples), path(beds)
     // eg, [CpG, [DMRs, DMRs, DMRs, ...], [sample1, sample2, sample3, ...], [path1, path2, path3, ...]]
 
     output:
-    tuple context, val("${types.unique().join("")}"), samples, path("${context}.${types.unique().join("")}.bed")
+    tuple val(context), val("${types.unique().join("")}"), val(samples), path("${context}.${types.unique().join("")}.bed")
     // eg. [CpG, [DMRs, DMRs, DMRs, ...], [sample1, sample2, sample3, ...], /path/to/CpG.DMRs.bed]
 
     when:
@@ -79,13 +82,16 @@ process "bedtools_filtering" {
     tag "${context}.${type}"
 
     maxForks "${params.fork}".toInteger()
-   
+     
+    publishDir "${params.output}/input/bed", pattern: "${context}.${type}.bed", mode: 'copy', enabled: params.input ? true:false
+  
+    
     input:
-    tuple context, type, samples, path(bed)
+    tuple val(context), val(type), val(samples), path(bed)
     // eg, [CpG, DMRs, [sample1, sample2, sample3, ...], /path/to/DMRs.bed]
 
     output:
-    tuple context, type, samples, path("bed/${context}.${type}.bed")
+    tuple val(context), val(type), val(samples), path("bed/${context}.${type}.bed")
     // eg. [CpG, DMRs, [sample1, sample2, sample3, ...], /path/to/DMRs.bed]
 
     when:
@@ -118,13 +124,14 @@ process "bedtools_sorting" {
     tag "${context}.${type}"
 
     maxForks "${params.fork}".toInteger()
-   
+    //publishDir "${params.output}", mode: 'copy', enabled: params.input ? true:false
+    
     input:
-    tuple context, type, samples, path(bed)
+    tuple val(context), val(type), val(samples), path(bed)
     // eg, [CpG, DMRs, [sample1, sample2, sample3, ...], /path/to/DMRs.bed]
 
     output:
-    tuple context, type, path("bed/${context}.${type}.bed")
+    tuple val(context), val(type), path("bed/${context}.${type}.bed")
     // eg. [CpG, DMRs, /path/to/DMRs.bed]
 
     when:
@@ -154,13 +161,15 @@ process "bedtools_intersect" {
     tag "${context}.${type}"
 
     maxForks "${params.fork}".toInteger()
-   
+    
+    //publishDir "${params.output}", mode: 'copy', enabled: params.input ? true:false
+    
     input:
-    tuple context, bedGraph, path("methylation.txt"), type, path("differential.txt")
+    tuple val(context), val(bedGraph), path("methylation.txt"), val(type), path("differential.txt")
     // eg. [CpG, bedGraph, CpG.bedGraph.bed, DMPs, CpG.DMPs.bed]
 
     output:
-    tuple context, type, path("${context}.${type}.bed")
+    tuple val(context), val(type), path("${context}.${type}.bed")
 
     when:
     params.input
@@ -182,13 +191,15 @@ process "filter_regions" {
     tag "${context}.${type}"
 
     maxForks "${params.fork}".toInteger()
-   
+     
+    //publishDir "${params.output}", mode: 'copy', enabled: params.input ? true:false
+     
     input:
-    tuple context, bedGraph, path(methylation), type, path(differential)
+    tuple val(context), val(bedGraph), path(methylation), val(type), path(differential)
     // eg. [CpG, bedGraph, CpG.bedGraph.bed, DMRs, CpG.DMRs.bed]
 
     output:
-    tuple context, bedGraph, path(methylation), val("region"), path("filtered.txt")
+    tuple val(context), val(bedGraph), path(methylation), val("region"), path("filtered.txt")
      
     when:    
     params.input
@@ -211,13 +222,15 @@ process "bedtools_merge" {
     tag "${context}.${type}"
 
     maxForks "${params.fork}".toInteger()
-   
+    
+    //publishDir "${params.output}", mode: 'copy', enabled: params.input && params.merge ? true:false
+    
     input:
-    tuple context, bedGraph, path(methylation), type, path(differential)
+    tuple val(context), val(bedGraph), path(methylation), val(type), path(differential)
     // eg. [CpG, bedGraph, CpG.bedGraph.bed, DMRs, CpG.DMRs.bed]
 
     output:
-    tuple context, bedGraph, path(methylation), val("merged"), path("${context}.merged.txt")
+    tuple val(context), val(bedGraph), path(methylation), val("merged"), path("${context}.merged.txt")
      
     when:    
     params.input && params.merge
@@ -242,13 +255,15 @@ process "average_over_regions" {
     tag "${context}.${type}"
 
     maxForks "${params.fork}".toInteger()
-   
+
+    publishDir "${params.output}/regions", pattern: "${context}.${type}.bed", mode: 'copy', enabled:true
+ 
     input:
-    tuple context, bedGraph, path("methylation.txt"), type, path("differential.txt")
+    tuple val(context), val(bedGraph), path("methylation.txt"), val(type), path("differential.txt")
     // eg. [CpG, bedGraph, CpG.bedGraph.bed, DMRs, CpG.DMRs.bed]
 
     output:
-    tuple context, type, path("${context}.${type}.bed")
+    tuple val(context), val(type), path("${context}.${type}.bed")
 
     when:
     params.input
@@ -256,7 +271,7 @@ process "average_over_regions" {
     script:
     """
     tail -q -n+2 differential.txt methylation.txt | cut -f1 | uniq | sort | uniq > index.txt
-    ${baseDir}/bin/average_over_bed.py <(tail -n+2 differential.txt) methylation.txt index.txt > ${context}.${type}.bed
+    ${baseDir}/bin/average_over_bed.py <(bedtools intersect -a differential.txt -b methylation.txt -u -sorted) methylation.txt index.txt > ${context}.${type}.bed
     """
 
 } 
@@ -274,16 +289,28 @@ process "GEM_Emodel" {
     label "low"
     label "finish"
     tag "${context}.${type} - ${meth.baseName}"
+     
+//    publishDir "${params.output}/positions/Emodel", patern: "${context}.${key}.txt" , mode: 'copy', \
+//            enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false         
 
+//    publishDir "${params.output}/regions/Emodel", patern: "${context}.region.txt" , mode: 'copy', \
+//            enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) && (params.DMRs || params.merge) ? true : false         
+
+            
     input:
-    tuple context, type, path(meth)
+    tuple val(context), val(type), path(meth)
     path envs
     path covs
     
     output:
     //tuple context, type, path("output/*.txt"), path("output/*.log")
+<<<<<<< HEAD
     path "output/${context}.${type}.gz"
     path "output/${context}.${type}.log"
+=======
+    path "${context}.${type}.txt"
+    path "${context}.${type}.log"
+>>>>>>> 3ed2bddd5686fcd937992d9f55274d29ea7fd703
    
     when:
     params.input && (!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel
@@ -292,8 +319,13 @@ process "GEM_Emodel" {
     """
     mkdir output
     awk -F "\\t" '{printf \"%s:%s-%s\",\$1,\$2,\$3; for(i=4; i<=NF; i++) {printf \"\\t%s\",\$i}; print null}' ${meth} > \$(basename ${meth} .bed).txt
+<<<<<<< HEAD
     Rscript ${baseDir}/bin/GEM_Emodel.R ${baseDir}/bin ${envs} ${covs} \$(basename ${meth} .bed).txt ${params.Gmodel_pv} output/temp > output/${context}.${type}.log || exit \$?
     tail -n+2 output/temp.txt | gzip > output/${context}.${type}.gz && rm output/temp.txt
+=======
+    Rscript ${baseDir}/bin/GEM_Emodel.R ${baseDir}/bin ${envs} ${covs} \$(basename ${meth} .bed).txt ${params.Gmodel_pv} output/temp > ${context}.${type}.log || exit \$?
+    tail -n+2 output/temp.txt > ${context}.${type}.txt
+>>>>>>> 3ed2bddd5686fcd937992d9f55274d29ea7fd703
     """
 
 }
@@ -307,14 +339,31 @@ process "manhattan" {
     label "low"
     label "ignore"
     tag "${key}"
-     
+    
+    publishDir "${params.output}/positions/${model}", pattern: "*.bedGraph.filtered_${params.output_FDR}_FDR.png" , mode: 'copy', \
+            enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
+    publishDir "${params.output}/positions/${model}", pattern: "*.bedGraph.filtered_${params.output_FDR}_FDR.zip" , mode: 'copy', \
+            enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
+    publishDir "${params.output}/positions/${model}", pattern: "*.DMRs.filtered_${params.output_FDR}_FDR.png" , mode: 'copy', \
+            enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
+    publishDir "${params.output}/positions/${model}", pattern: "*.DMRs.filtered_${params.output_FDR}_FDR.zip" , mode: 'copy', \
+            enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
+    publishDir "${params.output}/positions/${model}", pattern: "*.DMPs.filtered_${params.output_FDR}_FDR.png" , mode: 'copy', \
+            enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
+    publishDir "${params.output}/positions/${model}", pattern: "*.DMPs.filtered_${params.output_FDR}_FDR.zip" , mode: 'copy', \
+            enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false            
+    publishDir "${params.output}/regions/${model}", pattern: "*.region.filtered_${params.output_FDR}_FDR.png" , mode: 'copy', \
+            enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
+    publishDir "${params.output}/regions/${model}", pattern: "*.region.filtered_${params.output_FDR}_FDR.zip" , mode: 'copy', \
+            enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
+    
     input:
-    tuple model, key, type, path(txt)
+    tuple val(model), val(key), val(type), path(txt)
     // eg. [Emodel, CpG.bedGraph, bedGraph, [/paths/... ,/paths/...]]
     
     output:
-    tuple type, path("*.png") optional true
-    tuple type, path("*.zip") optional true
+    tuple val(type), path("*.png") optional true
+    tuple val(type), path("*.zip") optional true
 
     when:
     params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel)

@@ -8,7 +8,7 @@ process "tabix" {
     tag "$sample"
      
     input:
-    tuple sample, path(snp)
+    tuple val(sample), path(snp)
     
     output:
     path "output/*.vcf.gz"
@@ -79,7 +79,11 @@ process "vcftools_missing" {
     path snp
     
     output:
+<<<<<<< HEAD
     path "out.recode.vcf"
+=======
+    path "out.recode.vcf.gz"
+>>>>>>> 3ed2bddd5686fcd937992d9f55274d29ea7fd703
     //file("out.imiss")
     //file("out.log")
     //path "out.log"
@@ -89,6 +93,7 @@ process "vcftools_missing" {
 
     script:
     """
+<<<<<<< HEAD
     vcftools --gzvcf ${snp} --max-missing ${params.max_missing} --recode
     
     """ 
@@ -96,6 +101,12 @@ process "vcftools_missing" {
 
 // | bgzip -c > out.recode.vcf.gz
 
+=======
+    vcftools --gzvcf ${snp} --max-missing ${params.max_missing} --recode --stdout | bgzip  > out.recode.vcf.gz
+    """ 
+} 
+
+>>>>>>> 3ed2bddd5686fcd937992d9f55274d29ea7fd703
 process "BEAGLE_SNP_Imputation" {
     
     label "low"
@@ -105,7 +116,11 @@ process "BEAGLE_SNP_Imputation" {
     //afterScript "set +u; source deactivate"
     
     input:
+<<<<<<< HEAD
     path "out.recode.vcf"
+=======
+    path "out.recode.vcf.gz"
+>>>>>>> 3ed2bddd5686fcd937992d9f55274d29ea7fd703
     
     output:
     path "snps_imputed.gt.vcf.gz"
@@ -115,7 +130,11 @@ process "BEAGLE_SNP_Imputation" {
     
     script:
     """
+<<<<<<< HEAD
     beagle gt=out.recode.vcf iterations=${params.iters} phase-states=${params.phase_states} imp-states=${params.imp_states} ne=${params.ne} nthreads=${params.nthreads_SNP} out=snps_imputed.gt
+=======
+    beagle gt=out.recode.vcf.gz iterations=${params.iters} phase-states=${params.phase_states} imp-states=${params.imp_states} ne=${params.ne} nthreads=${params.nthreads_SNP} out=snps_imputed.gt
+>>>>>>> 3ed2bddd5686fcd937992d9f55274d29ea7fd703
    
     """ 
 } 
@@ -127,7 +146,10 @@ process "vcftools_extract" {
 
     label "low"
     label "finish"
-     
+    
+    publishDir "${params.output}/input", pattern: "snps.txt" , mode: 'copy', \
+            enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel || params.GxE) ? true : false
+    
     input:
     path ("snps_imputed.gt.vcf.gz")
     
@@ -142,6 +164,10 @@ process "vcftools_extract" {
     script:
     """   
     vcftools --gzvcf snps_imputed.gt.vcf.gz \\
+<<<<<<< HEAD
+=======
+    --max-missing 1 \\
+>>>>>>> 3ed2bddd5686fcd937992d9f55274d29ea7fd703
     --mac ${params.mac} \\
     --minQ ${params.minQ} \\
     --012 \\
@@ -160,9 +186,14 @@ process "GEM_Gmodel" {
     label "low"
     label "finish"
     tag "${context}.${type} - ${meth.baseName}"
-
+    
+    //publishDir "${params.output}/positions/Gmodel", pattern: "*.txt" , mode: 'copy', \
+    //        enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel) ? true : false
+    //publishDir "${params.output}/regions/Gmodel", pattern: "*.txt" , mode: 'copy', \
+    //        enabled: (params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel)) && params.DMRs ? true : false
+    
     input:
-    tuple context, type, path(meth)
+    tuple val(context), val(type), path(meth)
     path snps
     path covs
     
@@ -190,9 +221,14 @@ process "GEM_GxEmodel" {
     label "low"
     label "finish"
     tag "${context}.${type} - ${meth.baseName}"
-
+    
+    //publishDir "${params.output}/positions/GxE", pattern: "*.txt" , mode: 'copy', \
+    //        enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) ? true : false
+    //publishDir "${params.output}/regions/GxE", pattern: "*.txt" , mode: 'copy', \
+    //        enabled: (params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE)) && params.DMRs ? true : false
+    
     input:
-    tuple context, type, path(meth)
+    tuple val(context), val(type), path(meth)
     path snps
     path gxe
     
@@ -202,7 +238,7 @@ process "GEM_GxEmodel" {
     path "output/${context}.${type}.txt"
     path "output/${context}.${type}.log"
     path "${context}.${type}.txt"
-    tuple context, type, path("header.txt")
+    tuple val(context), val(type), path("header.txt")
 
     when:
     params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE)
@@ -238,13 +274,23 @@ process "dotPlot" {
     label "low"
     label "ignore"
     tag "${key}"
-     
+    
+    publishDir "${params.output}/positions", pattern: "${model}/*.bedGraph.filtered_${params.output_FDR}_FDR.png" , mode: 'copy', enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel) ? true : false
+    publishDir "${params.output}/positions", pattern: "${model}/*.bedGraph.filtered_${params.output_FDR}_FDR.zip" , mode: 'copy', enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel) ? true : false    
+    publishDir "${params.output}/positions", pattern: "${model}/*.DMRs.filtered_${params.output_FDR}_FDR.png" , mode: 'copy', enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel) ? true : false
+    publishDir "${params.output}/positions", pattern: "${model}/*.DMRs.filtered_${params.output_FDR}_FDR.zip" , mode: 'copy', enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel) ? true : false    
+    publishDir "${params.output}/positions", pattern: "${model}/*.DMPs.filtered_${params.output_FDR}_FDR.png" , mode: 'copy', enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel) ? true : false
+    publishDir "${params.output}/positions", pattern: "${model}/*.DMPs.filtered_${params.output_FDR}_FDR.zip" , mode: 'copy', enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel) ? true : false    
+    publishDir "${params.output}/regions", pattern: "${model}/*.region.filtered_${params.output_FDR}_FDR.png" , mode: 'copy', enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel) ? true : false
+    publishDir "${params.output}/regions", pattern: "${model}/*.region.filtered_${params.output_FDR}_FDR.zip" , mode: 'copy', enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel) ? true : false    
+   
+    
     input:
-    tuple model, key, type, path(result)
+    tuple val(model), val(key), val(type), path(result)
     
     output:
-    tuple type, path("${model}/*.png") optional true
-    tuple type, path("${model}/*.zip") optional true
+    tuple val(type), path("${model}/*.png") optional true
+    tuple val(type), path("${model}/*.zip") optional true
 
     when:
     params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel)
@@ -270,16 +316,54 @@ process "topKplots" {
     label "low"
     label "ignore"
     tag "${key}"
-     
+    
+    publishDir "${params.output}/regions", pattern: "${model}/CpG.region/*.png" , mode: 'copy', \
+    enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) && params.kplots > 0 ? true : false
+    
+    publishDir "${params.output}/regions", pattern: "${model}/CHG.region/*.png" , mode: 'copy', \
+    enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) && params.kplots > 0 ? true : false
+    
+    publishDir "${params.output}/regions", pattern: "${model}/CHH.region/*.png" , mode: 'copy', \
+    enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) && params.kplots > 0 ? true : false
+    
+    publishDir "${params.output}/positions", pattern: "${model}/CpG.bedGraph/*.png" , mode: 'copy', \
+    enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) && params.kplots > 0 ? true : false
+    
+    publishDir "${params.output}/positions", pattern: "${model}/CHG.bedGraph/*.png" , mode: 'copy', \
+    enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) && params.kplots > 0 ? true : false
+    
+    publishDir "${params.output}/positions", pattern: "${model}/CHH.bedGraph/*.png" , mode: 'copy', \
+    enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) && params.kplots > 0 ? true : false
+  
+    publishDir "${params.output}/positions", pattern: "${model}/CpG.DMRs/*.png" , mode: 'copy', \
+    enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) && params.kplots > 0 ? true : false
+    
+    publishDir "${params.output}/positions", pattern: "${model}/CHG.DMRs/*.png" , mode: 'copy', \
+    enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) && params.kplots > 0 ? true : false
+    
+    publishDir "${params.output}/positions", pattern: "${model}/CHH.DMRs/*.png" , mode: 'copy', \
+    enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) && params.kplots > 0 ? true : false
+ 
+ 
+    publishDir "${params.output}/positions", pattern: "${model}/CpG.DMPs/*.png" , mode: 'copy', \
+    enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) && params.kplots > 0 ? true : false
+    
+    publishDir "${params.output}/positions", pattern: "${model}/CHG.DMPs/*.png" , mode: 'copy', \
+    enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) && params.kplots > 0 ? true : false
+    
+    publishDir "${params.output}/positions", pattern: "${model}/CHH.DMPs/*.png" , mode: 'copy', \
+    enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) && params.kplots > 0 ? true : false
+    
+    
     input:
     //tuple key, type, path(result), path(scaffolds)
     // eg. [CHG.region, region, [path/to/CHG.region.txt, /path/to/filtered.txt], path/to/CHG.region.txt]
-    tuple key, type, path(results), path("meth.txt"), path(header)
+    tuple val(key), val(type), path(results), path("meth.txt"), path(header)
     path snp
     path gxe
     
     output:
-    tuple type, path("GxE/${key}/*.png") optional true
+    tuple val(type), path("GxE/${key}/*.png") optional true
 
     when:
     params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) && params.kplots > 0

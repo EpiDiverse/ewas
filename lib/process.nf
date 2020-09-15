@@ -8,7 +8,11 @@ process "parsing" {
     tag "${samples.getName()}"
 
     maxForks "${params.fork}".toInteger()
-
+    
+    publishDir "${params.output}/input", pattern: "env.txt" , mode: 'copy', enabled: params.input ? true : false
+    publishDir "${params.output}/input", pattern: "cov.txt" , mode: 'copy', enabled: params.input ? true : false
+    publishDir "${params.output}/input", pattern: "gxe.txt" , mode: 'copy', enabled: params.input ? true : false
+    
     input:
     path samples
 
@@ -58,10 +62,10 @@ process "split_scaffolds" {
     tag "${context}.${type}"
      
     input:
-    tuple context, type, path(bed)
+    tuple val(context), val(type), path(bed)
     
     output:
-    tuple context, type, path("output/*.bed")
+    tuple val(context), val(type), path("output/*.bed")
 
     when:
     params.input
@@ -84,13 +88,23 @@ process "calculate_FDR" {
     label "high"
     label "finish"
     tag "${model}:${key}"
-     
+    
+    publishDir "${params.output}/regions", pattern: "${model}/${context}.region.filtered_${params.output_FDR}_FDR.txt" , mode: 'copy', enabled: params.input && (params.DMRs || params.merge) ? true : false
+    publishDir "${params.output}/regions", pattern: "${model}/${context}.region.txt" , mode: 'copy', enabled: params.input && (params.DMRs || params.merge) ? true : false 
+    publishDir "${params.output}/positions", pattern: "${model}/${context}.DMRs.filtered_${params.output_FDR}_FDR.txt" , mode: 'copy', enabled: params.input ? true : false
+    publishDir "${params.output}/positions", pattern: "${model}/${context}.DMRs.txt" , mode: 'copy', enabled: params.input  ? true : false
+    publishDir "${params.output}/positions", pattern: "${model}/${context}.DMPs.filtered_${params.output_FDR}_FDR.txt" , mode: 'copy', enabled: params.input ? true : false
+    publishDir "${params.output}/positions", pattern: "${model}/${context}.DMPs.txt" , mode: 'copy', enabled: params.input  ? true : false
+    publishDir "${params.output}/positions", pattern: "${model}/${context}.bedGraph.filtered_${params.output_FDR}_FDR.txt" , mode: 'copy', enabled: params.input ? true : false
+    publishDir "${params.output}/positions", pattern: "${model}/${context}.bedGraph.txt" , mode: 'copy', enabled: params.input  ? true : false
+ 
+    
     input:
-    tuple model, key, context, type, path(results), path(logs)
+    tuple val(model), val(key), val(context), val(type), path(results), path(logs)
     //tuple model, key, contexts, types, path(results), path(logs)
     
     output:
-    tuple model, key, type, path("${model}/*.txt")
+    tuple val(model), val(key), val(type), path("${model}/*.txt")
     //tuple model, key, val("${types.unique().join("")}"), path("${model}/*.txt")
     //tuple model, key, val("${types.unique().join("")}"), path("input/*.txt"), path("${model}/${key}.filtered_${params.output_FDR}_FDR.txt")
 
@@ -117,20 +131,52 @@ process "calculate_FDR" {
 
 
 // GEM_Emodel.out[0]
+<<<<<<< HEAD
 // process to generate manhattan plots from Emodel
 
+=======
+// process to generate Q-Q plots from Emodel
+>>>>>>> 3ed2bddd5686fcd937992d9f55274d29ea7fd703
 process "qqPlot" {
 
     label "low"
     label "ignore"
     tag "${key}"
-     
+    
+    publishDir "${params.output}/positions", pattern: "${model}/CpG.bedGraph*.png" , mode: 'copy', \
+    enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
+    
+    publishDir "${params.output}/positions", pattern: "${model}/CpG.DMRs*.png" , mode: 'copy', \
+    enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
+    
+    publishDir "${params.output}/regions", pattern: "${model}/CpG.region*.png" , mode: 'copy', \
+    enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
+
+    publishDir "${params.output}/positions", pattern: "${model}/CHG.bedGraph*.png" , mode: 'copy', \
+    enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
+    
+    publishDir "${params.output}/positions", pattern: "${model}/CHG.DMRs*.png" , mode: 'copy', \
+    enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
+    
+    publishDir "${params.output}/regions", pattern: "${model}/CHG.region*.png" , mode: 'copy', \
+    enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
+    
+    publishDir "${params.output}/positions", pattern: "${model}/CHH.bedGraph*.png" , mode: 'copy', \
+    enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
+    
+    publishDir "${params.output}/positions", pattern: "${model}/CHH.DMRs*.png" , mode: 'copy', \
+    enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
+    
+    publishDir "${params.output}/regions", pattern: "${model}/CHH.region*.png" , mode: 'copy', \
+    enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false    
+    
+    
     input:
-    tuple model, key, type, path(result)
+    tuple val(model), val(key), val(type), path(result)
     // eg. [Emodel, CpG.bedGraph, bedGraph, [/paths/... ,/paths/...]]
     
     output:
-    tuple type, path("${model}/*.png") optional true
+    tuple val(model), val(key), val(type), path("${model}/*.png") optional true
 
     when:
     params.input
@@ -142,6 +188,7 @@ process "qqPlot" {
     """ 
 }
 
+<<<<<<< HEAD
 /*
 process "GO_analysis" {
 
@@ -168,12 +215,54 @@ process "GO_analysis" {
     bedtools intersect -a ${GOA} -b 2${model}/${key}.filtered_${params.GO_filter}_FDR.txt | awk '\$3=="gene"' | awk -F";" '\$1=\$1' | awk '{gsub(/\\ID=/,"",\$9)}' | awk '{print \$9}' > 3${model}/${key}.filtered_${params.GO_filter}_FDR.txt
         
     bash ${baseDir}bin/GOA/GOtest.sh 3${model}/${key}.filtered_${params.GO_filter}_FDR.txt ${species} BP_${model}/${key}.filtered_${params.GO_filter}/overtree BP_${model}/${key}.filtered_${params.GO_filter}/over BP_${model}/${key}.filtered_${params.GO_filter}/undertree BP_${model}/${key}.filtered_${params.GO_filter}/under BP ${params.GO_filter}
+=======
+process "GO_analysis" {
+    
+    //label "low"
+    //label "finish"
+    tag "${model}:${key}"
+
+    //publishDir "${params.output}/positions/${model}/GOA", pattern: "${model}/GOA/3${key}.filtered_${params.output_FDR}_FDR.txt" , mode: 'copy', \
+    //enabled: params.goa && params.species ? true : false
+        
+    
+    input:
+    path(goa)
+    val(species)
+    tuple val(model), val(key), val(type), path("${key}.filtered*.txt")
+
+    
+    output:
+    tuple val(model), val(key), val(type), path("3${key}.filtered_${params.output_FDR}_FDR.txt") optional true
+
+    when:
+    params.goa
+    
+    script:
+    """
+    awk -F":" '\$1=\$1' ${key}.filtered*.txt | awk -F"-" '\$1=\$1' | awk '{print \$1"\\t"\$2"\\t"\$3}' | sed '1d' > 2${key}.filtered*.txt
+    bedtools intersect -a ${goa} -b 2${key}.filtered*.txt | awk '\$3=="gene"' | awk -F";" '\$1=\$1' | awk '{gsub(/\\ID=/,"",\$9)}1' | awk '{print \$9}' > 3${key}.filtered*.txt
+    bash ${baseDir}bin/GOA/GOtest.sh 3${key}.filtered*.txt ${species} BP_${model}/${key}.filtered_${params.GO_filter}/overtree BP_${model}/${key}.filtered_${params.GO_filter}/over BP_${model}/${key}.filtered_${params.GO_filter}/undertree BP_${model}/${key}.filtered_${params.GO_filter}/under BP ${params.GO_filter}
+    cat BP_${model}/*.txt > BP.txt
+    """
+ }   
+
+/*
+  mkdir GOA
+    awk -F":" '\$1=\$1' ${model}/${key}.filtered_${params.output_FDR}_FDR.txt | awk -F"-" '\$1=\$1' | awk '{print \$1"\\t"\$2"\\t"\$3}' | sed '1d' > ${model}/2${key}.filtered_${params.output_FDR}_FDR.txt
+    bedtools intersect -a ${goa} -b ${model}/2${key}.filtered_${params.output_FDR}_FDR.txt | awk '\$3=="gene"' | awk -F";" '\$1=\$1' | awk '{gsub(/\\ID=/,"",\$9)}' | awk '{print \$9}' > ${model}/GOA/3${key}.filtered_${params.goa}_FDR.txt
+ 
+ 
+>>>>>>> 3ed2bddd5686fcd937992d9f55274d29ea7fd703
     bash ${baseDir}bin/GOA/GOtest.sh 3${model}/${key}.filtered_${params.GO_filter}_FDR.txt ${species} MF_${model}/${key}.filtered_${params.GO_filter}/overtree MF_${model}/${key}.filtered_${params.GO_filter}/over MF_${model}/${key}.filtered_${params.GO_filter}/undertree MF_${model}/${key}.filtered_${params.GO_filter}/under MF ${params.GO_filter}
     bash ${baseDir}bin/GOA/GOtest.sh 3${model}/${key}.filtered_${params.GO_filter}_FDR.txt ${species} CC_${model}/${key}.filtered_${params.GO_filter}/overtree CC_${model}/${key}.filtered_${params.GO_filter}/over CC_${model}/${key}.filtered_${params.GO_filter}/undertree CC_${model}/${key}.filtered_${params.GO_filter}/under CC ${params.GO_filter}
     cat BP_${model}/${key}.filtered_${params.GO_filter}/*.txt > BP.txt
     cat MF_${model}/${key}.filtered_${params.GO_filter}/*.txt > MF.txt
     cat BCC_${model}/${key}.filtered_${params.GO_filter}/*.txt > CC.txt
+<<<<<<< HEAD
     """
     
 }
+=======
+>>>>>>> 3ed2bddd5686fcd937992d9f55274d29ea7fd703
 */

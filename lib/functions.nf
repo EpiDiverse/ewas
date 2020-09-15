@@ -22,6 +22,7 @@ def check_test_data(CpGPaths, CHGPaths, CpGPaths_DMRs, CHGPaths_DMRs, SNPPaths) 
         .map { row -> [ row[0], file(row[1]) ] }
         .ifEmpty { exit 1, "test profile CHGPaths_DMRs was empty - no input files supplied" }
 
+        
     // STAGE SNPs CHANNEL
     SNPs = Channel.from(SNPPaths)
         .map { row -> [ row[0], file(row[1]) ] }

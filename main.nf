@@ -1,7 +1,7 @@
 #!/usr/bin/env nextflow
 
 // DSL2 BRANCH
-nextflow.preview.dsl=2
+nextflow.enable.dsl=2
 
 // PRINT HELP AND EXIT
 if(params.help){
@@ -16,6 +16,7 @@ if(params.help){
               nextflow run epidiverse/ewas [OPTIONS]...
 
          Options: GENERAL
+<<<<<<< HEAD
               --input [path/to/input/dir]      [REQUIRED] Specify input path for the directory containing outputs from the WGBS pipeline.
                                                The pipeline searches for bedGraph files in '*/bedGraph/{sample_name}_{context}.bedGraph'
                                                format, where sample names must correspond to the samplesheet and context can be either
@@ -73,6 +74,65 @@ if(params.help){
               --all                            If --DMPs and/or --DMRs are provided to the pipeline then raw un-intersected bedGraphs are
                                                not carried forward for analysis. Enable this parameter to process them alongside the 
                                                DMP / DMR intersections in parallel [default: off]
+=======
+              --input [path/to/input/dir]       [REQUIRED] Specify input path for the directory containing outputs from the WGBS pipeline.
+                                                The pipeline searches for bedGraph files in '*/bedGraph/{sample_name}_{context}.bedGraph'
+                                                format, where sample names must correspond to the samplesheet and context can be either
+                                                "CpG", "CHG", or "CHH".
+
+              --samples [path/to/samples.tsv]   [REQUIRED] Specify the path to the samplesheet file containing information regarding
+                                                sample names and corresponding environment and covariate values. The file must contain
+                                                at least three tab-separated columns: 1) sample names, 2) environment value, 3) covariate
+                                                values, with further columns optional for additional covariates.
+
+              --DMPs [path/to/DMPs/dir]         Specify path to the DMR pipeline output directory to run EWAS analyses in addition with
+                                                methylated positions filtered by significant DMPs. The pipeline searches for bed files in
+                                                '*/{context}/metilene/*/*.bed' format where context can be either "CpG", "CHG", or "CHH".
+         
+              --DMRs [path/to/DMRs/dir]         Specify path to the DMR pipeline output directory to run EWAS analyses in addition with
+                                                methylated positions filtered by significant DMRs. In addition, the pipeline will call
+                                                the union of all significant regions and attempt to run EWAS with whole regions as markers.
+                                                The pipeline searches for bed files in '*/{context}/metilene/*/*.bed' format where context
+                                                can be either "CpG", "CHG", or "CHH".
+
+              --SNPs [path/to/vcf/dir]          Specify path to the SNP pipeline output directory to enable EWAS analyses Gmodel and GxEmodel
+                                                which attempt to create a genome-wide methQTL map. ONLY SUITABLE FOR DIPLOID ORGANISMS.
+                                                The pipeline searches for VCF files in '*/vcf/{sample_name}.{extension}' where sample names
+                                                must correspond to the samplesheet and the extension can be any standard vcf extension
+                                                readable by 'bcftools' and defined with --extension parameter. Alternatively, the path to a
+                                                single multi-sample VCF file can be provided.
+
+              --extension <STR>                 Specify the extension to use when searching for VCF files [default: vcf.gz]
+
+              --output <STR>                    A string that can be given to name the output directory [default: ewas]
+
+
+         Options: MODEL DECISION
+              --Emodel                          Run analysis with "E model". Disables other models unless they are also specified. If no
+                                                individual model is specified then all that are possible with the provided inputs will run
+                                                in parallel [default: off]
+
+              --Gmodel                          Run analysis with "G model". Disables other models unless they are also specified. If no
+                                                individual model is specified then all that are possible with the provided inputs will run
+                                                in parallel [default: off]
+
+              --GxE                             Run analysis with "GxE model". Disables other models unless they are also specified. If no
+                                                individual model is specified then all that are possible with the provided inputs will run
+                                                in parallel [default: off]
+            
+              --noCpG                           Disables EWAS analysis in CpG context. Note: at least one methylation context is required
+                                                for analysis. [default: off]
+
+              --noCHG                           Disables EWAS analysis in CHG context. Note: at least one methylation context is required
+                                                for analysis. [default: off]
+
+              --noCHH                           Disables EWAS analysis in CHH context. Note: at least one methylation context is required
+                                                for analysis. [default: off]
+
+              --all                             If --DMPs and/or --DMRs are provided to the pipeline then raw un-intersected bedGraphs are
+                                                not carried forward for analysis. Enable this parameter to process them alongside the 
+                                                DMP / DMR intersections in parallel [default: off]
+>>>>>>> 3ed2bddd5686fcd937992d9f55274d29ea7fd703
 
 
          Options: INPUT FILTERING
@@ -83,9 +143,14 @@ if(params.help){
                                                --DMPs and --DMRs directories [default: 0.05]          
 
               --filter_NA <FLOAT>              Specify the maximum proportion of samples that can contain a missing value before a methylated
+<<<<<<< HEAD
                                                position is removed from the analysis Please be careful about the usage, filtering out more than 
                                                half of the data is not recommended.[default: 0] . 
                                                
+=======
+                                               position is removed from the analysis [default: 0] 
+
+>>>>>>> 3ed2bddd5686fcd937992d9f55274d29ea7fd703
               --filter_SD <FLOAT>              Specify the maximum standard deviation in methylation between samples to filter individual
                                                positions based on the degree of difference [default: 0] 
 
@@ -98,16 +163,38 @@ if(params.help){
 
          Options: SNP FILTERING
               --mac <INT>                      Minor allele count [default: 3]
+<<<<<<< HEAD
 
 
               --minQ <INT>                     Minimum quality score [default: 30]
 
 
          Options: OUTPUT FILTERING       
-              --output_FDR <FLOAT>            Specify the maximum FDR threshold for filtering EWAS post-analysis [default: 0.05]
+=======
+              
+              --minQ <INT>                     Minimum quality score [default: 30]
 
+
+         Options: Gene Ontology(GO) Analysis
+              --goa                            Path to .gff file with standard format that has name of chromosome/scaffold (the first column),
+                                               name of program generated this feature (the second column), feature type name, e.g. Gene, Variation,
+                                               Similarity (the third column), start (fourth column), end positions (fifth column), score, a floating
+                                               point (the sixth column), strand (the seventh column), frame (the eighth column) and attribute (the 
+                                               last column).
+              
+              --GO_filter <FLOAT>              Specify the minimum p-value for filtering the output [default: 0.05]
+             
+              --species                        Specify the name of the species to run GOA. Possible options: "fragaria_vesca", "picea_abies", 
+                                               "populus_nigra" and "thlaspi_arvense".
+                                               
+
+         Options: OUTPUT FILTERING   
+>>>>>>> 3ed2bddd5686fcd937992d9f55274d29ea7fd703
+              --output_FDR <FLOAT>            Specify the maximum FDR threshold for filtering EWAS post-analysis [default: 0.05]
+              
               --Emodel_pv <FLOAT>             Set the p-value to run "E model". Note: this filter is applied prior to FDR calculation
                                               and should be used cautiously [default: 1]
+<<<<<<< HEAD
 
               --Gmodel_pv <FLOAT>             Set the p-value to run "G model". Note: this filter is applied prior to FDR calculation
                                               and should be used cautiously [default: 1]
@@ -116,6 +203,14 @@ if(params.help){
                                               and should be used cautiously [default: 1]
 
 
+=======
+                                              
+              --Gmodel_pv <FLOAT>             Set the p-value to run "G model". Note: this filter is applied prior to FDR calculation
+                                              and should be used cautiously [default: 1]
+                                              
+              --GxE_pv <FLOAT>                Set the p-value to run "GxE model". Note: this filter is applied prior to FDR calculation
+                                              and should be used cautiously [default: 1]
+>>>>>>> 3ed2bddd5686fcd937992d9f55274d29ea7fd703
 
          Options: VISUALISATION
               --kplots <INT>                  Specify the number of plots to generate for the top k significant results in "GxE model"  
@@ -240,6 +335,7 @@ log.info "         maximum missing                 : ${params.max_missing}"
 log.info "         minor allele count              : ${params.mac}"
 log.info "         minimum quality score           : ${params.minQ}"
 log.info "" }
+<<<<<<< HEAD
 if(params.burnin || params.iterations || params.phase_states || params.imp_states || params.ne || nthreads_SNP){
 log.info "         =================================================="
 log.info "         SNP Imputation with BEAGLE"
@@ -251,6 +347,28 @@ log.info "         number of model states for ungenotype estimation       : ${pa
 log.info "         effective population size                              : ${params.ne}"
 log.info "         number of threads of execution                         : ${params.nthreads_SNP}"
 log.info "" }
+=======
+if(params.goa && params.species || params.GO_filter){
+log.info "         =================================================="
+log.info "         Gene Ontology Analysis"
+log.info "         =================================================="
+log.info "         path to .gff file               : ${params.goa}"
+log.info "         name of species                 : ${params.species}"
+log.info "         output GO p-value               : ${params.GO_filter}"
+log.info "" }
+//if(params.burnin || params.iterations || params.phase_states || params.imp_states || params.ne || nthreads_SNP){
+//log.info "         =================================================="
+//log.info "         SNP Imputation with BEAGLE"
+//log.info "         =================================================="
+//log.info "         burnin iterations                                      : ${params.burnin}"
+//log.info "         iterations for genotype phase estimation               : ${params.iters}"
+//log.info "         number of model states for genotype estimation         : ${params.phase_states}"
+//log.info "         number of model states for ungenotype estimation       : ${params.imp_states}"
+//log.info "         effective population size                              : ${params.ne}"
+//log.info "         number of threads of execution                         : ${params.nthreads_SNP}"
+//log.info "" }
+log.info "         =================================================="
+>>>>>>> 3ed2bddd5686fcd937992d9f55274d29ea7fd703
 log.info "         =================================================="
 log.info "         Output"
 log.info "         =================================================="
@@ -273,16 +391,20 @@ log.info ""
 // STAGE SAMPLES CHANNEL
 samples_channel = Channel
     .from(file("${params.samples}").readLines())
-    .ifEmpty{ exit 1, "ERROR: samples file is missing or invalid. Please remember to use the --samples parameter." }
+    .ifEmpty{ exit 1, "ERROR: samples file is missing. Please remember to use the --samples parameter." }
     .map { line ->
         def field = line.toString().tokenize('\t').take(1)
         return tuple(field[0].replaceAll("\\s",""))}
+
+//stage gff file with goa channel
+goa = "${params.goa}"
+species= "${params.species}"
 
 
 // STAGE TEST PROFILE 
 if ( workflow.profile.tokenize(",").contains("test") ){
 
-    include check_test_data from './lib/functions.nf' params(CpGPaths: params.CpGPaths, CHGPaths: params.CHGPaths, CpGPaths_DMRs: params.CpGPaths_DMRs, CHGPaths_DMRs: params.CHGPaths_DMRs, SNPPaths: params.SNPPaths)
+    include {check_test_data} from './lib/functions.nf' params(CpGPaths: params.CpGPaths, CHGPaths: params.CHGPaths, CpGPaths_DMRs: params.CpGPaths_DMRs, CHGPaths_DMRs: params.CHGPaths_DMRs, SNPPaths: params.SNPPaths)
     (CpG, CHG, CpG_DMRs, CHG_DMRs, SNPs) = check_test_data(params.CpGPaths, params.CHGPaths, params.CpGPaths_DMRs, params.CHGPaths_DMRs, params.SNPPaths)
 
     CpG_DMPs = CpG_DMRs
@@ -395,21 +517,26 @@ input_channel = single_channel.mix(DMPs_channel, DMRs_channel)
 ////////////////////
 
 // INCLUDES
-include './lib/process.nf' params(params)
-include './lib/GEM_Emodel.nf' params(params)
-include './lib/GEM_Gmodel.nf' params(params)
-include checkLines from './lib/functions.nf'
+include {parsing;split_scaffolds;calculate_FDR;qqPlot;GO_analysis} from './lib/process.nf' params(params)
+include {filtering;bedtools_unionbedg;bedtools_filtering;bedtools_sorting;bedtools_intersect;filter_regions;bedtools_merge;average_over_regions;GEM_Emodel;manhattan;} from './lib/GEM_Emodel.nf' params(params)
+include {tabix;bcftools;vcftools_missing;vcftools_extract;GEM_Gmodel;GEM_GxEmodel;dotPlot;topKplots} from './lib/GEM_Gmodel.nf' params(params)
+include {checkLines} from './lib/functions.nf'
 
 // SUB-WORKFLOWS
 workflow 'EWAS' {
 
     // get the initial files / Channels
-    get:
+    take:
         samples
         input_channel
         SNPs
+<<<<<<< HEAD
         //GOA
         //species
+=======
+        //goa
+      
+>>>>>>> 3ed2bddd5686fcd937992d9f55274d29ea7fd703
 
     // outline workflow
     main:
@@ -432,7 +559,7 @@ workflow 'EWAS' {
         bedtools_filtering(bedGraph_combined.filter{ it[3].size() == 1 }.mix(bedtools_unionbedg.out.filter{ it[1] == "bedGraph" }))
         bedtools_filtering_output = bedtools_filtering.out.filter{ checkLines(it[3]) > 1 }
         bedtools_filtering.out.filter{ checkLines(it[3]) <= 1 }.subscribe {
-            log.warn "no data left to analyse after filtering: ${it[0]}.${it[1]}.bed"
+            log.warn "bedtools_filtering: no data left to analyse after filtering: ${it[0]}.${it[1]}.bed"
         }
 
         // sorting on union bed files
@@ -449,16 +576,34 @@ workflow 'EWAS' {
 
         // bedtools_intersect for intersecting individual methylation info based on DMPs/DMRs
         bedtools_intersect(bedGraph_DMPs.mix(bedGraph_DMRs))
+
         // filter regions based on bootstrap values
+<<<<<<< HEAD
         filter_regions(unfilter_DMRs)
+=======
+        filter_regions(bedGraph_DMRs)
+        filter_regions_output = filter_regions.out.filter{ checkLines(it[4]) > 1 }
+        filter_regions.out.filter{ checkLines(it[4]) <= 1 }.subscribe {
+            log.warn "filter_regions: no data left to analyse after filtering: ${it[0]}.${it[1]}.bed"
+        }
+>>>>>>> 3ed2bddd5686fcd937992d9f55274d29ea7fd703
         // bedtools_merge for optionally combining filtered sub-regions
-        bedtools_merge(filter_regions.out)
+        bedtools_merge(filter_regions_output)
         // average_over_regions for calculating average methylation over defined regions
-        average_over_regions(filter_regions.out.mix(bedtools_merge.out))
+        average_over_regions(filter_regions_output.mix(bedtools_merge.out))
+        average_over_regions_output = average_over_regions.out.filter{ checkLines(it[2]) > 1 }
+        average_over_regions.out.filter{ checkLines(it[2]) <= 1 }.subscribe {
+            log.warn "average_over_regions: no data left to analyse after intersection: ${it[0]}.${it[1]}.bed"
+        }
+
         // stage channels for downstream processes
         bedGraph_channel = params.all || (!params.DMPs && !params.DMRs) ? bedtools_sorting.out.filter{it[1] == "bedGraph"} : Channel.empty()
+<<<<<<< HEAD
         meth_channel = bedGraph_channel.mix(bedtools_intersect.out, average_over_regions.out)
         split_scaffolds(meth_channel)
+=======
+        meth_channel = bedGraph_channel.mix(bedtools_intersect.out, average_over_regions_output)
+>>>>>>> 3ed2bddd5686fcd937992d9f55274d29ea7fd703
 
         // SNPs
         // index individual vcf files, optionally rename header
@@ -510,12 +655,18 @@ workflow 'EWAS' {
 
         // eg. [Emodel, context, type, context.txt, [scaffold.txt, ...], [scaffold.log], ...]]
         calculate_FDR(Emodel_channel.mix(Gmodel_channel, GxE_channel))
+        //calculate_FDR_output = calculate_FDR.out.filter{ checkLines(it[3]) > 1 }
+        //calculate_FDR.out.filter{ checkLines(it[3]) <= 1 }.subscribe {
+        //    log.warn "calculate_FDR: no data left to analyse after filtering: ${it[1]}.${it[2]}.txt"
+        //}
         
         //GOA
         //GO_analysis(calculate_FDR.out)
         
         // visualisation
         qqPlot(calculate_FDR.out)
+        GO_analysis(goa, species, calculate_FDR.out[0].collect())
+        //GO_analysis(goa)
         manhattan(calculate_FDR.out.filter{ it[0] == "Emodel" })
         dotPlot(calculate_FDR.out.filter{ it[0] == "Gmodel" })
         //kplots_channel = calculate_FDR.out.filter{ it[0] == "GxE" }.map{ it.tail() }.combine(GEM_GxEmodel.out[1].map{ tuple( it[0] + "." + it[1], it.last()) }.groupTuple(), by:0)
@@ -525,7 +676,7 @@ workflow 'EWAS' {
         kplots_channel = calculate_FDR.out.filter{ it[0] == "GxE" }.map{ it.tail() }.combine(GxE_plot, by:0).combine(GxE_head, by:0)
         topKplots(kplots_channel, vcftools_extract.out, parsing.out[2])
 
-
+/*
     // emit results
     emit:
         parsing_env = parsing.out[0]
@@ -556,7 +707,7 @@ workflow 'EWAS' {
         dotPlot_zip_pos = dotPlot.out[1].filter{ it[0] != "region" && it[0] != "merged" }
         topKplots_png_reg = topKplots.out.filter{ it[0] == "region" || it[0] == "merged" }
         topKplots_png_pos = topKplots.out.filter{ it[0] != "region" && it[0] != "merged" }
-
+*/
 
 }
 
@@ -566,7 +717,7 @@ workflow {
     // call sub-workflows
     main:
         EWAS(samples, input_channel, SNPs)
-
+/*
     // publish files
     publish:
         EWAS.out.parsing_env to: "${params.output}/input", mode: 'copy'
@@ -596,7 +747,7 @@ workflow {
         EWAS.out.dotPlot_zip_pos to: "${params.output}/positions", mode: 'copy'
         EWAS.out.topKplots_png_reg to: "${params.output}/regions", mode: 'copy'
         EWAS.out.topKplots_png_pos to: "${params.output}/positions", mode: 'copy'
-
+*/
 }
 
 

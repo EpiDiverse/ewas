@@ -1,6 +1,8 @@
 # EpiDiverse/ewas
 ---
 # Releases
+## v1.0
+* Bring in line with Nextflow 20.07.1 revisions
 
 ---
 # Prereleases
