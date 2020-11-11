@@ -131,10 +131,8 @@ process "calculate_FDR" {
 
 
 // GEM_Emodel.out[0]
-<<<<<<< HEAD
 // process to generate manhattan plots from Emodel
 
-=======
 // process to generate Q-Q plots from Emodel
 >>>>>>> 3ed2bddd5686fcd937992d9f55274d29ea7fd703
 process "qqPlot" {
@@ -188,7 +186,6 @@ process "qqPlot" {
     """ 
 }
 
-<<<<<<< HEAD
 /*
 process "GO_analysis" {
 
@@ -215,7 +212,7 @@ process "GO_analysis" {
     bedtools intersect -a ${GOA} -b 2${model}/${key}.filtered_${params.GO_filter}_FDR.txt | awk '\$3=="gene"' | awk -F";" '\$1=\$1' | awk '{gsub(/\\ID=/,"",\$9)}' | awk '{print \$9}' > 3${model}/${key}.filtered_${params.GO_filter}_FDR.txt
         
     bash ${baseDir}bin/GOA/GOtest.sh 3${model}/${key}.filtered_${params.GO_filter}_FDR.txt ${species} BP_${model}/${key}.filtered_${params.GO_filter}/overtree BP_${model}/${key}.filtered_${params.GO_filter}/over BP_${model}/${key}.filtered_${params.GO_filter}/undertree BP_${model}/${key}.filtered_${params.GO_filter}/under BP ${params.GO_filter}
-=======
+
 process "GO_analysis" {
     
     //label "low"
@@ -253,16 +250,14 @@ process "GO_analysis" {
     bedtools intersect -a ${goa} -b ${model}/2${key}.filtered_${params.output_FDR}_FDR.txt | awk '\$3=="gene"' | awk -F";" '\$1=\$1' | awk '{gsub(/\\ID=/,"",\$9)}' | awk '{print \$9}' > ${model}/GOA/3${key}.filtered_${params.goa}_FDR.txt
  
  
->>>>>>> 3ed2bddd5686fcd937992d9f55274d29ea7fd703
     bash ${baseDir}bin/GOA/GOtest.sh 3${model}/${key}.filtered_${params.GO_filter}_FDR.txt ${species} MF_${model}/${key}.filtered_${params.GO_filter}/overtree MF_${model}/${key}.filtered_${params.GO_filter}/over MF_${model}/${key}.filtered_${params.GO_filter}/undertree MF_${model}/${key}.filtered_${params.GO_filter}/under MF ${params.GO_filter}
     bash ${baseDir}bin/GOA/GOtest.sh 3${model}/${key}.filtered_${params.GO_filter}_FDR.txt ${species} CC_${model}/${key}.filtered_${params.GO_filter}/overtree CC_${model}/${key}.filtered_${params.GO_filter}/over CC_${model}/${key}.filtered_${params.GO_filter}/undertree CC_${model}/${key}.filtered_${params.GO_filter}/under CC ${params.GO_filter}
     cat BP_${model}/${key}.filtered_${params.GO_filter}/*.txt > BP.txt
     cat MF_${model}/${key}.filtered_${params.GO_filter}/*.txt > MF.txt
     cat BCC_${model}/${key}.filtered_${params.GO_filter}/*.txt > CC.txt
-<<<<<<< HEAD
+
     """
     
 }
-=======
->>>>>>> 3ed2bddd5686fcd937992d9f55274d29ea7fd703
+
 */
