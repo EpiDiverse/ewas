@@ -356,18 +356,6 @@ log.info "         name of species                 : ${params.species}"
 log.info "         output GO p-value               : ${params.GO_filter}"
 log.info "" }
 */
-//if(params.burnin || params.iterations || params.phase_states || params.imp_states || params.ne || nthreads_SNP){
-//log.info "         =================================================="
-//log.info "         SNP Imputation with BEAGLE"
-//log.info "         =================================================="
-//log.info "         burnin iterations                                      : ${params.burnin}"
-//log.info "         iterations for genotype phase estimation               : ${params.iters}"
-//log.info "         number of model states for genotype estimation         : ${params.phase_states}"
-//log.info "         number of model states for ungenotype estimation       : ${params.imp_states}"
-//log.info "         effective population size                              : ${params.ne}"
-//log.info "         number of threads of execution                         : ${params.nthreads_SNP}"
-//log.info "" }
-log.info "         =================================================="
 log.info "         =================================================="
 log.info "         Output"
 log.info "         =================================================="
