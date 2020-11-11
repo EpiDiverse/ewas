@@ -134,7 +134,6 @@ process "calculate_FDR" {
 // process to generate manhattan plots from Emodel
 
 // process to generate Q-Q plots from Emodel
->>>>>>> 3ed2bddd5686fcd937992d9f55274d29ea7fd703
 process "qqPlot" {
 
     label "low"
