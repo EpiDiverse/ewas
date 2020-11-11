@@ -332,6 +332,7 @@ log.info "         minor allele count              : ${params.mac}"
 log.info "         minimum quality score           : ${params.minQ}"
 log.info "" }
 
+/*
 if(params.burnin || params.iterations || params.phase_states || params.imp_states || params.ne || nthreads_SNP){
 log.info "         =================================================="
 log.info "         SNP Imputation with BEAGLE"
@@ -343,6 +344,7 @@ log.info "         number of model states for ungenotype estimation       : ${pa
 log.info "         effective population size                              : ${params.ne}"
 log.info "         number of threads of execution                         : ${params.nthreads_SNP}"
 log.info "" }
+*/
 
 /*
 if(params.goa && params.species || params.GO_filter){
@@ -601,7 +603,7 @@ workflow 'EWAS' {
         // extract missing information
         vcftools_missing(bcftools.out)
         //SNP imputation with BEAGLE
-        BEAGLE_SNP_Imputation(bcftools.out)
+        //BEAGLE_SNP_Imputation(bcftools.out)
         // extract snps.txt for GEM_GModel
         vcftools_extract(bcftools.out)
 
@@ -671,7 +673,7 @@ workflow 'EWAS' {
         parsing_cov = parsing.out[1]
         parsing_gxe = GxE ? parsing.out[2] : Channel.empty()
         vcftools_extract_out = vcftools_extract.out
-        BEAGLE_SNP_Imputation_out = BEAGLE_SNP_Imputation.out 
+        //BEAGLE_SNP_Imputation_out = BEAGLE_SNP_Imputation.out 
 
         bedtools_unionbedg_out = bedtools_sorting.out
         bedtools_intersect_out = bedtools_intersect.out
