@@ -16,7 +16,7 @@ class ParameterChecks {
         assert Double.valueOf(params.Emodel_pv) >= 0.0d && Double.valueOf(params.Emodel_pv) <= 1.0d, "Emodel p-value must be a decimal in the range of 0 and 1!"
         assert Double.valueOf(params.Gmodel_pv) >= 0.0d && Double.valueOf(params.Gmodel_pv) <= 1.0d, "Gmodel p-value must be a decimal in the range of 0 and 1!"
         assert Double.valueOf(params.GxE_pv) >= 0.0d && Double.valueOf(params.GxE_pv) <= 1.0d, "GxE p-value must be a decimal in the range of 0 and 1!"
-        //assert Double.valueOf(params.max_missing) >= 0.0d && Double.valueOf(params.max_missing) <= 1.0d, "--max_missing parameter must be a decimal in the range of 0 and 1!"
+        assert Double.valueOf(params.max_missing) >= 0.0d && Double.valueOf(params.max_missing) <= 1.0d, "--max_missing parameter must be a decimal in the range of 0 and 1!"
         //assert params.mac instanceof Integer && params.mac >= 0, "--mac parameter must be a non-negative integer!"
         //assert params.minQ instanceof Integer && params.minQ >= 0, "--minQ parameter must be a non-negative integer!"
         //assert params.burnin instanceof Integer && params.burnin >= 0, "--burnin parameter must be a non-negative integer!"
