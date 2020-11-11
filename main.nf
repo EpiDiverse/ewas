@@ -517,10 +517,6 @@ workflow 'EWAS' {
         samples
         input_channel
         SNPs
-        //GOA
-        //species
-        //goa
-      
 
     // outline workflow
     main:
@@ -537,8 +533,6 @@ workflow 'EWAS' {
 
         // bedtools_unionbedg for taking the union set in each context
         bedtools_unionbedg(bedtools_input.filter{ it[3].size() > 1 })
-        unfiltered = bedtools_unionbedg.out.filter{ it[1] == "bedGraph" }.map{ tuple(it[0], "unfilter", *it[2..-1]) }
-
         // filtering bedGraph union bed files based on SD and NA
         bedtools_filtering(bedGraph_combined.filter{ it[3].size() == 1 }.mix(bedtools_unionbedg.out.filter{ it[1] == "bedGraph" }))
         bedtools_filtering_output = bedtools_filtering.out.filter{ checkLines(it[3]) > 1 }
@@ -549,14 +543,13 @@ workflow 'EWAS' {
         // sorting on union bed files
         sort_DMPs = DMPs_combined.filter{ it[3].size() == 1 }.mix(bedtools_unionbedg.out.filter{ it[1] == "DMPs" })
         sort_DMRs = DMRs_combined.filter{ it[3].size() == 1 }.mix(bedtools_unionbedg.out.filter{ it[1] == "DMRs" })
-        bedtools_sorting(bedtools_filtering_output.mix(sort_DMPs, sort_DMRs, unfiltered))
+        bedtools_sorting(bedtools_filtering_output.mix(sort_DMPs, sort_DMRs))
         
         // stage channels for downstream processes
         intersect_DMPs = bedtools_sorting.out.filter{ it[1] == "DMPs" }
         intersect_DMRs = bedtools_sorting.out.filter{ it[1] == "DMRs" }
         bedGraph_DMPs = bedtools_sorting.out.filter{it[1] == "bedGraph"}.combine(intersect_DMPs, by: 0)
         bedGraph_DMRs = bedtools_sorting.out.filter{it[1] == "bedGraph"}.combine(intersect_DMRs, by: 0)
-        unfilter_DMRs = bedtools_sorting.out.filter{it[1] == "unfilter"}.combine(intersect_DMRs, by: 0)
 
         // bedtools_intersect for intersecting individual methylation info based on DMPs/DMRs
         bedtools_intersect(bedGraph_DMPs.mix(bedGraph_DMRs))
@@ -578,8 +571,6 @@ workflow 'EWAS' {
 
         // stage channels for downstream processes
         bedGraph_channel = params.all || (!params.DMPs && !params.DMRs) ? bedtools_sorting.out.filter{it[1] == "bedGraph"} : Channel.empty()
-        meth_channel = bedGraph_channel.mix(bedtools_intersect.out, average_over_regions.out)
-        split_scaffolds(meth_channel)
         meth_channel = bedGraph_channel.mix(bedtools_intersect.out, average_over_regions_output)
 
         // SNPs
@@ -589,10 +580,10 @@ workflow 'EWAS' {
         bcftools(samples, tabix.out[0].collect(), tabix.out[1].collect())
         // extract missing information
         vcftools_missing(bcftools.out)
-        //SNP imputation with BEAGLE
-        BEAGLE_SNP_Imputation(bcftools.out)
         // extract snps.txt for GEM_GModel
         vcftools_extract(bcftools.out)
+        // split data based on scaffolds
+        split_scaffolds(meth_channel)
 
         // run GEM on selected combination of inputs
         GEM_Emodel(split_scaffolds.out.transpose(), parsing.out[0], parsing.out[1])
@@ -632,18 +623,9 @@ workflow 'EWAS' {
 
         // eg. [Emodel, context, type, context.txt, [scaffold.txt, ...], [scaffold.log], ...]]
         calculate_FDR(Emodel_channel.mix(Gmodel_channel, GxE_channel))
-        //calculate_FDR_output = calculate_FDR.out.filter{ checkLines(it[3]) > 1 }
-        //calculate_FDR.out.filter{ checkLines(it[3]) <= 1 }.subscribe {
-        //    log.warn "calculate_FDR: no data left to analyse after filtering: ${it[1]}.${it[2]}.txt"
-        //}
-        
-        //GOA
-        //GO_analysis(calculate_FDR.out)
         
         // visualisation
         qqPlot(calculate_FDR.out)
-        //GO_analysis(goa, species, calculate_FDR.out[0].collect())
-        //GO_analysis(goa)
         manhattan(calculate_FDR.out.filter{ it[0] == "Emodel" })
         dotPlot(calculate_FDR.out.filter{ it[0] == "Gmodel" })
         //kplots_channel = calculate_FDR.out.filter{ it[0] == "GxE" }.map{ it.tail() }.combine(GEM_GxEmodel.out[1].map{ tuple( it[0] + "." + it[1], it.last()) }.groupTuple(), by:0)
@@ -652,7 +634,6 @@ workflow 'EWAS' {
         GxE_head = GEM_GxEmodel.out[3].map{ tuple( it[0] + "." + it[1], it[2]) }.unique{ it[0] }
         kplots_channel = calculate_FDR.out.filter{ it[0] == "GxE" }.map{ it.tail() }.combine(GxE_plot, by:0).combine(GxE_head, by:0)
         topKplots(kplots_channel, vcftools_extract.out, parsing.out[2])
-
 /*
     // emit results
     emit:
