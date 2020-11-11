@@ -79,11 +79,10 @@ process "vcftools_missing" {
     path snp
     
     output:
-<<<<<<< HEAD
+
     path "out.recode.vcf"
-=======
+    
     path "out.recode.vcf.gz"
->>>>>>> 3ed2bddd5686fcd937992d9f55274d29ea7fd703
     //file("out.imiss")
     //file("out.log")
     //path "out.log"
@@ -93,20 +92,17 @@ process "vcftools_missing" {
 
     script:
     """
-<<<<<<< HEAD
     vcftools --gzvcf ${snp} --max-missing ${params.max_missing} --recode
     
     """ 
 } 
 
 // | bgzip -c > out.recode.vcf.gz
-
-=======
     vcftools --gzvcf ${snp} --max-missing ${params.max_missing} --recode --stdout | bgzip  > out.recode.vcf.gz
     """ 
 } 
 
->>>>>>> 3ed2bddd5686fcd937992d9f55274d29ea7fd703
+/*
 process "BEAGLE_SNP_Imputation" {
     
     label "low"
@@ -116,11 +112,9 @@ process "BEAGLE_SNP_Imputation" {
     //afterScript "set +u; source deactivate"
     
     input:
-<<<<<<< HEAD
+
     path "out.recode.vcf"
-=======
     path "out.recode.vcf.gz"
->>>>>>> 3ed2bddd5686fcd937992d9f55274d29ea7fd703
     
     output:
     path "snps_imputed.gt.vcf.gz"
@@ -130,15 +124,13 @@ process "BEAGLE_SNP_Imputation" {
     
     script:
     """
-<<<<<<< HEAD
     beagle gt=out.recode.vcf iterations=${params.iters} phase-states=${params.phase_states} imp-states=${params.imp_states} ne=${params.ne} nthreads=${params.nthreads_SNP} out=snps_imputed.gt
-=======
     beagle gt=out.recode.vcf.gz iterations=${params.iters} phase-states=${params.phase_states} imp-states=${params.imp_states} ne=${params.ne} nthreads=${params.nthreads_SNP} out=snps_imputed.gt
->>>>>>> 3ed2bddd5686fcd937992d9f55274d29ea7fd703
    
     """ 
 } 
 
+*/
 // bcftools.out
 // extract required format
 
@@ -164,10 +156,8 @@ process "vcftools_extract" {
     script:
     """   
     vcftools --gzvcf snps_imputed.gt.vcf.gz \\
-<<<<<<< HEAD
-=======
+
     --max-missing 1 \\
->>>>>>> 3ed2bddd5686fcd937992d9f55274d29ea7fd703
     --mac ${params.mac} \\
     --minQ ${params.minQ} \\
     --012 \\
