@@ -1,8 +1,5 @@
 #!/bin/awk -f
-<<<<<<< HEAD
-=======
 
->>>>>>> 3ed2bddd5686fcd937992d9f55274d29ea7fd703
 BEGIN{FS=OFS="\t"}
 
 {
