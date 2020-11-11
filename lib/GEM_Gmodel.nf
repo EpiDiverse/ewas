@@ -121,7 +121,7 @@ process "BEAGLE_SNP_Imputation" {
     """ 
 } 
 
-*/
+
 // bcftools.out
 // extract required format
 
