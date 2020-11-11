@@ -144,18 +144,15 @@ process "vcftools_extract" {
     script:
     """   
     vcftools --gzvcf snps_imputed.gt.vcf.gz \\
-
     --max-missing 1 \\
     --mac ${params.mac} \\
     --minQ ${params.minQ} \\
     --012 \\
     --out GT || exit \$?
-
     paste <(cat <(echo -e "CHROM\\tPOS") GT.012.pos) <(paste GT.012.indv <(cut -f2- GT.012) | datamash transpose) |
     awk '{printf "%s:%s-%s",\$1,\$2-1,\$2; for(i=3; i<=NF; i++) {printf "\\t%s",(NR==1?\$i:\$i+1)}; print null}' > snps.txt
     """ 
 }
-
 
 //split_scaffolds.out.transpose()
 // RUN GEM Gmodel
