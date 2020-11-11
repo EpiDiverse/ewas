@@ -343,7 +343,7 @@ log.info "         number of model states for ungenotype estimation       : ${pa
 log.info "         effective population size                              : ${params.ne}"
 log.info "         number of threads of execution                         : ${params.nthreads_SNP}"
 log.info "" }
-=======
+
 if(params.goa && params.species || params.GO_filter){
 log.info "         =================================================="
 log.info "         Gene Ontology Analysis"
@@ -527,7 +527,6 @@ workflow 'EWAS' {
         SNPs
         //GOA
         //species
-=======
         //goa
       
 
