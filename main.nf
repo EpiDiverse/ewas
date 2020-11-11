@@ -344,6 +344,7 @@ log.info "         effective population size                              : ${pa
 log.info "         number of threads of execution                         : ${params.nthreads_SNP}"
 log.info "" }
 
+/*
 if(params.goa && params.species || params.GO_filter){
 log.info "         =================================================="
 log.info "         Gene Ontology Analysis"
@@ -352,6 +353,7 @@ log.info "         path to .gff file               : ${params.goa}"
 log.info "         name of species                 : ${params.species}"
 log.info "         output GO p-value               : ${params.GO_filter}"
 log.info "" }
+*/
 //if(params.burnin || params.iterations || params.phase_states || params.imp_states || params.ne || nthreads_SNP){
 //log.info "         =================================================="
 //log.info "         SNP Imputation with BEAGLE"
@@ -392,8 +394,8 @@ samples_channel = Channel
         return tuple(field[0].replaceAll("\\s",""))}
 
 //stage gff file with goa channel
-goa = "${params.goa}"
-species= "${params.species}"
+//goa = "${params.goa}"
+//species= "${params.species}"
 
 
 // STAGE TEST PROFILE 
@@ -651,7 +653,7 @@ workflow 'EWAS' {
         
         // visualisation
         qqPlot(calculate_FDR.out)
-        GO_analysis(goa, species, calculate_FDR.out[0].collect())
+        //GO_analysis(goa, species, calculate_FDR.out[0].collect())
         //GO_analysis(goa)
         manhattan(calculate_FDR.out.filter{ it[0] == "Emodel" })
         dotPlot(calculate_FDR.out.filter{ it[0] == "Gmodel" })
