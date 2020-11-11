@@ -573,7 +573,6 @@ workflow 'EWAS' {
         bedtools_intersect(bedGraph_DMPs.mix(bedGraph_DMRs))
 
         // filter regions based on bootstrap values
-        filter_regions(unfilter_DMRs)
         filter_regions(bedGraph_DMRs)
         filter_regions_output = filter_regions.out.filter{ checkLines(it[4]) > 1 }
         filter_regions.out.filter{ checkLines(it[4]) <= 1 }.subscribe {
