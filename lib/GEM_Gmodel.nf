@@ -79,9 +79,6 @@ process "vcftools_missing" {
     path snp
     
     output:
-
-    path "out.recode.vcf"
-    
     path "out.recode.vcf.gz"
     //file("out.imiss")
     //file("out.log")
