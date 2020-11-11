@@ -98,9 +98,8 @@ process "vcftools_missing" {
 } 
 
 // | bgzip -c > out.recode.vcf.gz
-    vcftools --gzvcf ${snp} --max-missing ${params.max_missing} --recode --stdout | bgzip  > out.recode.vcf.gz
-    """ 
-} 
+//    vcftools --gzvcf ${snp} --max-missing ${params.max_missing} --recode --stdout | bgzip  > out.recode.vcf.gz
+
 
 /*
 process "BEAGLE_SNP_Imputation" {
@@ -114,7 +113,7 @@ process "BEAGLE_SNP_Imputation" {
     input:
 
     path "out.recode.vcf"
-    path "out.recode.vcf.gz"
+//    path "out.recode.vcf.gz"
     
     output:
     path "snps_imputed.gt.vcf.gz"
