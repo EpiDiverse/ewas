@@ -332,7 +332,6 @@ log.info "         minor allele count              : ${params.mac}"
 log.info "         minimum quality score           : ${params.minQ}"
 log.info "" }
 
-/*
 if(params.burnin || params.iterations || params.phase_states || params.imp_states || params.ne || nthreads_SNP){
 log.info "         =================================================="
 log.info "         SNP Imputation with BEAGLE"
@@ -344,7 +343,7 @@ log.info "         number of model states for ungenotype estimation       : ${pa
 log.info "         effective population size                              : ${params.ne}"
 log.info "         number of threads of execution                         : ${params.nthreads_SNP}"
 log.info "" }
-*/
+
 
 /*
 if(params.goa && params.species || params.GO_filter){
@@ -591,7 +590,7 @@ workflow 'EWAS' {
         // extract missing information
         vcftools_missing(bcftools.out)
         //SNP imputation with BEAGLE
-        //BEAGLE_SNP_Imputation(bcftools.out)
+        BEAGLE_SNP_Imputation(bcftools.out)
         // extract snps.txt for GEM_GModel
         vcftools_extract(bcftools.out)
 
