@@ -16,7 +16,7 @@ if(params.help){
               nextflow run epidiverse/ewas [OPTIONS]...
 
          Options: GENERAL
-<<<<<<< HEAD
+         
               --input [path/to/input/dir]      [REQUIRED] Specify input path for the directory containing outputs from the WGBS pipeline.
                                                The pipeline searches for bedGraph files in '*/bedGraph/{sample_name}_{context}.bedGraph'
                                                format, where sample names must correspond to the samplesheet and context can be either
@@ -74,7 +74,7 @@ if(params.help){
               --all                            If --DMPs and/or --DMRs are provided to the pipeline then raw un-intersected bedGraphs are
                                                not carried forward for analysis. Enable this parameter to process them alongside the 
                                                DMP / DMR intersections in parallel [default: off]
-=======
+
               --input [path/to/input/dir]       [REQUIRED] Specify input path for the directory containing outputs from the WGBS pipeline.
                                                 The pipeline searches for bedGraph files in '*/bedGraph/{sample_name}_{context}.bedGraph'
                                                 format, where sample names must correspond to the samplesheet and context can be either
@@ -132,7 +132,6 @@ if(params.help){
               --all                             If --DMPs and/or --DMRs are provided to the pipeline then raw un-intersected bedGraphs are
                                                 not carried forward for analysis. Enable this parameter to process them alongside the 
                                                 DMP / DMR intersections in parallel [default: off]
->>>>>>> 3ed2bddd5686fcd937992d9f55274d29ea7fd703
 
 
          Options: INPUT FILTERING
@@ -143,14 +142,13 @@ if(params.help){
                                                --DMPs and --DMRs directories [default: 0.05]          
 
               --filter_NA <FLOAT>              Specify the maximum proportion of samples that can contain a missing value before a methylated
-<<<<<<< HEAD
+
                                                position is removed from the analysis Please be careful about the usage, filtering out more than 
                                                half of the data is not recommended.[default: 0] . 
                                                
-=======
+
                                                position is removed from the analysis [default: 0] 
 
->>>>>>> 3ed2bddd5686fcd937992d9f55274d29ea7fd703
               --filter_SD <FLOAT>              Specify the maximum standard deviation in methylation between samples to filter individual
                                                positions based on the degree of difference [default: 0] 
 
@@ -163,14 +161,14 @@ if(params.help){
 
          Options: SNP FILTERING
               --mac <INT>                      Minor allele count [default: 3]
-<<<<<<< HEAD
+
 
 
               --minQ <INT>                     Minimum quality score [default: 30]
 
 
          Options: OUTPUT FILTERING       
-=======
+
               
               --minQ <INT>                     Minimum quality score [default: 30]
 
@@ -189,12 +187,11 @@ if(params.help){
                                                
 
          Options: OUTPUT FILTERING   
->>>>>>> 3ed2bddd5686fcd937992d9f55274d29ea7fd703
+
               --output_FDR <FLOAT>            Specify the maximum FDR threshold for filtering EWAS post-analysis [default: 0.05]
               
               --Emodel_pv <FLOAT>             Set the p-value to run "E model". Note: this filter is applied prior to FDR calculation
-                                              and should be used cautiously [default: 1]
-<<<<<<< HEAD
+
 
               --Gmodel_pv <FLOAT>             Set the p-value to run "G model". Note: this filter is applied prior to FDR calculation
                                               and should be used cautiously [default: 1]
@@ -203,14 +200,13 @@ if(params.help){
                                               and should be used cautiously [default: 1]
 
 
-=======
                                               
               --Gmodel_pv <FLOAT>             Set the p-value to run "G model". Note: this filter is applied prior to FDR calculation
                                               and should be used cautiously [default: 1]
                                               
               --GxE_pv <FLOAT>                Set the p-value to run "GxE model". Note: this filter is applied prior to FDR calculation
                                               and should be used cautiously [default: 1]
->>>>>>> 3ed2bddd5686fcd937992d9f55274d29ea7fd703
+
 
          Options: VISUALISATION
               --kplots <INT>                  Specify the number of plots to generate for the top k significant results in "GxE model"  
@@ -335,7 +331,7 @@ log.info "         maximum missing                 : ${params.max_missing}"
 log.info "         minor allele count              : ${params.mac}"
 log.info "         minimum quality score           : ${params.minQ}"
 log.info "" }
-<<<<<<< HEAD
+
 if(params.burnin || params.iterations || params.phase_states || params.imp_states || params.ne || nthreads_SNP){
 log.info "         =================================================="
 log.info "         SNP Imputation with BEAGLE"
@@ -368,7 +364,6 @@ log.info "" }
 //log.info "         number of threads of execution                         : ${params.nthreads_SNP}"
 //log.info "" }
 log.info "         =================================================="
->>>>>>> 3ed2bddd5686fcd937992d9f55274d29ea7fd703
 log.info "         =================================================="
 log.info "         Output"
 log.info "         =================================================="
@@ -530,13 +525,11 @@ workflow 'EWAS' {
         samples
         input_channel
         SNPs
-<<<<<<< HEAD
         //GOA
         //species
 =======
         //goa
       
->>>>>>> 3ed2bddd5686fcd937992d9f55274d29ea7fd703
 
     // outline workflow
     main:
@@ -578,15 +571,12 @@ workflow 'EWAS' {
         bedtools_intersect(bedGraph_DMPs.mix(bedGraph_DMRs))
 
         // filter regions based on bootstrap values
-<<<<<<< HEAD
         filter_regions(unfilter_DMRs)
-=======
         filter_regions(bedGraph_DMRs)
         filter_regions_output = filter_regions.out.filter{ checkLines(it[4]) > 1 }
         filter_regions.out.filter{ checkLines(it[4]) <= 1 }.subscribe {
             log.warn "filter_regions: no data left to analyse after filtering: ${it[0]}.${it[1]}.bed"
         }
->>>>>>> 3ed2bddd5686fcd937992d9f55274d29ea7fd703
         // bedtools_merge for optionally combining filtered sub-regions
         bedtools_merge(filter_regions_output)
         // average_over_regions for calculating average methylation over defined regions
@@ -598,12 +588,9 @@ workflow 'EWAS' {
 
         // stage channels for downstream processes
         bedGraph_channel = params.all || (!params.DMPs && !params.DMRs) ? bedtools_sorting.out.filter{it[1] == "bedGraph"} : Channel.empty()
-<<<<<<< HEAD
         meth_channel = bedGraph_channel.mix(bedtools_intersect.out, average_over_regions.out)
         split_scaffolds(meth_channel)
-=======
         meth_channel = bedGraph_channel.mix(bedtools_intersect.out, average_over_regions_output)
->>>>>>> 3ed2bddd5686fcd937992d9f55274d29ea7fd703
 
         // SNPs
         // index individual vcf files, optionally rename header
