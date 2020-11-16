@@ -505,7 +505,7 @@ input_channel = single_channel.mix(DMPs_channel, DMRs_channel)
 // INCLUDES
 //include {parsing;split_scaffolds;calculate_FDR;qqPlot;GO_analysis} from './lib/process.nf' params(params)
 include {parsing;split_scaffolds;calculate_FDR;qqPlot} from './lib/process.nf' params(params)
-include {filtering;bedtools_unionbedg;bedtools_filtering;bedtools_sorting;bedtools_intersect;filter_regions;bedtools_merge;average_over_regions;GEM_Emodel;manhattan;} from './lib/GEM_Emodel.nf' params(params)
+include {filtering;bedtools_unionbedg;bedtools_filtering;bedtools_sorting;bedtools_intersect;filter_regions;bedtools_merge;average_over_regions;GEM_Emodel;GEM_mixed_Emodel;manhattan;} from './lib/GEM_Emodel.nf' params(params)
 include {tabix;bcftools;vcftools_missing;vcftools_extract;GEM_Gmodel;GEM_GxEmodel;dotPlot;topKplots} from './lib/GEM_Gmodel.nf' params(params)
 include {checkLines} from './lib/functions.nf'
 
@@ -587,6 +587,7 @@ workflow 'EWAS' {
 
         // run GEM on selected combination of inputs
         GEM_Emodel(split_scaffolds.out.transpose(), parsing.out[0], parsing.out[1])
+        GEM_mixed_Emodel(split_scaffolds.out.transpose(), parsing.out[0], parsing.out[1])
         GEM_Gmodel(split_scaffolds.out.transpose(), vcftools_extract.out, parsing.out[1])
         GEM_GxEmodel(split_scaffolds.out.transpose(), vcftools_extract.out, parsing.out[2])
         
@@ -600,6 +601,18 @@ workflow 'EWAS' {
                 type = key.last()
                 return tuple("Emodel", it[0], context, type, it[1], it[2])
             }
+
+        mixed_Emodel_txt = GEM_mixed_Emodel.out[0].collectFile().map{ tuple(it.baseName, it) }
+        mixed_Emodel_log = GEM_mixed_Emodel.out[1].collectFile().map{ tuple(it.baseName, it) }
+        mixed_Emodel_channel = mixed_Emodel_txt.combine(mixed_Emodel_log, by: 0)
+            .map { it -> 
+                List key = it[0].tokenize(".")
+                context = key.init().join(".")
+                type = key.last()
+                return tuple("Emodel", it[0], context, type, it[1], it[2])
+            }
+
+
 
         Gmodel_txt = GEM_Gmodel.out[0].collectFile().map{ tuple(it.baseName, it) }
         Gmodel_log = GEM_Gmodel.out[1].collectFile().map{ tuple(it.baseName, it) }
