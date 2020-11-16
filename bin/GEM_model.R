@@ -88,6 +88,80 @@ my.GEM_Emodel <-
     }
 
 
+
+#use a kinship matrix from methylation data to conduct a mixed model analysis
+my.mixed_GEM_Emodel <-
+    function(env_file_name, covariate_file_name, methylation_file_name,
+             Emodel_pv, outfile, noFDR = FALSE) {
+
+        errorCovariance = numeric();
+
+        env <- SlicedData$new();
+        env$fileDelimiter = "\t";      # the TAB character
+        env$fileOmitCharacters = "NA"; # denote missing values;
+        env$fileSkipRows = 1;          # one row of column labels
+        env$fileSkipColumns = 1;       # one column of row labels
+        env$fileSliceSize = 2000;      # read file in slices of 2,000 rows
+        env$LoadFile(env_file_name);
+
+        cvrt <- SlicedData$new();
+        cvrt$fileDelimiter = "\t";      # the TAB character
+        cvrt$fileOmitCharacters = "NA"; # denote missing values;
+        cvrt$fileSkipRows = 1;          # one row of column labels
+        cvrt$fileSkipColumns = 1;       # one column of row labels
+        if (length(covariate_file_name) > 0) {
+            cvrt$LoadFile(covariate_file_name);
+        }
+
+        cpg = SlicedData$new();
+        cpg$fileDelimiter = "\t";      # the TAB character
+        cpg$fileOmitCharacters = "NA"; # denote missing values;
+        cpg$fileSkipRows = 1;          # one row of column labels
+        cpg$fileSkipColumns = 1;       # one column of row labels
+        cpg$fileSliceSize = 2000;      # read file in slices of 2,000 rows
+        cpg$LoadFile(methylation_file_name);
+
+        ## Run the analysis
+        mixed_Emodel <- Matrix_eQTL_engine2(
+            snps = env,
+            gene = cpg,
+            cvrt = cvrt,
+            output_file_name = outfile,
+            pvOutputThreshold = Emodel_pv,
+            useModel = modelANOVA,
+            errorCovariance = errorCovariance,
+            verbose = FALSE,
+            pvalue.hist = FALSE,
+            min.pv.by.genesnp = FALSE,
+            noFDRsaveMemory = noFDR,
+            addInfo = "CpGs"
+        )
+        
+        fstat = mixed_Emodel$all$eqtls$statistic;
+        pvalue = mixed_Emodel$all$eqtls$pvalue;
+        rez = c( Fstat = fstat, pvalue = pvalue)
+        # And compare to those from ANOVA in R
+        {
+            #cat("\n\n Matrix eQTL: \n");
+            #print(rez);
+            #cat("\n R anova(lm()) output: \n")
+            lmodel = lm( cpg.mat ~ cvrt.mat + factor(snps.mat), weights = 1/errorCovariance);
+            lmout = anova(lmodel)[2, c("F value", "Pr(>F)")];
+            #print( lmout )
+}
+        
+# Results from Matrix eQTL and "lm" must agree
+stopifnot(all.equal(lmout, rez, check.attributes = FALSE));
+        
+        
+        ## Results:
+        cat('Analysis done in: ', mixed_Emodel$time.in.sec, ' seconds', '\n');
+        #show(Emodel$all$eqtls)
+        #R2 = Emodel$all$eqtls$statistic ^ 2 / (Emodel$all$eqtls$statistic ^ 2 + Emodel$param$dfFull);
+        
+    }
+
+
 #' GEM_Gmodel Analysis
 #'
 #' GEM_Gmodel creates a methQTL genome-wide map.
