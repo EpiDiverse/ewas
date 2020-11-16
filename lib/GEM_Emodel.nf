@@ -283,7 +283,7 @@ process "average_over_regions" {
 // eg. [CpG, regions, CpG.avg]
 
 
-// RUN GEM Emodel
+// RUN GEM Emodel with LINEARMODEL
 process "GEM_Emodel" {
     
     label "low"
@@ -317,13 +317,60 @@ process "GEM_Emodel" {
     """
     mkdir output
     awk -F "\\t" '{printf \"%s:%s-%s\",\$1,\$2,\$3; for(i=4; i<=NF; i++) {printf \"\\t%s\",\$i}; print null}' ${meth} > \$(basename ${meth} .bed).txt
-    Rscript ${baseDir}/bin/GEM_Emodel.R ${baseDir}/bin ${envs} ${covs} \$(basename ${meth} .bed).txt ${params.Gmodel_pv} output/temp > output/${context}.${type}.log || exit \$?
+    Rscript ${baseDir}/bin/GEM_Emodel.R ${baseDir}/bin ${envs} ${covs} \$(basename ${meth} .bed).txt ${params.Emodel_pv} output/temp > output/${context}.${type}.log || exit \$?
+    tail -n+2 output/temp.txt | gzip > output/${context}.${type}.gz && rm output/temp.txt
+    Rscript ${baseDir}/bin/GEM_Emodel.R ${baseDir}/bin ${envs} ${covs} \$(basename ${meth} .bed).txt ${params.Emodel_pv} output/temp > ${context}.${type}.log || exit \$?
+    tail -n+2 output/temp.txt > ${context}.${type}.txt
+    """
+
+}
+
+
+// RUN GEM Emodel with ANOVAMODEL
+process "GEM_mixed_Emodel" {
+    
+    label "low"
+    label "finish"
+    tag "${context}.${type} - ${meth.baseName}"
+            
+    input:
+    tuple val(context), val(type), path(meth)
+    path envs
+    path covs
+    
+    output:
+    //tuple context, type, path("output/*.txt"), path("output/*.log")
+    path "output/${context}.${type}.gz"
+    path "output/${context}.${type}.log"
+    path "${context}.${type}.txt"
+    path "${context}.${type}.log"
+
+   
+    when:
+    (params.input && (!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) params.mixed
+    
+    script: 
+    """
+    mkdir output
+    awk -F "\\t" '{printf \"%s:%s-%s\",\$1,\$2,\$3; for(i=4; i<=NF; i++) {printf \"\\t%s\",\$i}; print null}' ${meth} > \$(basename ${meth} .bed).txt
+    Rscript ${baseDir}/bin/mixed_GEM_Emodel.R.R ${baseDir}/bin ${envs} ${covs} \$(basename ${meth} .bed).txt ${params.Emodel_pv} output/temp > output/${context}.${type}.log || exit \$?
     tail -n+2 output/temp.txt | gzip > output/${context}.${type}.gz && rm output/temp.txt
     Rscript ${baseDir}/bin/GEM_Emodel.R ${baseDir}/bin ${envs} ${covs} \$(basename ${meth} .bed).txt ${params.Gmodel_pv} output/temp > ${context}.${type}.log || exit \$?
     tail -n+2 output/temp.txt > ${context}.${type}.txt
     """
 
 }
+
+
+
+
+
+
+
+
+
+
+
 
 
 
