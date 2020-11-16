@@ -1,0 +1,25 @@
+#!/usr/bin/env R
+
+suppressMessages(require(ggplot2))
+suppressMessages(require(Rcpp))
+suppressMessages(require(digest))
+suppressMessages(require(devtools))
+suppressMessages(require(usethis))
+#suppressMessages(require(GEM))
+#loadNamespace(GEM)
+
+##################################
+args <- commandArgs(trailingOnly=T)
+source(paste(args[1],"GEM_model.R",sep="/"))
+environment(my.GEM_Emodel) <- asNamespace("GEM")
+##################################
+
+env= paste(".", args[2], sep="/")
+cov= paste(".", args[3], sep="/")
+meth= paste(".", args[4], sep="/")
+p= as.numeric(args[5])
+
+#main.nf takes p_value as an integer, but GEM process converts it into string. before this, this value be converted into int again. 
+mixed_emodel_txt = paste("./", args[6], ".txt", sep="")
+
+my.mixed_GEM_Emodel(env, cov, meth, p, mixed_emodel_txt, noFDR=TRUE)
