@@ -15,7 +15,7 @@ process "tabix" {
     path "output/*.tbi"
     
     when:
-    params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel || params.GxE)
+    params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE && !params.GWAS) || params.Gmodel || params.GxE || params.GWAS)
 
     script:
     """
@@ -47,7 +47,7 @@ process "bcftools" {
     path "input/filtered.vcf.gz"
 
     when:
-    params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel || params.GxE)
+     params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE && !params.GWAS) || params.Gmodel || params.GxE || params.GWAS)
 
     script:
     """
@@ -85,7 +85,7 @@ process "vcftools_missing" {
     //path "out.log"
 
     when:
-    params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel || params.GxE)
+     params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE && !params.GWAS) || params.Gmodel || params.GxE || params.GWAS)
 
     script:
     """
@@ -108,7 +108,7 @@ process "BEAGLE_SNP_Imputation" {
     path "snps_imputed.gt.vcf.gz"
 
     when:
-    params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel || params.GxE)
+     params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE && !params.GWAS) || params.Gmodel || params.GxE || params.GWAS)
     
     script:
     """
@@ -136,7 +136,7 @@ process "vcftools_extract" {
     //file("out.log")
 
     when:
-    params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel || params.GxE)
+     params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE && !params.GWAS) || params.Gmodel || params.GxE || params.GWAS)
 
     script:
     """   
@@ -177,7 +177,7 @@ process "GEM_Gmodel" {
     path "output/${context}.${type}.log"
    
     when:
-    params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel)
+    params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE && !params.GWAS) || params.Gmodel)
     
     script: 
     """
@@ -216,7 +216,7 @@ process "GEM_GxEmodel" {
     tuple val(context), val(type), path("header.txt")
 
     when:
-    params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE)
+    params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE && !params.GWAS) || params.GxE)
     
     script: 
     """
@@ -261,8 +261,8 @@ process "GEM_GWAS" {
     path "output/${context}.${type}.gz"
     path "output/${context}.${type}.log"
    
-    //when:
-    //params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE && !params.GWAS) || params.GWAS)
+    when:
+    params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE && !params.GWAS) || params.GWAS)
     //params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel)
     
     script: 
@@ -301,7 +301,7 @@ process "dotPlot" {
     tuple val(type), path("${model}/*.zip") optional true
 
     when:
-    params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel)
+    params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE && !params.GWAS) || params.Gmodel)
 
     script:
     """
@@ -387,4 +387,3 @@ process "topKplots" {
     Rscript ${baseDir}/bin/Kplot.R GxE/${key}/${key}.filtered_${params.output_FDR}_FDR.txt <(cat ${header} meth.txt) ${snp} ${gxe}
     """ 
 }
-
