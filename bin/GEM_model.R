@@ -396,7 +396,7 @@ GEM_GWASmodel <-
             verbose = FALSE,
             pvalue.hist = "qqplot",
             min.pv.by.genesnp = FALSE,
-            noFDRsaveMemory = FALSE,
+            noFDRsaveMemory = noFDR,
             addInfo = "SNPs"
         );
 
