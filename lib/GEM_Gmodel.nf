@@ -125,7 +125,7 @@ process "vcftools_extract" {
     label "finish"
     
     publishDir "${params.output}/input", pattern: "snps.txt" , mode: 'copy', \
-            enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel || params.GxE) ? true : false
+            enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE && !params.GWAS) || params.Gmodel || params.GxE || params.GWAS) ? true : false
     
     input:
     path ("snps_imputed.gt.vcf.gz")
@@ -136,7 +136,7 @@ process "vcftools_extract" {
     //file("out.log")
 
     when:
-     params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE && !params.GWAS) || params.Gmodel || params.GxE || params.GWAS)
+    params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE && !params.GWAS) || params.Gmodel || params.GxE || params.GWAS)
 
     script:
     """   
@@ -258,7 +258,7 @@ process "GEM_GWAS" {
     path covs
     
     output:
-    path "output/${context}.${type}.gz"
+    path "output/${context}.${type}.txt"
     path "output/${context}.${type}.log"
    
     when:
