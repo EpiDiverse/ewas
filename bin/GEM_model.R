@@ -316,7 +316,7 @@ my.GEM_GxEmodel <-
 #' GWASmodel_pv = 1
 #' GEM_GWASmodel(env_file, snp_file, covariate_file, GWASmodel_pv, output_file, qqplot_file)
 
-GEM_GWASmodel <-
+my.GEM_GWASmodel <-
     function(env_file_name, snp_file_name, covariate_file_name,
              GWAS_pv, outfile, noFDR = FALSE)
     {
