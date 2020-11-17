@@ -115,11 +115,12 @@ process "calculate_FDR" {
     """
     mkdir tmp input ${model}
     total=\$(cat ${logs} | grep "100.00%" | cut -d " " -f3 | tr -d "," | awk 'BEGIN{c=0} {c+=\$0} END{print c}')
-    echo -e "${model == "Emodel" ? "cpg" : "cpg\\tsnp"}\\tbeta\\tstats\\tpvalue\\tFDR" |
+    //echo -e "${model == "Emodel" ? "cpg" : "cpg\\tsnp"}\\tbeta\\tstats\\tpvalue\\tFDR" |
+    echo -e ${model == "Emodel" ? "cpg\\tbeta\\tstats\\tpvalue\\tFDR" : model == "GWAS" ? "cpg\\tbeta\\tstats\\tpvalue\\tFDR" : model == "Gmodel" ? "cpg\\tsnp\\tbeta\\tstats\\tpvalue\\tFDR" : model == "GxE" ? "cpg\\tsnp\\tbeta\\tstats\\tpvalue\\tFDR"
     tee input/header.txt ${model}/${key}.txt ${model}/${key}.filtered_${params.output_FDR}_FDR.txt
 
     if [ -z \$(gzip -cd ${results} | head -c1) ]; then
-    echo "No findings with ${model == "Emodel" ? "--Emodel_pv ${params.Emodel_pv}" : model == "Gmodel" ? "--Gmodel_pv ${params.Gmodel_pv}" : "--GxE_pv ${params.GxE_pv}"}" > ${model}/${key}.txt
+    echo "No findings with ${model == "Emodel" ? "--Emodel_pv ${params.Emodel_pv}" : model == "Gmodel" ? "--Gmodel_pv ${params.Gmodel_pv}" : "--GxE_pv ${params.GxE_pv}" : model == "GWAS" ? "--GWAS_pv ${params.GWAS_pv}"}" > ${model}/${key}.txt
     else
     gzip -cd ${results} | sort -T tmp --parallel=${task.cpus} -grk5 | cut -f${model == "Emodel" ? "2-" : "1-"} |
     awk -F "\\t" -v t="\$total" 'BEGIN{OFS="\\t";p=1;r=t} {fdr=(t/r)*${model == "Emodel" ? "\$4" : "\$5"};
@@ -141,31 +142,31 @@ process "qqPlot" {
     tag "${key}"
     
     publishDir "${params.output}/positions", pattern: "${model}/CpG.bedGraph*.png" , mode: 'copy', \
-    enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
+    enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE && !params.GWAS) || params.Emodel) ? true : false
     
     publishDir "${params.output}/positions", pattern: "${model}/CpG.DMRs*.png" , mode: 'copy', \
-    enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
+    enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE && !params.GWAS) || params.Emodel) ? true : false
     
     publishDir "${params.output}/regions", pattern: "${model}/CpG.region*.png" , mode: 'copy', \
-    enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
+    enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE && !params.GWAS) || params.Emodel) ? true : false
 
     publishDir "${params.output}/positions", pattern: "${model}/CHG.bedGraph*.png" , mode: 'copy', \
-    enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
+    enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE && !params.GWAS) || params.Emodel) ? true : false
     
     publishDir "${params.output}/positions", pattern: "${model}/CHG.DMRs*.png" , mode: 'copy', \
-    enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
+    enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE && !params.GWAS) || params.Emodel) ? true : false
     
     publishDir "${params.output}/regions", pattern: "${model}/CHG.region*.png" , mode: 'copy', \
-    enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
+    enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE && !params.GWAS) || params.Emodel) ? true : false
     
     publishDir "${params.output}/positions", pattern: "${model}/CHH.bedGraph*.png" , mode: 'copy', \
-    enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
+    enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE && !params.GWAS) || params.Emodel) ? true : false
     
     publishDir "${params.output}/positions", pattern: "${model}/CHH.DMRs*.png" , mode: 'copy', \
-    enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
+    enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE && !params.GWAS) || params.Emodel) ? true : false
     
     publishDir "${params.output}/regions", pattern: "${model}/CHH.region*.png" , mode: 'copy', \
-    enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false    
+    enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE && !params.GWAS) || params.Emodel) ? true : false    
     
     
     input:
