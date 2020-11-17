@@ -119,7 +119,7 @@ process "calculate_FDR" {
     tee input/header.txt ${model}/${key}.txt ${model}/${key}.filtered_${params.output_FDR}_FDR.txt
 
     if [ -z \$(gzip -cd ${results} | head -c1) ]; then
-    echo "No findings with ${model == "Emodel" ? "--Emodel_pv ${params.Emodel_pv}" : model == "Gmodel" ? "--Gmodel_pv ${params.Gmodel_pv}" : "--GxE_pv ${params.GxE_pv}" : model == "GWAS" ? "--GWAS_pv ${params.GWAS_pv}"}" > ${model}/${key}.txt
+    echo "No findings with ${model == "Emodel" ? "--Emodel_pv ${params.Emodel_pv}" : model == "Gmodel" ? "--Gmodel_pv ${params.Gmodel_pv}" : "--GxE_pv ${params.GxE_pv}" : "--GWAS_pv ${params.GWAS_pv}"}" > ${model}/${key}.txt
     else
     gzip -cd ${results} | sort -T tmp --parallel=${task.cpus} -grk5 | cut -f${model == "Emodel" ? "2-" : "1-"} |
     awk -F "\\t" -v t="\$total" 'BEGIN{OFS="\\t";p=1;r=t} {fdr=(t/r)*${model == "Emodel" ? "\$4" : "\$5"};
