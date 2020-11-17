@@ -15,7 +15,7 @@ process "tabix" {
     path "output/*.tbi"
     
     when:
-    params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel || params.GxE)
+    params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE && !params.GWAS) || params.Gmodel || params.GxE || params.GWAS)
 
     script:
     """
@@ -47,7 +47,7 @@ process "bcftools" {
     path "input/filtered.vcf.gz"
 
     when:
-    params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel || params.GxE)
+    params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE && !params.GWAS) || params.Gmodel || params.GxE || params.GWAS)
 
     script:
     """
@@ -85,7 +85,7 @@ process "vcftools_missing" {
     //path "out.log"
 
     when:
-    params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel || params.GxE)
+    params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE && !params.GWAS) || params.Gmodel || params.GxE || params.GWAS)
 
     script:
     """
@@ -109,7 +109,7 @@ process "BEAGLE_SNP_Imputation" {
     path "snps_imputed.gt.vcf.gz"
 
     when:
-    params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel || params.GxE)
+    params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE && !params.GWAS) || params.Gmodel || params.GxE || params.GWAS)
     
     script:
     """
@@ -128,7 +128,7 @@ process "vcftools_extract" {
     label "finish"
     
     publishDir "${params.output}/input", pattern: "snps.txt" , mode: 'copy', \
-            enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel || params.GxE) ? true : false
+            enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE && !params.GWAS) || params.Gmodel || params.GxE || params.GWAS) ? true : false
     
     input:
     path ("snps_imputed.gt.vcf.gz")
@@ -139,7 +139,7 @@ process "vcftools_extract" {
     //file("out.log")
 
     when:
-    params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel || params.GxE)
+    params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE && !params.GWAS) || params.Gmodel || params.GxE || params.GWAS)
 
     script:
     """   
@@ -209,7 +209,7 @@ process "GEM_Gmodel" {
     path "output/${context}.${type}.log"
    
     when:
-    params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel)
+    params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE && !params.GWAS) || params.Gmodel)
     
     script: 
     """
@@ -247,7 +247,7 @@ process "GEM_GxEmodel" {
     tuple val(context), val(type), path("header.txt")
 
     when:
-    params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE)
+    params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE && !params.GWAS) || params.GxE)
     
     script: 
     """
@@ -299,7 +299,7 @@ process "dotPlot" {
     tuple val(type), path("${model}/*.zip") optional true
 
     when:
-    params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel)
+    params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE && !params.GWAS) || params.Gmodel)
 
     script:
     """
@@ -372,7 +372,7 @@ process "topKplots" {
     tuple val(type), path("GxE/${key}/*.png") optional true
 
     when:
-    params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.GxE) && params.kplots > 0
+    params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE && !params.GWAS) || params.GxE) && params.kplots > 0
 
     script:
     """
