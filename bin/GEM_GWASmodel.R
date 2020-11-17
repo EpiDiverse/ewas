@@ -11,7 +11,7 @@ suppressMessages(require(usethis))
 ##################################
 args <- commandArgs(trailingOnly=T)
 source(paste(args[1],"GEM_model.R",sep="/"))
-environment(my.GEM_Emodel) <- asNamespace("GEM")
+environment(my.GEM_GWASmodel) <- asNamespace("GEM")
 ##################################
 
 snp= paste(".", args[2], sep="/")
