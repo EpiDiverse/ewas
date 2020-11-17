@@ -162,7 +162,7 @@ stopifnot(all.equal(lmout, rez, check.attributes = FALSE));
         
     }
 }
-*/
+
 
 #' GEM_Gmodel Analysis
 #'
@@ -440,4 +440,4 @@ GEM_GWASmodel <-
         );
 
         ## Results:
-        cat('Analysis done in: ', GWAS$time.in.sec, ' seconds', '\n');
+        cat('Analysis done in: ', GWASmodel$time.in.sec, ' seconds', '\n');
