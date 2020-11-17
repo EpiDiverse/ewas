@@ -260,8 +260,8 @@ process "GEM_GWAS" {
     path "output/${context}.${type}.gz"
     path "output/${context}.${type}.log"
    
-    when:
-    params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE && !params.GWAS) || params.GWAS)
+    //when:
+    //params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE && !params.GWAS) || params.GWAS)
     //params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel)
     
     script: 
