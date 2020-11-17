@@ -354,9 +354,7 @@ process "GEM_mixed_Emodel" {
     """
     mkdir output
     awk -F "\\t" '{printf \"%s:%s-%s\",\$1,\$2,\$3; for(i=4; i<=NF; i++) {printf \"\\t%s\",\$i}; print null}' ${meth} > \$(basename ${meth} .bed).txt
-    Rscript ${baseDir}/bin/mixed_GEM_Emodel.R.R ${baseDir}/bin ${envs} ${covs} \$(basename ${meth} .bed).txt ${params.Emodel_pv} output/temp > output/${context}.${type}.log || exit \$?
-    tail -n+2 output/temp.txt | gzip > output/${context}.${type}.gz && rm output/temp.txt
-    Rscript ${baseDir}/bin/GEM_Emodel.R ${baseDir}/bin ${envs} ${covs} \$(basename ${meth} .bed).txt ${params.Gmodel_pv} output/temp > ${context}.${type}.log || exit \$?
+    Rscript ${baseDir}/bin/GEM_Emodel.R ${envs} ${covs} \$(basename ${meth} .bed).txt ${params.Gmodel_pv} output/temp > ${context}.${type}.log || exit \$?
     tail -n+2 output/temp.txt > ${context}.${type}.txt
     """
 
