@@ -311,7 +311,7 @@ process "GEM_Emodel" {
 
    
     when:
-    params.input && (!params.Emodel && !params.Gmodel && !params.GxE && !params.GWAS) || params.Emodel
+    params.input && (!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel
     
     script: 
     """
