@@ -382,7 +382,4 @@ my.GEM_GWASmodel <-
       result_GWASmodel, outfile, sep = "\t", row.names = FALSE, quote = FALSE
     )
     
-  }
-
-
 }
