@@ -154,6 +154,37 @@ process "vcftools_extract" {
     """ 
 }
 
+
+// RUN GEM GWAS
+process "GEM_GWAS" {
+    
+    label "low"
+    label "finish"
+    tag "${context}.${type} - ${meth.baseName}"
+
+
+    enabled: (params.SNPs && ((!params.Emodel && !params.GWAS && !params.GxE) || params.GWAS)) && params.DMRs ? true : false
+    
+    input:
+    path envs
+    path snps
+    path covs
+    
+    output:
+    path "output/${context}.${type}.gz"
+    path "output/${context}.${type}.log"
+   
+    when:
+    params.SNPs && ((!params.Emodel && !params.GWAS && !params.GxE) || params.GWAS)
+    
+    script: 
+    """
+    mkdir output
+    Rscript ${baseDir}/bin/GEM_GWAS.R ${baseDir}/bin ${snps} ${covs} ${envs} ${params.GWAS_pv} output/temp > output/${context}.${type}.log || exit \$?
+    tail -n+2 output/temp.txt | awk 'BEGIN{OFS=\"\\t\"} {printf \"%s\\t%s\\t%s\\t%s\\t%s\\n\", \$2,\$1,\$3,\$4,\$5}' | gzip > output/${context}.${type}.gz  && rm output/temp.txt   
+    """
+}
+
 //split_scaffolds.out.transpose()
 // RUN GEM Gmodel
 process "GEM_Gmodel" {
