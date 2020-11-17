@@ -242,7 +242,35 @@ process "GEM_GxEmodel" {
     """
 }
 
+process "GEM_GWAS" {
+    
+    label "low"
+    label "finish"
+    tag "${context}.${type} - ${meth.baseName}"
 
+
+    //enabled: (params.SNPs && ((!params.Emodel && !params.GWAS && !params.GxE) || params.GWAS)) && params.DMRs ? true : false
+    
+    input:
+    path envs
+    path snps
+    path covs
+    
+    output:
+    path "output/${context}.${type}.gz"
+    path "output/${context}.${type}.log"
+   
+    when:
+    params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE && !params.GWAS) || params.GWAS)
+    //params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel)
+    
+    script: 
+    """
+    mkdir output
+    Rscript ${baseDir}/bin/GEM_GWAS.R ${baseDir}/bin ${snps} ${covs} ${envs} ${params.GWAS_pv} output/temp > output/${context}.${type}.log || exit \$?
+    tail -n+2 output/temp.txt | awk 'BEGIN{OFS=\"\\t\"} {printf \"%s\\t%s\\t%s\\t%s\\t%s\\n\", \$2,\$1,\$3,\$4,\$5}' | gzip > output/${context}.${type}.gz  && rm output/temp.txt   
+    """
+}
 
 // calculate_FDR.out[0].filter{ it[0] == "Gmodel" }
 // process to generate dotplots from Gmodel
@@ -356,3 +384,4 @@ process "topKplots" {
     Rscript ${baseDir}/bin/Kplot.R GxE/${key}/${key}.filtered_${params.output_FDR}_FDR.txt <(cat ${header} meth.txt) ${snp} ${gxe}
     """ 
 }
+
