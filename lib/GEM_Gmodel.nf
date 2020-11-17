@@ -163,7 +163,7 @@ process "GEM_GWAS" {
     tag "${context}.${type} - ${meth.baseName}"
 
 
-    enabled: (params.SNPs && ((!params.Emodel && !params.GWAS && !params.GxE) || params.GWAS)) && params.DMRs ? true : false
+    //enabled: (params.SNPs && ((!params.Emodel && !params.GWAS && !params.GxE) || params.GWAS)) && params.DMRs ? true : false
     
     input:
     path envs
