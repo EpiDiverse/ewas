@@ -242,7 +242,7 @@ process "GEM_GxEmodel" {
     """
 }
 
-/*
+
 process "GEM_GWAS" {
     
     label "low"
@@ -268,12 +268,12 @@ process "GEM_GWAS" {
     script: 
     """
     mkdir output
-    Rscript ${baseDir}/bin/GEM_GWAS.R ${baseDir}/bin ${snps} ${covs} ${envs} ${params.GWAS_pv} output/temp > output/${context}.${type}.log || exit \$?
+    Rscript ${baseDir}/bin/GEM_GWASmodel.R ${baseDir}/bin ${snps} ${covs} ${envs} ${params.GWAS_pv} output/temp > output/${context}.${type}.log || exit \$?
     tail -n+2 output/temp.txt | awk 'BEGIN{OFS=\"\\t\"} {printf \"%s\\t%s\\t%s\\t%s\\t%s\\n\", \$2,\$1,\$3,\$4,\$5}' | gzip > output/${context}.${type}.gz  && rm output/temp.txt   
     """
 }
 
-*/
+
 
 // calculate_FDR.out[0].filter{ it[0] == "Gmodel" }
 // process to generate dotplots from Gmodel
