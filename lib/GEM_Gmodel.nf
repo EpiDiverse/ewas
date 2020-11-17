@@ -248,17 +248,17 @@ process "GEM_GWAS" {
     label "low"
     label "finish"
 
-    //enabled: (params.SNPs && ((!params.Emodel && !params.GWAS && !params.GxE) || params.GWAS)) && params.DMRs ? true : false
+    publishDir "${params.output}/GWAS", pattern: ".gz", mode: 'copy', enabled: true
+    publishDir "${params.output}/GWAS", pattern: ".log", mode: 'copy', enabled: true
     
     input:
-    tuple val(context), val(type)
-    path snps
     path envs
+    path snps
     path covs
     
     output:
-    path "output/${context}.${type}.txt"
-    path "output/${context}.${type}.log"
+    path "output/GWAS.gz"
+    path "output/GWAS.log"
    
     when:
     params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE && !params.GWAS) || params.GWAS)
@@ -267,8 +267,8 @@ process "GEM_GWAS" {
     script: 
     """
     mkdir output
-    Rscript ${baseDir}/bin/GEM_GWASmodel.R ${baseDir}/bin ${snps} ${covs} ${envs} ${params.GWAS_pv} output/temp > output/${context}.${type}.log || exit \$?
-    tail -n+2 output/temp.txt | awk 'BEGIN{OFS=\"\\t\"} {printf \"%s\\t%s\\t%s\\t%s\\t%s\\n\", \$2,\$1,\$3,\$4,\$5}' | gzip > output/${context}.${type}.gz  && rm output/temp.txt   
+    Rscript ${baseDir}/bin/GEM_GWASmodel.R ${baseDir}/bin ${snps} ${covs} ${envs} ${params.GWAS_pv} output/temp > output/GWAS.log || exit \$?
+    tail -n+2 output/temp.txt | awk 'BEGIN{OFS=\"\\t\"} {printf \"%s\\t%s\\t%s\\t%s\\t%s\\n\", \$2,\$1,\$3,\$4,\$5}' | gzip > output/GWAS.gz  && rm output/temp.txt   
     """
 }
 
