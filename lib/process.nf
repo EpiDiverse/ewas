@@ -141,31 +141,31 @@ process "qqPlot" {
     tag "${key}"
     
     publishDir "${params.output}/positions", pattern: "${model}/CpG.bedGraph*.png" , mode: 'copy', \
-    enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE && ) || params.Emodel) ? true : false
+    enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE && !params.GWAS) || params.Emodel) ? true : false
     
     publishDir "${params.output}/positions", pattern: "${model}/CpG.DMRs*.png" , mode: 'copy', \
-    enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
+    enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE && !params.GWAS) || params.Emodel) ? true : false
     
     publishDir "${params.output}/regions", pattern: "${model}/CpG.region*.png" , mode: 'copy', \
-    enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
+    enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE && !params.GWAS) || params.Emodel) ? true : false
 
     publishDir "${params.output}/positions", pattern: "${model}/CHG.bedGraph*.png" , mode: 'copy', \
-    enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
+    enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE && !params.GWAS) || params.Emodel) ? true : false
     
     publishDir "${params.output}/positions", pattern: "${model}/CHG.DMRs*.png" , mode: 'copy', \
-    enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
+    enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE && !params.GWAS) || params.Emodel) ? true : false
     
     publishDir "${params.output}/regions", pattern: "${model}/CHG.region*.png" , mode: 'copy', \
-    enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
+    enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE && !params.GWAS) || params.Emodel) ? true : false
     
     publishDir "${params.output}/positions", pattern: "${model}/CHH.bedGraph*.png" , mode: 'copy', \
-    enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
+    enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE && !params.GWAS) || params.Emodel) ? true : false
     
     publishDir "${params.output}/positions", pattern: "${model}/CHH.DMRs*.png" , mode: 'copy', \
-    enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
+    enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE && !params.GWAS) || params.Emodel) ? true : false
     
     publishDir "${params.output}/regions", pattern: "${model}/CHH.region*.png" , mode: 'copy', \
-    enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false    
+    enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE && !params.GWAS) || params.Emodel) ? true : false    
     
     
     input:
