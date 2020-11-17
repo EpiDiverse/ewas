@@ -88,7 +88,7 @@ my.GEM_Emodel <-
     }
 
 
-
+/*
 #use a kinship matrix from methylation data to conduct a mixed model analysis
 my.mixed_GEM_Emodel <-
     function(env_file_name, covariate_file_name, methylation_file_name,
@@ -161,6 +161,7 @@ stopifnot(all.equal(lmout, rez, check.attributes = FALSE));
         
     }
 
+*/
 
 #' GEM_Gmodel Analysis
 #'
@@ -351,9 +352,46 @@ my.GEM_GxEmodel <-
         #dev.off()
 }
 
+
+#' GEM_GWASmodel
+#' 
+#' 
+#' GEM_GWASmodel performs genome wide association study (GWAS).
+#' 
+#' GEM_GWASmodel finds the association between genetic variants and environment genome-wide by performing matrix 
+#' based iterative correlation and memory-efficient data analysis instead of millions of linear regressions 
+#' (N = number_of_SNPs). The environmental factor can be a particular phenotype or environment 
+#' factor from,for example, birth outcomes, maternal conditions or disease traits. 
+#' The genotype data are encoded as 1,2,3 or any three 
+#' distinct values for major allele homozygote (AA),
+#' heterozygote (AB) and minor allele homozygote (BB). The linear regression is adjusted by covariates read from covariate data file.
+#' The output of GEM_GWASmodel is a list of SNPs and their association with environment. 
+#' GEM_GWASmodel runs linear regression like lm (E ~ G + covt), where G is a matrix with genotype data,
+#' E is a matrix with environment factor and covt is a matrix with covariates, and all read from the
+#' formatted text data file.
+#' 
+#' 
+#' @export
+#' @param env_file_name Text file with rows representing environment factor and columns representing samples, such as the example data file "env.txt".
+#' @param snp_file_name Text file with rows representing genotype encoded as 1,2,3 or any three distinct values for major allele homozygote (AA), heterozygote (AB) and minor allele homozygote (BB) and columns representing samples, such as the example data file "snp.txt".
+#' @param covariate_file_name Text file with rows representing covariate factors,  and columns representing samples, such as the example data file "cov.txt".
+#' @param GWASmodel_pv The pvalue cut off. Associations with significances at GWASmodel_pv level or below are saved to output_file_name, with corresponding estimate of effect size (slope coefficient), test statistics and p-value. Default value is 5.0E-08.
+#' @param output_file_name The result file with each row presenting a SNP and its association with environment, which contains SNPID, estimate of effect size (slope coefficient), test statistics, pvalue and FDR at each column.
+#' @param qqplot_file_name Output QQ plot for all pvalues.
+#'
+#' @return save results automatically
+#' @examples
+#' DATADIR = system.file('extdata',package='GEM')
+#' RESULTDIR = getwd()
+#' snp_file = paste(DATADIR, "snp.txt", sep = .Platform$file.sep)
+#' covariate_file = paste(DATADIR, "cov.txt", sep = .Platform$file.sep)
+#' env_file = paste(DATADIR, "env.txt", sep = .Platform$file.sep)
+#' GWASmodel_pv = 1
+#' GEM_GWASmodel(env_file, snp_file, covariate_file, GWASmodel_pv, output_file, qqplot_file)
+
 GEM_GWASmodel <-
     function(env_file_name, snp_file_name, covariate_file_name,
-             GWASmodel_pv, output_file_name, qqplot_file_name)
+             GWAS_pv, outfile, noFDR = FALSE)
     {
 
         errorCovariance = numeric();
@@ -389,7 +427,7 @@ GEM_GWASmodel <-
             snps = snp,
             gene = env,
             cvrt = cvrt,
-            output_file_name = NULL,
+            output_file_name = outfile,
             pvOutputThreshold = GWASmodel_pv,
             useModel = modelLINEAR,
             errorCovariance = errorCovariance,
@@ -401,4 +439,4 @@ GEM_GWASmodel <-
         );
 
         ## Results:
-        cat('Analysis done in: ', GWASmodel$time.in.sec, ' seconds', '\n');
+        cat('Analysis done in: ', GWAS$time.in.sec, ' seconds', '\n');
