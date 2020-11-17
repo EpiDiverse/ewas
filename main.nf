@@ -590,7 +590,7 @@ workflow 'EWAS' {
         //GEM_mixed_Emodel(split_scaffolds.out.transpose(), parsing.out[0], parsing.out[1])
         GEM_Gmodel(split_scaffolds.out.transpose(), vcftools_extract.out, parsing.out[1])
         GEM_GxEmodel(split_scaffolds.out.transpose(), vcftools_extract.out, parsing.out[2])
-        //GEM_GWAS(split_scaffolds.out.transpose(), vcftools_extract.out, parsing.out[1])
+        GEM_GWAS(split_scaffolds.out.transpose(), vcftools_extract.out, parsing.out[1])
         
         // calculate FDR
         Emodel_txt = GEM_Emodel.out[0].collectFile().map{ tuple(it.baseName, it) }
@@ -624,7 +624,7 @@ workflow 'EWAS' {
                 return tuple("GxE", it[0], context, type, it[1], it[2])
             }
 
-/*
+
         GWAS_txt = GEM_GWAS.out[0].collectFile().map{ tuple(it.baseName, it) }
         GWAS_log = GEM_GWAS.out[1].collectFile().map{ tuple(it.baseName, it) }
         GWAS_channel = GWAS_txt.combine(GWAS_log, by: 0)
@@ -634,11 +634,11 @@ workflow 'EWAS' {
                 type = key.last()
                 return tuple("GWAS", it[0], context, type, it[1], it[2])
             }
-*/
+
 
         // eg. [Emodel, context, type, context.txt, [scaffold.txt, ...], [scaffold.log], ...]]
         //calculate_FDR(Emodel_channel.mix(Gmodel_channel,GxE_channel,GWAS_channel))
-        calculate_FDR(Emodel_channel.mix(Gmodel_channel,GxE_channel))
+        calculate_FDR(Emodel_channel.mix(Gmodel_channel,GxE_channel,GWAS_channel))
         // visualisation
         qqPlot(calculate_FDR.out)
         manhattan(calculate_FDR.out.filter{ it[0] == "Emodel" })
