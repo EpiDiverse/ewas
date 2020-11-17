@@ -394,7 +394,7 @@ GEM_GWASmodel <-
             useModel = modelLINEAR,
             errorCovariance = errorCovariance,
             verbose = FALSE,
-            pvalue.hist = "qqplot",
+            pvalue.hist = FALSE,
             min.pv.by.genesnp = FALSE,
             noFDRsaveMemory = noFDR,
             addInfo = "SNPs"
