@@ -242,6 +242,7 @@ process "GEM_GxEmodel" {
     """
 }
 
+/*
 process "GEM_GWAS" {
     
     label "low"
@@ -271,6 +272,8 @@ process "GEM_GWAS" {
     tail -n+2 output/temp.txt | awk 'BEGIN{OFS=\"\\t\"} {printf \"%s\\t%s\\t%s\\t%s\\t%s\\n\", \$2,\$1,\$3,\$4,\$5}' | gzip > output/${context}.${type}.gz  && rm output/temp.txt   
     """
 }
+
+*/
 
 // calculate_FDR.out[0].filter{ it[0] == "Gmodel" }
 // process to generate dotplots from Gmodel
