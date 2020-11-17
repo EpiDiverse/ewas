@@ -7,19 +7,19 @@ dependencies:
   - _libgcc_mutex=0.1=conda_forge
   - _openmp_mutex=4.5=1_gnu
   - _r-mutex=1.0.1=anacondar_1
-  - bcftools=1.11=h7c999a4_0
+  - bcftools=1.9=ha228f0b_4
   - bedtools=2.29.2=hc088bd4_0
-  - binutils_impl_linux-64=2.35=h18a2f87_9
+  - binutils_impl_linux-64=2.35.1=h17ad2fc_0
   - binutils_linux-64=2.35=hc3fd857_29
   - bioconductor-gem=1.16.0=r40_0
   - bwidget=1.9.14=ha770c72_0
   - bzip2=1.0.8=h516909a_3
-  - c-ares=1.16.1=h516909a_3
+  - c-ares=1.11.0=h470a237_1
   - ca-certificates=2020.11.8=ha878542_0
   - cairo=1.16.0=h9f066cc_1006
-  - certifi=2020.6.20=py39h079e4ff_2
+  - certifi=2020.11.8=py39hf3d152e_0
   - curl=7.71.1=he644dc0_8
-  - datamash=1.7=h516909a_0
+  - datamash=1.1.0=0
   - fontconfig=2.13.1=h7e3eb15_1002
   - freetype=2.10.4=h7ca028e_0
   - fribidi=1.0.10=h36c2ea0_0
@@ -32,17 +32,16 @@ dependencies:
   - gsl=2.6=hf94e986_0
   - gxx_impl_linux-64=9.3.0=h53cdd4c_17
   - gxx_linux-64=9.3.0=h0d07fa4_29
-  - harfbuzz=2.7.2=hb1ce69c_1
-  - htslib=1.11=hd3b49d5_1
+  - harfbuzz=2.7.2=ha5b49bf_1
   - icu=67.1=he1b5a44_0
   - jpeg=9d=h36c2ea0_0
   - kernel-headers_linux-64=2.6.32=h77966d4_13
   - krb5=1.17.1=hfafb76e_3
-  - ld_impl_linux-64=2.35=h769bd43_9
+  - ld_impl_linux-64=2.35.1=hed1e6ac_0
   - libblas=3.9.0=2_openblas
   - libcblas=3.9.0=2_openblas
   - libcurl=7.71.1=hcdd3856_8
-  - libdeflate=1.6=h516909a_0
+  - libdeflate=1.0=h14c3975_1
   - libedit=3.1.20191231=he28a2e2_2
   - libev=4.33=h516909a_1
   - libffi=3.2.1=he1b5a44_1007
@@ -54,7 +53,7 @@ dependencies:
   - libgomp=9.3.0=h5dbcf3e_17
   - libiconv=1.16=h516909a_0
   - liblapack=3.9.0=2_openblas
-  - libnghttp2=1.41.0=h8cfc5f6_2
+  - libnghttp2=1.41.0=hab1572f_1
   - libopenblas=0.3.12=pthreads_h4812303_1
   - libpng=1.6.37=h21135ba_2
   - libssh2=1.9.0=hab1572f_5
@@ -67,13 +66,12 @@ dependencies:
   - libxml2=2.9.10=h68273f3_2
   - lz4-c=1.9.2=he1b5a44_3
   - make=4.3=hd18ef5c_1
-  - ncurses=6.2=h58526e2_3
+  - ncurses=6.2=h58526e2_4
   - numpy=1.19.4=py39h57d35e7_1
   - openssl=1.1.1h=h516909a_0
   - pango=1.42.4=h80147aa_5
   - pcre=8.44=he1b5a44_0
   - pcre2=10.35=h279444b_1
-  - perl=5.32.0=h36c2ea0_0
   - pip=20.2.4=py_0
   - pixman=0.40.0=h36c2ea0_0
   - pthread-stubs=0.4=h14c3975_1001
@@ -89,8 +87,8 @@ dependencies:
   - r-callr=3.5.1=r40h142f84f_0
   - r-cli=2.1.0=r40h142f84f_0
   - r-clipr=0.7.1=r40h142f84f_0
-  - r-colorspace=1.4_1=r40hcdcec82_2
-  - r-cpp11=0.2.3=r40h142f84f_1
+  - r-colorspace=2.0_0=r40h9e2df91_0
+  - r-cpp11=0.2.4=r40hc72bb7e_0
   - r-crayon=1.3.4=r40h6115d3f_1003
   - r-crosstalk=1.1.0.1=r40h6115d3f_1
   - r-curl=4.3=r40hcdcec82_1
@@ -143,12 +141,12 @@ dependencies:
   - r-purrr=0.3.4=r40hcdcec82_1
   - r-r6=2.5.0=r40hc72bb7e_0
   - r-rcolorbrewer=1.1_2=r40h6115d3f_1003
-  - r-rcpp=1.0.4.6=r40h0357c0b_1
+  - r-rcpp=1.0.5=r40he524a50_0
   - r-readr=1.4.0=r40h1b71b39_0
   - r-rematch2=2.1.2=r40h6115d3f_1
   - r-rlang=0.4.8=r40h9e2df91_0
-  - r-rprojroot=1.3_2=r40h6115d3f_1003
-  - r-rstudioapi=0.11=r40h6115d3f_1
+  - r-rprojroot=2.0.2=r40hc72bb7e_0
+  - r-rstudioapi=0.13=r40hc72bb7e_0
   - r-scales=1.1.1=r40h6115d3f_0
   - r-sys=3.4=r40hcdcec82_0
   - r-testthat=3.0.0=r40he524a50_0
@@ -158,13 +156,13 @@ dependencies:
   - r-utf8=1.1.4=r40hcdcec82_1003
   - r-vctrs=0.3.4=r40hcdcec82_0
   - r-viridislite=0.3.0=r40h6115d3f_1003
-  - r-waldo=0.2.2=r40hc72bb7e_0
+  - r-waldo=0.2.3=r40hc72bb7e_0
   - r-withr=2.3.0=r40h6115d3f_0
   - r-yaml=2.2.1=r40hcdcec82_1
   - r-zeallot=0.1.0=r40h6115d3f_1002
   - r-zip=2.1.1=r40hcdcec82_0
   - readline=8.0=he28a2e2_2
-  - sed=4.8=hbfbb72e_0
+  - sed=4.8=he412f7d_0
   - setuptools=49.6.0=py39h079e4ff_2
   - sqlite=3.33.0=h4cf870e_1
   - sysroot_linux-64=2.12=h77966d4_13
