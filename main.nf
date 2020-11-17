@@ -602,17 +602,6 @@ workflow 'EWAS' {
                 type = key.last()
                 return tuple("Emodel", it[0], context, type, it[1], it[2])
             }
-/*
-        mixed_Emodel_txt = GEM_mixed_Emodel.out[0].collectFile().map{ tuple(it.baseName, it) }
-        mixed_Emodel_log = GEM_mixed_Emodel.out[1].collectFile().map{ tuple(it.baseName, it) }
-        mixed_Emodel_channel = mixed_Emodel_txt.combine(mixed_Emodel_log, by: 0)
-            .map { it -> 
-                List key = it[0].tokenize(".")
-                context = key.init().join(".")
-                type = key.last()
-                return tuple("Emodel", it[0], context, type, it[1], it[2])
-            }
-*/
 
 
         Gmodel_txt = GEM_Gmodel.out[0].collectFile().map{ tuple(it.baseName, it) }
