@@ -350,3 +350,55 @@ my.GEM_GxEmodel <-
         #plot(GxEmodel, pch = 16, cex = 0.7);
         #dev.off()
 }
+
+GEM_GWASmodel <-
+    function(env_file_name, snp_file_name, covariate_file_name,
+             GWASmodel_pv, output_file_name, qqplot_file_name)
+    {
+
+        errorCovariance = numeric();
+
+        snp = SlicedData$new();
+        snp$fileDelimiter = "\t";      # the TAB character
+        snp$fileOmitCharacters = "NA"; # denote missing values;
+        snp$fileSkipRows = 1;          # one row of column labels
+        snp$fileSkipColumns = 1;       # one column of row labels
+        snp$fileSliceSize = 2000;      # read file in slices of 2,000 rows
+        snp$LoadFile(snp_file_name);
+
+        cvrt = SlicedData$new();
+        cvrt$fileDelimiter = "\t";      # the TAB character
+        cvrt$fileOmitCharacters = "NA"; # denote missing values;
+        cvrt$fileSkipRows = 1;          # one row of column labels
+        cvrt$fileSkipColumns = 1;       # one column of row labels
+        if (length(covariate_file_name) > 0) {
+            cvrt$LoadFile(covariate_file_name);
+        }
+
+        env = SlicedData$new();
+        env$fileDelimiter = "\t";      # the TAB character
+        env$fileOmitCharacters = "NA"; # denote missing values;
+        env$fileSkipRows = 1;          # one row of column labels
+        env$fileSkipColumns = 1;       # one column of row labels
+        env$fileSliceSize = 2000;      # read file in slices of 2,000 rows
+        env$LoadFile(env_file_name);
+
+
+        ## Run the analysis
+        GWASmodel = Matrix_eQTL_engine2(
+            snps = snp,
+            gene = env,
+            cvrt = cvrt,
+            output_file_name = NULL,
+            pvOutputThreshold = GWASmodel_pv,
+            useModel = modelLINEAR,
+            errorCovariance = errorCovariance,
+            verbose = FALSE,
+            pvalue.hist = "qqplot",
+            min.pv.by.genesnp = FALSE,
+            noFDRsaveMemory = FALSE,
+            addInfo = "SNPs"
+        );
+
+        ## Results:
+        cat('Analysis done in: ', GWASmodel$time.in.sec, ' seconds', '\n');
