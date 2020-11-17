@@ -116,8 +116,6 @@ process "calculate_FDR" {
     mkdir tmp input ${model}
     total=\$(cat ${logs} | grep "100.00%" | cut -d " " -f3 | tr -d "," | awk 'BEGIN{c=0} {c+=\$0} END{print c}')
     echo -e "${model == "Emodel" ? "cpg" : "cpg\\tsnp"}\\tbeta\\tstats\\tpvalue\\tFDR" |
-    //echo -e ${model == "Emodel" ? "cpg\\tbeta\\tstats\\tpvalue\\tFDR" : model == "GWAS" ? "cpg\\tbeta\\tstats\\tpvalue\\tFDR" : model == "Gmodel" ? "cpg\\tsnp\\tbeta\\tstats\\tpvalue\\tFDR" : model == "GxE" ? "cpg\\tsnp\\tbeta\\tstats\\tpvalue\\tFDR"} | 
-    //echo -e "${model == "Emodel" ? : "cpg\\tbeta\\tstats\\tpvalue\\tFDR" |
     tee input/header.txt ${model}/${key}.txt ${model}/${key}.filtered_${params.output_FDR}_FDR.txt
 
     if [ -z \$(gzip -cd ${results} | head -c1) ]; then
