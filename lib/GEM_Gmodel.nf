@@ -251,7 +251,7 @@ process "GEM_GWAS" {
     //enabled: (params.SNPs && ((!params.Emodel && !params.GWAS && !params.GxE) || params.GWAS)) && params.DMRs ? true : false
     
     input:
-    tuple val(context), val(type), path (snps)
+    tuple val(context), val(type), path(snps)
     path envs
     path covs
     
