@@ -88,7 +88,8 @@ my.GEM_Emodel <-
     }
 
 
-/*
+if(FALSE) {
+
 #use a kinship matrix from methylation data to conduct a mixed model analysis
 my.mixed_GEM_Emodel <-
     function(env_file_name, covariate_file_name, methylation_file_name,
@@ -160,7 +161,7 @@ stopifnot(all.equal(lmout, rez, check.attributes = FALSE));
         #R2 = Emodel$all$eqtls$statistic ^ 2 / (Emodel$all$eqtls$statistic ^ 2 + Emodel$param$dfFull);
         
     }
-
+}
 */
 
 #' GEM_Gmodel Analysis
