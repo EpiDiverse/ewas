@@ -22,4 +22,4 @@ p= as.numeric(args[5])
 #main.nf takes p_value as an integer, but GEM process converts it into string. before this, this value be converted into int again. 
 gwas_txt = paste("./", args[6], ".txt", sep="")
 
-my.GEM_GWASmodel(snp, cov, env, p, gwas_txt, noFDR=TRUE)
+my.GEM_GWASmodel(env, snp, cov, p, gwas_txt, noFDR=TRUE)
