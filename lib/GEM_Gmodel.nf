@@ -58,7 +58,7 @@ process "bcftools" {
     bcftools view -S <(cut -f1 ${samples}) input/norm.vcf.gz > input/filtered.vcf.gz || exit \$?
     bcftools query -l input/filtered.vcf.gz > input/samples.txt || exit \$?
 
-    total=\$(cut -f1 ${samples} | wc -l)
+    total=\$(cat ${samples} | wc -l)
     match=\$(grep -f <(cut -f1 ${samples}) input/samples.txt | wc -l)
 
     if [[ \$match != \$total ]];
@@ -90,7 +90,6 @@ process "vcftools_missing" {
     script:
     """
     vcftools --gzvcf ${snp} --max-missing ${params.max_missing} --recode --stdout | bgzip  > out.recode.vcf.gz
-    
     """ 
 } 
 
@@ -118,10 +117,8 @@ process "BEAGLE_SNP_Imputation" {
     """ 
 } 
 
-
 // bcftools.out
 // extract required format
-
 process "vcftools_extract" {
 
     label "low"
@@ -149,42 +146,12 @@ process "vcftools_extract" {
     --minQ ${params.minQ} \\
     --012 \\
     --out GT || exit \$?
+
     paste <(cat <(echo -e "CHROM\\tPOS") GT.012.pos) <(paste GT.012.indv <(cut -f2- GT.012) | datamash transpose) |
     awk '{printf "%s:%s-%s",\$1,\$2-1,\$2; for(i=3; i<=NF; i++) {printf "\\t%s",(NR==1?\$i:\$i+1)}; print null}' > snps.txt
     """ 
 }
 
-
-// RUN GEM GWAS
-process "GEM_GWAS" {
-    
-    label "low"
-    label "finish"
-    tag "${context}.${type} - ${meth.baseName}"
-
-
-    //enabled: (params.SNPs && ((!params.Emodel && !params.GWAS && !params.GxE) || params.GWAS)) && params.DMRs ? true : false
-    
-    input:
-    path envs
-    path snps
-    path covs
-    
-    output:
-    path "output/${context}.${type}.gz"
-    path "output/${context}.${type}.log"
-   
-    when:
-    params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE && !params.GWAS) || params.GWAS)
-    //params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel)
-    
-    script: 
-    """
-    mkdir output
-    Rscript ${baseDir}/bin/GEM_GWAS.R ${baseDir}/bin ${snps} ${covs} ${envs} ${params.GWAS_pv} output/temp > output/${context}.${type}.log || exit \$?
-    tail -n+2 output/temp.txt | awk 'BEGIN{OFS=\"\\t\"} {printf \"%s\\t%s\\t%s\\t%s\\t%s\\n\", \$2,\$1,\$3,\$4,\$5}' | gzip > output/${context}.${type}.gz  && rm output/temp.txt   
-    """
-}
 
 //split_scaffolds.out.transpose()
 // RUN GEM Gmodel
@@ -206,7 +173,7 @@ process "GEM_Gmodel" {
     
     output:
     //tuple context, type, path("output/*.txt"), path("output/*.log")
-    path "output/${context}.${type}.gz"
+    path "output/${context}.${type}.txt"
     path "output/${context}.${type}.log"
    
     when:
@@ -217,12 +184,13 @@ process "GEM_Gmodel" {
     mkdir output
     awk -F "\\t" '{printf \"%s:%s-%s\",\$1,\$2,\$3; for(i=4; i<=NF; i++) {printf \"\\t%s\",\$i}; print null}' ${meth} > \$(basename ${meth} .bed).txt
     Rscript ${baseDir}/bin/GEM_Gmodel.R ${baseDir}/bin ${snps} ${covs} \$(basename ${meth} .bed).txt ${params.Gmodel_pv} output/temp > output/${context}.${type}.log || exit \$?
-    tail -n+2 output/temp.txt | awk 'BEGIN{OFS=\"\\t\"} {printf \"%s\\t%s\\t%s\\t%s\\t%s\\n\", \$2,\$1,\$3,\$4,\$5}' | gzip > output/${context}.${type}.gz  && rm output/temp.txt   
+    tail -n+2 output/temp.txt > output/${context}.${type}.txt
+    #Rscript ${baseDir}/bin/GEM_Gmodel.R ${baseDir}/bin ${snps} ${covs} \$(basename ${meth} .bed).txt ${params.Gmodel_pv} output/\$(basename ${meth} .bed) > output/\$(basename ${meth} .bed).log
     """
 }
 
 
-// RUN GEM GXE model
+// RUN GEM Gmodel
 process "GEM_GxEmodel" {
     
     label "low"
@@ -273,7 +241,9 @@ process "GEM_GxEmodel" {
     #Rscript ${baseDir}/bin/GEM_GxE.R ${baseDir}/bin ${snps} ${gxe} \$(basename ${meth} .bed).txt ${params.GxE_pv} output/\$(basename ${meth} .bed) > output/\$(basename ${meth} .bed).log
     """
 }
-//&& tail -n+2 \$(basename ${meth} .bed).txt > ${context}.${type}.txt
+
+
+
 // calculate_FDR.out[0].filter{ it[0] == "Gmodel" }
 // process to generate dotplots from Gmodel
 process "dotPlot" {
