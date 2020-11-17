@@ -303,9 +303,6 @@ process "GEM_Emodel" {
     path covs
     
     output:
-    //tuple context, type, path("output/*.txt"), path("output/*.log")
-    path "output/${context}.${type}.gz"
-    path "output/${context}.${type}.log"
     path "${context}.${type}.txt"
     path "${context}.${type}.log"
 
