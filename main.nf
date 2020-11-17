@@ -637,8 +637,8 @@ workflow 'EWAS' {
 */
 
         // eg. [Emodel, context, type, context.txt, [scaffold.txt, ...], [scaffold.log], ...]]
-        calculate_FDR(Emodel_channel.mix(Gmodel_channel, GxE_channel,GWAS_channel))
-        
+        //calculate_FDR(Emodel_channel.mix(Gmodel_channel,GxE_channel,GWAS_channel))
+        calculate_FDR(Emodel_channel.mix(Gmodel_channel,GxE_channel))
         // visualisation
         qqPlot(calculate_FDR.out)
         manhattan(calculate_FDR.out.filter{ it[0] == "Emodel" })
