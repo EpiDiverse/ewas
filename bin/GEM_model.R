@@ -437,7 +437,8 @@ GEM_GWASmodel <-
             min.pv.by.genesnp = FALSE,
             noFDRsaveMemory = noFDR,
             addInfo = "SNPs"
-        );
+        )
 
         ## Results:
         cat('Analysis done in: ', GWASmodel$time.in.sec, ' seconds', '\n');
+}
