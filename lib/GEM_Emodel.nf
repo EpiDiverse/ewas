@@ -283,7 +283,7 @@ process "average_over_regions" {
 // eg. [CpG, regions, CpG.avg]
 
 
-// RUN GEM Emodel with LINEARMODEL
+// RUN GEM Emodel
 process "GEM_Emodel" {
     
     label "low"
