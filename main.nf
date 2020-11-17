@@ -119,6 +119,10 @@ if(params.help){
               --GxE                             Run analysis with "GxE model". Disables other models unless they are also specified. If no
                                                 individual model is specified then all that are possible with the provided inputs will run
                                                 in parallel [default: off]
+                                                
+              --GWAS                             Run analysis with "GWAS model". Disables other models unless they are also specified. If no
+                                                individual model is specified then all that are possible with the provided inputs will run
+                                                in parallel [default: off]   
             
               --noCpG                           Disables EWAS analysis in CpG context. Note: at least one methylation context is required
                                                 for analysis. [default: off]
@@ -198,9 +202,12 @@ if(params.help){
 
               --GxE_pv <FLOAT>                Set the p-value to run "GxE model". Note: this filter is applied prior to FDR calculation
                                               and should be used cautiously [default: 1]
-
-
                                               
+              
+              --GWAS_pv <FLOAT>               Set the p-value to run "GWAS model". Note: this filter is applied prior to FDR calculation
+                                              and should be used cautiously [default: 1]                                 
+
+                                             
               --Gmodel_pv <FLOAT>             Set the p-value to run "G model". Note: this filter is applied prior to FDR calculation
                                               and should be used cautiously [default: 1]
                                               
@@ -272,14 +279,17 @@ CHH_path_DMRs = "${params.DMRs}/CHH/metilene/*"
 // PARAMETER CHECKS
 //if( !params.input ){error "ERROR: Missing required parameter --input"}
 //if( params.noCpG && params.noCHG && params.noCHH ){error "ERROR: please specify at least one methylation context for analysis"}
-if( !params.Emodel && !params.Gmodel && !params.GxE ){
+if( !params.Emodel && !params.Gmodel && !params.GxE && !params.GWAS ){
     Emodel = true
     Gmodel = true
-    GxE = true
+    GxE    = true
+    GWAS   = true
 } else {
     Emodel = params.Emodel
     Gmodel = params.Gmodel
-    GxE = params.GxE
+    GxE    = params.GxE
+    GWAS   = params.GWAS
+    
 }
 
 
@@ -303,7 +313,7 @@ log.info "         output dir                      : ${params.output}"
 log.info ""
 log.info "         Analysis Configuration"
 log.info "         =================================================="
-log.info "         GEM model(s)                    : ${Emodel ? "Emodel " : ""}${Gmodel ? "Gmodel " : ""}${GxE ? "GxE" : ""}"
+log.info "         GEM model(s)                    : ${Emodel ? "Emodel " : ""}${Gmodel ? "Gmodel " : ""}${GxE ? "GxE" : ""}${GWAS ? "GWAS " : ""}"
 log.info "         Methylation context(s)          : ${params.noCpG ? "" : "CpG "}${params.noCHH ? "" : "CHH "}${params.noCHG ? "" : "CHG"}"
 if(Emodel && params.Emodel_pv.toInteger() < 1){
 log.info "         Emodel p-value                  : ${params.Emodel_pv}" }
@@ -311,6 +321,8 @@ if(params.SNPs && Gmodel && params.Gmodel_pv.toInteger() < 1){
 log.info "         Gmodel p-value                  : ${params.Gmodel_pv}" }
 if(params.SNPs && GxE && params.GxE_pv.toInteger() < 1){
 log.info "         GxE p-value                     : ${params.GxE_pv}" }
+if(params.SNPs && GWAS && params.GWAS_pv.toInteger() < 1){
+log.info "         GWAS p-value                     : ${params.GWAS_pv}" }
 log.info ""
 log.info "         Input Filtering"
 log.info "         =================================================="
