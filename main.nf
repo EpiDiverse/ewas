@@ -506,7 +506,7 @@ input_channel = single_channel.mix(DMPs_channel, DMRs_channel)
 //include {parsing;split_scaffolds;calculate_FDR;qqPlot;GO_analysis} from './lib/process.nf' params(params)
 include {parsing;split_scaffolds;calculate_FDR;qqPlot} from './lib/process.nf' params(params)
 include {filtering;bedtools_unionbedg;bedtools_filtering;bedtools_sorting;bedtools_intersect;filter_regions;bedtools_merge;average_over_regions;GEM_Emodel;manhattan;} from './lib/GEM_Emodel.nf' params(params)
-include {tabix;bcftools;vcftools_missing;vcftools_extract;GEM_Gmodel;GEM_GxEmodel;GEM_GWAS;dotPlot;topKplots} from './lib/GEM_Gmodel.nf' params(params)
+include {tabix;bcftools;vcftools_missing;vcftools_extract;GEM_Gmodel;GEM_GxEmodel;dotPlot;topKplots} from './lib/GEM_Gmodel.nf' params(params)
 include {checkLines} from './lib/functions.nf'
 
 // SUB-WORKFLOWS
@@ -624,6 +624,7 @@ workflow 'EWAS' {
                 return tuple("GxE", it[0], context, type, it[1], it[2])
             }
 
+/*
         GWAS_txt = GEM_GWAS.out[0].collectFile().map{ tuple(it.baseName, it) }
         GWAS_log = GEM_GWAS.out[1].collectFile().map{ tuple(it.baseName, it) }
         GWAS_channel = GWAS_txt.combine(GWAS_log, by: 0)
@@ -633,7 +634,7 @@ workflow 'EWAS' {
                 type = key.last()
                 return tuple("GWAS", it[0], context, type, it[1], it[2])
             }
-
+*/
 
         // eg. [Emodel, context, type, context.txt, [scaffold.txt, ...], [scaffold.log], ...]]
         calculate_FDR(Emodel_channel.mix(Gmodel_channel, GxE_channel,GWAS_channel))
