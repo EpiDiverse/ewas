@@ -247,8 +247,6 @@ process "GEM_GWAS" {
     
     label "low"
     label "finish"
-    tag "${context}.${type} - ${meth.baseName}"
-
 
     //enabled: (params.SNPs && ((!params.Emodel && !params.GWAS && !params.GxE) || params.GWAS)) && params.DMRs ? true : false
     
