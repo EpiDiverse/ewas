@@ -590,7 +590,7 @@ workflow 'EWAS' {
         //GEM_mixed_Emodel(split_scaffolds.out.transpose(), parsing.out[0], parsing.out[1])
         GEM_Gmodel(split_scaffolds.out.transpose(), vcftools_extract.out, parsing.out[1])
         GEM_GxEmodel(split_scaffolds.out.transpose(), vcftools_extract.out, parsing.out[2])
-        GEM_GWAS(split_scaffolds.out.transpose(), vcftools_extract.out, parsing.out[1])
+        //GEM_GWAS(split_scaffolds.out.transpose(), vcftools_extract.out, parsing.out[1])
         
         // calculate FDR
         Emodel_txt = GEM_Emodel.out[0].collectFile().map{ tuple(it.baseName, it) }
