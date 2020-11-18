@@ -318,7 +318,7 @@ my.GEM_GxEmodel <-
 
 my.GEM_GWASmodel <-
     function(env_file_name, snp_file_name, covariate_file_name,
-             GWAS_pv, outfile, noFDR = FALSE)
+             GWAS_pv, outfile, noFDR = FALSE, savePlot=TRUE)
     {
 
         errorCovariance = numeric();
@@ -361,25 +361,11 @@ my.GEM_GWASmodel <-
             verbose = FALSE,
             pvalue.hist = FALSE,
             min.pv.by.genesnp = FALSE,
-            noFDRsaveMemory = FALSE,
+            noFDRsaveMemory = noFDR,
             addInfo = "SNPs"
         );
 
         ## Results:
         cat('Analysis done in: ', GWASmodel$time.in.sec, ' seconds', '\n');
-        R2 = GWASmodel$all$eqtls$statistic ^ 2 / (GWASmodel$all$eqtls$statistic ^
-                                                2 + GWASmodel$param$dfFull);
-       result_GWASmodel <- cbind(
-       as.character(GWASmodel$all$eqtl$snps),
-       GWASmodel$all$eqtls$beta,
-       GWASmodel$all$eqtls$statistic,
-       GWASmodel$all$eqtl$pvalue,
-       GWASmodel$all$eqtl$FDR
-    )
-    
-    colnames(result_GWASmodel) <- c("snp", "beta", "st", "pvalue", "FDR")
-    write.table(
-      result_GWASmodel, outfile, sep = "\t", row.names = FALSE, quote = FALSE
-    )
     
 }
