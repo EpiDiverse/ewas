@@ -68,7 +68,7 @@ process "split_scaffolds" {
     tuple val(context), val(type), path("output/*.bed")
 
     when:
-    params.input
+    params.input && ((!params.GWAS && !params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel || params.GxE || params.Emodel)
 
     script:
     """   
@@ -109,7 +109,7 @@ process "calculate_FDR" {
     //tuple model, key, val("${types.unique().join("")}"), path("input/*.txt"), path("${model}/${key}.filtered_${params.output_FDR}_FDR.txt")
 
     when:
-    params.input
+    params.input && ((!params.GWAS && !params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel || params.GxE || params.Emodel)
 
     script:
     """
@@ -178,7 +178,7 @@ process "qqPlot" {
     tuple val(model), val(key), val(type), path("${model}/*.png") optional true
 
     when:
-    params.input
+    params.input && ((!params.GWAS && !params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel || params.GxE || params.Emodel)
 
     script:
     """
