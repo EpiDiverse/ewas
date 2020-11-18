@@ -257,8 +257,8 @@ process "GEM_GWAS" {
     path covs
     
     output:
-    path "output/GWAS.gz"
-    path "output/GWAS.log"
+    path "output/GWAS.txt"
+    path "output/GWAS.png"
    
     when:
     params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE && !params.GWAS) || params.GWAS)
@@ -266,12 +266,10 @@ process "GEM_GWAS" {
     
     script: 
     """
-    mkdir output
-    Rscript ${baseDir}/bin/GEM_GWASmodel.R ${baseDir}/bin ${snps} ${covs} ${envs} ${params.GWAS_pv} output/temp > output/GWAS.log || exit \$?
-    tail -n+2 output/temp.txt | awk 'BEGIN{OFS=\"\\t\"} {printf \"%s\\t%s\\t%s\\t%s\\t%s\\n\", \$2,\$1,\$3,\$4,\$5}' | gzip > output/GWAS.gz  && rm output/temp.txt   
+    Rscript ${baseDir}/bin/GEM_GWASmodel.R ${baseDir}/bin ${snps} ${covs} ${envs} ${params.GWAS_pv} gwas_txt gwas_png 
     """
 }
-
+//tail -n+2 GWAS.txt | awk 'BEGIN{OFS=\"\\t\"} {printf \"%s\\t%s\\t%s\\t%s\\t%s\\n\", \$2,\$1,\$3,\$4,\$5}' | echo -e "snp\tbeta\t\tgroup1_r2\tgroup1_r3\tgroup2_r1\tgroup2_r2\tgroup2_r3" | cat -  
 
 
 // calculate_FDR.out[0].filter{ it[0] == "Gmodel" }
