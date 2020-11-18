@@ -266,7 +266,7 @@ process "GEM_GWAS" {
     
     script: 
     """
-    Rscript ${baseDir}/bin/GEM_GWASmodel.R ${baseDir}/bin ${snps} ${covs} ${envs} ${params.GWAS_pv} gwas_txt gwas_png 
+    Rscript ${baseDir}/bin/GEM_GWASmodel.R ${snps} ${covs} ${envs} ${params.GWAS_pv} gwas_txt gwas_png 
     """
 }
 //tail -n+2 GWAS.txt | awk 'BEGIN{OFS=\"\\t\"} {printf \"%s\\t%s\\t%s\\t%s\\t%s\\n\", \$2,\$1,\$3,\$4,\$5}' | echo -e "snp\tbeta\t\tgroup1_r2\tgroup1_r3\tgroup2_r1\tgroup2_r2\tgroup2_r3" | cat -  
