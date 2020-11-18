@@ -132,6 +132,7 @@ process "vcftools_extract" {
     
     output:
     path "snps.txt"
+    path "snps2.txt"
     //file("out.imiss")
     //file("out.log")
 
@@ -149,6 +150,7 @@ process "vcftools_extract" {
 
     paste <(cat <(echo -e "CHROM\\tPOS") GT.012.pos) <(paste GT.012.indv <(cut -f2- GT.012) | datamash transpose) |
     awk '{printf "%s:%s-%s",\$1,\$2-1,\$2; for(i=3; i<=NF; i++) {printf "\\t%s",(NR==1?\$i:\$i+1)}; print null}' > snps.txt
+    awk 'FNR==1{$1="ID";print;next} 1' snps.txt > snps2.txt
     """ 
 }
 
@@ -253,7 +255,7 @@ process "GEM_GWAS" {
     
     input:
     path envs
-    path snps
+    path snps2
     path covs
     
     output:
@@ -266,9 +268,9 @@ process "GEM_GWAS" {
     
     script: 
     """
-    Rscript ${baseDir}/bin/GEM_GWASmodel.R ${baseDir}/bin ${envs} ${snps} ${covs} ${params.GWAS_pv} gwas_txt gwas_png  > .log || exit \$?
-    tail -n+2 gwas_txt.txt > GWAS.txt
-    mv gwas_png.png > GWAS.png
+    Rscript ${baseDir}/bin/GEM_GWASmodel.R ${baseDir}/bin ${envs} ${snps2} ${covs} ${params.GWAS_pv} gwas_txt gwas_png  > .log || exit \$?
+    tail -n+2 gwas_txt > GWAS.txt
+    mv gwas_png > GWAS.png
     """
 }
 //tail -n+2 GWAS.txt | awk 'BEGIN{OFS=\"\\t\"} {printf \"%s\\t%s\\t%s\\t%s\\t%s\\n\", \$2,\$1,\$3,\$4,\$5}' | echo -e "snp\tbeta\t\tgroup1_r2\tgroup1_r3\tgroup2_r1\tgroup2_r2\tgroup2_r3" | cat -  
