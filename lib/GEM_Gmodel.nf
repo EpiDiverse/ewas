@@ -266,7 +266,7 @@ process "GEM_GWAS" {
     
     script: 
     """
-    Rscript ${baseDir}/bin/GEM_GWASmodel.R ${baseDir}/bin ${snps} ${covs} ${envs} ${params.GWAS_pv} gwas_txt gwas_png  > .log || exit \$?
+    Rscript ${baseDir}/bin/GEM_GWASmodel.R ${baseDir}/bin ${envs} ${snps} ${covs} ${params.GWAS_pv} gwas_txt gwas_png  > .log || exit \$?
     tail -n+2 gwas_txt.txt > GWAS.txt
     mv gwas_png.png > GWAS.png
     """
