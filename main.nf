@@ -599,9 +599,9 @@ workflow 'EWAS' {
 
         // run GEM on selected combination of inputs
         GEM_Emodel(split_scaffolds.out.transpose(), parsing.out[0], parsing.out[1])
-        GEM_Gmodel(split_scaffolds.out.transpose(), vcftools_extract.out, parsing.out[1])
-        GEM_GxEmodel(split_scaffolds.out.transpose(), vcftools_extract.out, parsing.out[2])
-        GEM_GWAS(vcftools_extract.out, parsing.out[0], parsing.out[1])
+        GEM_Gmodel(split_scaffolds.out.transpose(), vcftools_extract.out[0], parsing.out[1])
+        GEM_GxEmodel(split_scaffolds.out.transpose(), vcftools_extract.out[0], parsing.out[2])
+        GEM_GWAS(vcftools_extract.out[1], parsing.out[0], parsing.out[1])
         
         // calculate FDR
         Emodel_txt = GEM_Emodel.out[0].collectFile().map{ tuple(it.baseName, it) }
