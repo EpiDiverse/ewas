@@ -132,7 +132,7 @@ process "vcftools_extract" {
     
     output:
     path "snps.txt"
-    path "snps3.txt"
+    path "snps2.txt"
     //file("out.imiss")
     //file("out.log")
 
@@ -149,9 +149,8 @@ process "vcftools_extract" {
     --out GT || exit \$?
 
     paste <(cat <(echo -e "CHROM\\tPOS") GT.012.pos) <(paste GT.012.indv <(cut -f2- GT.012) | datamash transpose) |
-    awk '{printf "%s:%s-%s",\$1,\$2-1,\$2; for(i=3; i<=NF; i++) {printf "\\t%s",(NR==1?\$i:\$i+1)}; print null}' > snps.txt
-    awk 'FNR==1{\$1="ID";print;next} 1' snps.txt > snps2.txt
-    awk '{ for(i=1;i<=NF;i++){if(i==NF){printf("%s\n",\$NF);}else {printf("%s\t",\$i)}}}' snps2.txt > snps3.txt
+    awk '{printf "%s:%s-%s",\$1,\$2-1,\$2; for(i=3; i<=NF; i++) {printf "\\t%s",(NR==1?\$i:\$i+1)}; print null}'  > snps.txt
+    awk 'FNR==1{\$1="ID";print;next} 1' snps.txt | awk '{ for(i=1;i<=NF;i++){if(i==NF){printf("%s\n",\$NF);}else {printf("%s\t",\$i)}}}'> snps2.txt
     """ 
 }
 
@@ -256,7 +255,7 @@ process "GEM_GWAS" {
     
     input:
     path envs
-    path snps3
+    path snps2
     path covs
     
     output:
@@ -269,7 +268,7 @@ process "GEM_GWAS" {
     
     script: 
     """
-    Rscript ${baseDir}/bin/GEM_GWASmodel.R ${baseDir}/bin ${envs} ${snps3} ${covs} ${params.GWAS_pv} gwas_txt gwas_png  > .log || exit \$?
+    Rscript ${baseDir}/bin/GEM_GWASmodel.R ${baseDir}/bin ${envs} ${snps2} ${covs} ${params.GWAS_pv} gwas_txt gwas_png  > .log || exit \$?
     tail -n+2 gwas_txt > GWAS.txt
     mv gwas_png > GWAS.png
     """
