@@ -257,8 +257,8 @@ process "GEM_GWAS" {
     path covs
     
     output:
-    path ".txt"
-    path ".png"
+    path "gwas_txt.txt"
+    path "gwas_png.png"
    
     when:
     params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE && !params.GWAS) || params.GWAS)
