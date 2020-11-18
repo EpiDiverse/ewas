@@ -659,7 +659,7 @@ workflow 'EWAS' {
         GxE_plot = GEM_GxEmodel.out[2].collectFile().map{ tuple(it.baseName, it) }
         GxE_head = GEM_GxEmodel.out[3].map{ tuple( it[0] + "." + it[1], it[2]) }.unique{ it[0] }
         kplots_channel = calculate_FDR.out.filter{ it[0] == "GxE" }.map{ it.tail() }.combine(GxE_plot, by:0).combine(GxE_head, by:0)
-        topKplots(kplots_channel, vcftools_extract.out, parsing.out[2])
+        topKplots(kplots_channel, vcftools_extract.out[0], parsing.out[2])
 /*
     // emit results
     emit:
