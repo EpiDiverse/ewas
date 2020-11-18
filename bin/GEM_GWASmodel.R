@@ -20,7 +20,7 @@ env= paste(".", args[2], sep="/")
 p= as.numeric(args[5])
 
 #main.nf takes p_value as an integer, but GEM process converts it into string. before this, this value be converted into int again. 
-gwas_txt = paste("./output/", args[6], "GWAS.txt", sep="")
-gwas_png = paste("./output/", args[7], "GWAS.png", sep="")
+gwas_txt = paste("./", args[6], ".txt", sep="")
+gwas_png = paste("./", args[7], ".png", sep="")
 
 my.GEM_GWASmodel(env, snp, cov, p, gwas_txt, gwas_png)
