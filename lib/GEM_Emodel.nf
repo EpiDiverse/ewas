@@ -25,7 +25,7 @@ process "filtering" {
     script:
     if ( type == "bedGraph" )
         """
-        tail -n+2 ${bed} |
+        tail -n+1 ${bed} |
         awk 'BEGIN{OFS=\"\\t\"} {if((\$5+\$6)>=${params.coverage}) {printf \"%s\\t%s\\t%s\\t%1.2f\\n\", \$1,\$2,\$3,(\$4/100)}}' |
         sort -k1,1 -k2,2n > ${sample}.filtered.bed
         """  
@@ -103,7 +103,7 @@ process "bedtools_filtering" {
     ${samples.getClass() == nextflow.util.ArrayBag && samples.size() > 1 ? "head -1 ${bed}" : "echo -e chrom\\tstart\\tend\\t${samples.join('')}" } \\
     > bed/${context}.${type}.txt
 
-    tail -n+2 ${bed} | awk 'NR!=1{NA=0;c=0;s=0;ss=0;
+    tail -n+1 ${bed} | awk 'NR!=1{NA=0;c=0;s=0;ss=0;
     for(i=4;i<=NF;i++){if(\$i!="NA"){c++;s+=int(\$i*100+0.5);ss+=int(\$i*100+0.5)^2}else{NA++}};
     sd=sqrt((ss-s^2/c)/c)/100; if(sd>${params.filter_SD} && (NA/(NF-3))<=${params.filter_NA}){print}}' >> bed/${context}.${type}.txt
     head -n 1 bed/${context}.${type}.txt > header.txt
@@ -141,7 +141,7 @@ process "bedtools_sorting" {
     """
     mkdir tmp bed
     head -1 ${bed} > bed/${context}.${type}.bed
-    tail -n+2 ${bed} | sort -T tmp --parallel=${task.cpus} -k1,1 -k2,2n >> bed/${context}.${type}.bed
+    tail -n+1 ${bed} | sort -T tmp --parallel=${task.cpus} -k1,1 -k2,2n >> bed/${context}.${type}.bed
     """
 } 
 
