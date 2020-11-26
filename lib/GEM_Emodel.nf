@@ -53,14 +53,14 @@ process "bedtools_unionbedg" {
     tag "${context}.${types.unique().join("")}"
 
     maxForks "${params.fork}".toInteger()
-    publishDir "${params.output}/input/bed", pattern: "${context}.${types.unique().join("")}.bed", mode: 'copy', enabled: true
+    publishDir "${params.output}/input/bed", pattern: "${context}.${types.unique().join("")}.unfiltered.bed", mode: 'copy', enabled: true
     
     input:
     tuple val(context), val(types), val(samples), path(beds)
     // eg, [CpG, [DMRs, DMRs, DMRs, ...], [sample1, sample2, sample3, ...], [path1, path2, path3, ...]]
 
     output:
-    tuple val(context), val("${types.unique().join("")}"), val(samples), path("${context}.${types.unique().join("")}.bed")
+    tuple val(context), val("${types.unique().join("")}"), val(samples), path("${context}.${types.unique().join("")}.unfiltered.bed")
     // eg. [CpG, [DMRs, DMRs, DMRs, ...], [sample1, sample2, sample3, ...], /path/to/CpG.DMRs.bed]
 
     when:
@@ -68,7 +68,7 @@ process "bedtools_unionbedg" {
 
     script:
     """
-    bedtools unionbedg -filler NA -i ${beds} -header -names ${samples.join(" ")} > ${context}.${types.unique().join("")}.bed
+    bedtools unionbedg -filler NA -i ${beds} -header -names ${samples.join(" ")} > ${context}.${types.unique().join("")}.unfiltered.bed
     """
 } 
 
