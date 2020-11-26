@@ -68,10 +68,15 @@ process "bedtools_unionbedg" {
 
     script:
     """
-    bedtools unionbedg -filler NA -i ${beds} -header -names ${samples.join(" ")} > ${context}.${types.unique().join("")}.unfiltered.bed
+    bedtools unionbedg -filler NA -i ${beds} -header -names ${samples.join(" ")} > ${context}.${types.unique().join("")}.bed
+    cat ${context}.${types.unique().join("")}.bed | 
+    datamash transpose | 
+    awk '{ for(i=1;i<=NF;i++){if(i==NF){printf("%s\n",\$NF);}else {printf("%s\t",\$i)}}}' | 
+    awk 'NR == 1; NR > 1 {print \$0 | "sort -n"}' | 
+    datamash transpose | 
+    awk '{ for(i=1;i<=NF;i++){if(i==NF){printf("%s\n",\$NF);}else {printf("%s\t",\$i)}}}' > ${context}.${types.unique().join("")}.unfiltered.bed
     """
 } 
-
 
 //bedtools_unionbedg_input.mix(bedtools_unionbedg_output)
 // process "process_bedtools_unionbedg_methcalls" { combine filtered bedGraphs
