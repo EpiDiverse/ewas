@@ -70,11 +70,9 @@ process "bedtools_unionbedg" {
     """
     bedtools unionbedg -filler NA -i ${beds} -header -names ${samples.join(" ")} > ${context}.${types.unique().join("")}.bed
     cat ${context}.${types.unique().join("")}.bed | 
-    datamash transpose | 
-    awk '{ for(i=1;i<=NF;i++){if(i==NF){printf("%s\n",\$NF);}else {printf("%s\t",\$i)}}}' | 
+    datamash transpose | sed 's/ /\t/g' | 
     awk 'NR == 1; NR > 1 {print \$0 | "sort -n"}' | 
-    datamash transpose | 
-    awk '{ for(i=1;i<=NF;i++){if(i==NF){printf("%s\n",\$NF);}else {printf("%s\t",\$i)}}}' > ${context}.${types.unique().join("")}.unfiltered.bed
+    datamash transpose | sed 's/ /\t/g' > ${context}.${types.unique().join("")}.unfiltered.bed
     """
 } 
 
