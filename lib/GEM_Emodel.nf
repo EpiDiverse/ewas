@@ -82,7 +82,7 @@ process "bedtools_filtering" {
     tag "${context}.${type}"
 
     maxForks "${params.fork}".toInteger() 
-    publishDir "${params.output}/input/bed", pattern: "${context}.${type}.bed", mode: 'copy', enabled: true
+    publishDir "${params.output}/input/bed", pattern: "bed/${context}.${type}.bed", mode: 'copy', enabled: true
   
     
     input:
