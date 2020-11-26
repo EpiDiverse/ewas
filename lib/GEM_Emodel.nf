@@ -81,9 +81,8 @@ process "bedtools_filtering" {
     label "finish"
     tag "${context}.${type}"
 
-    maxForks "${params.fork}".toInteger()
-     
-    publishDir "${params.output}/input/bed", pattern: "${context}.${type}.bed", mode: 'copy', enabled: params.input ? true:false
+    maxForks "${params.fork}".toInteger() 
+    publishDir "${params.output}/input/bed", pattern: "${context}.${type}.bed", mode: 'copy', enabled: true
   
     
     input:
@@ -91,7 +90,7 @@ process "bedtools_filtering" {
     // eg, [CpG, DMRs, [sample1, sample2, sample3, ...], /path/to/DMRs.bed]
 
     output:
-    tuple val(context), val(type), val(samples), path(bed/"${context}.${type}.bed")
+    tuple val(context), val(type), val(samples), path("bed/${context}.${type}.bed")
     // eg. [CpG, DMRs, [sample1, sample2, sample3, ...], /path/to/DMRs.bed]
 
     when:
