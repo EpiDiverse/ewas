@@ -68,11 +68,7 @@ process "bedtools_unionbedg" {
 
     script:
     """
-    bedtools unionbedg -filler NA -i ${beds} -header -names ${samples.join(" ")} > ${context}.${types.unique().join("")}.bed
-    cat ${context}.${types.unique().join("")}.bed | 
-    datamash transpose | sed 's/ /\t/g' | 
-    awk 'NR == 1; NR > 1 {print \$0 | "sort -n"}' | 
-    datamash transpose | sed 's/ /\t/g' > ${context}.${types.unique().join("")}.unfiltered.bed
+    bedtools unionbedg -filler NA -i ${beds} -header -names ${samples.join(" ")} > ${context}.${types.unique().join("")}.unfiltered.bed
     """
 } 
 
@@ -316,7 +312,11 @@ process "GEM_Emodel" {
     """
     mkdir output
     awk -F "\\t" '{printf \"%s:%s-%s\",\$1,\$2,\$3; for(i=4; i<=NF; i++) {printf \"\\t%s\",\$i}; print null}' ${meth} > \$(basename ${meth} .bed).txt
-    Rscript ${baseDir}/bin/GEM_Emodel.R ${baseDir}/bin ${envs} ${covs} \$(basename ${meth} .bed).txt ${params.Emodel_pv} output/temp > ${context}.${type}.log || exit \$?
+    cat \$(basename ${meth} .bed).txt | 
+    datamash transpose | sed 's/ /\t/g' | 
+    awk 'NR == 1; NR > 1 {print \$0 | "sort -n"}' | 
+    datamash transpose | sed 's/ /\t/g' > 2\$(basename ${meth} .bed).txt
+    Rscript ${baseDir}/bin/GEM_Emodel.R ${baseDir}/bin ${envs} ${covs} 2\$(basename ${meth} .bed).txt ${params.Emodel_pv} output/temp > ${context}.${type}.log || exit \$?
     tail -n+2 output/temp.txt > ${context}.${type}.txt
     """
 
