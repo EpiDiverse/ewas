@@ -41,7 +41,6 @@ process "bcftools" {
      
     input:
     path samples
-    path "output/${sample}.vcf.gz"
     path snps
     path tbis
     
@@ -55,7 +54,7 @@ process "bcftools" {
     """
     mkdir input
     ${snps.getClass() == nextflow.util.BlankSeparatedList && snps.size() > 1 ? "bcftools merge ${snps} -Oz -o input/merged.vcf.gz || exit \$?" : ""}
-    bcftools norm -Ov -m-snps ${snps.getClass() == nextflow.util.BlankSeparatedList && snps.size() > 1 ? "input/merged.vcf.gz" : "output/${sample}.vcf.gz"} | bcftools norm -Ov --check-ref w -f ${params.fasta} > input/norm.vcf.gz || exit \$?
+    bcftools norm -Ov -m-snps ${snps.getClass() == nextflow.util.BlankSeparatedList && snps.size() > 1 ? "input/merged.vcf.gz" : "${snps}"} | bcftools norm -Ov --check-ref w -f ${params.fasta} > input/norm.vcf.gz || exit \$?
     bcftools view -S <(cut -f1 ${samples}) input/norm.vcf.gz > input/filtered.vcf.gz || exit \$?
     bcftools query -l input/filtered.vcf.gz > input/samples.txt || exit \$?
 
