@@ -11,20 +11,25 @@ process "tabix" {
     tuple val(sample), path(snp)
     
     output:
-    path "output/*.vcf.gz"
-    path "output/*.tbi"
+    path "*.vcf.gz"
+    path "*.tbi"
     
     when:
     params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE && !params.GWAS) || params.Gmodel || params.GxE || params.GWAS)
 
     script:
     """
+    tabix -f -p vcf ${sample}.vcf.gz
+    """
+}
+
+/*
     mkdir output
     sed "s|no_sample_specified|${sample}|g" <(bcftools view ${snp}) > output/${sample}.vcf
     bgzip output/${sample}.vcf
     tabix -f -p vcf output/${sample}.vcf.gz
-    """
-}
+    
+*/    
 
 
 //nextflow.processor.TaskPath
