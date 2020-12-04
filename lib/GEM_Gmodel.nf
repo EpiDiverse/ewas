@@ -53,8 +53,8 @@ process "bcftools" {
     script:
     """
     mkdir input
-    ${snps.getClass() == nextflow.util.BlankSeparatedList && snps.size() > 1 ? "bcftools merge ${snps} -Oz -o input/merged.vcf.gz || exit \$?" : ""}
-    bcftools norm -Ov -m-snps ${snps.getClass() == nextflow.util.BlankSeparatedList && snps.size() > 1 ? "input/merged.vcf.gz" : "${snp}"} | bcftools norm -Ov --check-ref w -f ${params.fasta} > input/norm.vcf.gz || exit \$?
+    ${snp.getClass() == nextflow.util.BlankSeparatedList && snp.size() > 1 ? "bcftools merge ${snp} -Oz -o input/merged.vcf.gz || exit \$?" : ""}
+    bcftools norm -Ov -m-snps ${snp.getClass() == nextflow.util.BlankSeparatedList && snp.size() > 1 ? "input/merged.vcf.gz" : "${snp}"} | bcftools norm -Ov --check-ref w -f ${params.fasta} > input/norm.vcf.gz || exit \$?
     bcftools view -S <(cut -f1 ${samples}) input/norm.vcf.gz > input/filtered.vcf.gz || exit \$?
     bcftools query -l input/filtered.vcf.gz > input/samples.txt || exit \$?
 
