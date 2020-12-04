@@ -142,7 +142,7 @@ process "vcftools_extract" {
     script:
     """   
     vcftools --gzvcf snps_imputed.gt.vcf.gz \\
-    --max-missing 1 \\
+    --max-missing ${params.max_missing} \\
     --mac ${params.mac} \\
     --minQ ${params.minQ} \\
     --012 \\
