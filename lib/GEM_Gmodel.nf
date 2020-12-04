@@ -76,7 +76,7 @@ process "vcftools_missing" {
     label "finish"
      
     input:
-    path snp
+    path "input/filtered.vcf.gz"
     
     output:
     path "out.recode.vcf.gz"
@@ -89,7 +89,7 @@ process "vcftools_missing" {
 
     script:
     """
-    vcftools --gzvcf ${snp} --max-missing ${params.max_missing} --recode --stdout | bgzip  > out.recode.vcf.gz
+    vcftools --gzvcf input/filtered.vcf.gz --max-missing ${params.max_missing} --recode --stdout | bgzip  > out.recode.vcf.gz
     """ 
 } 
 
