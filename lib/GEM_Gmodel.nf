@@ -33,6 +33,7 @@ process "tabix" {
 // tabix.out[0].collect()
 // tabix.out[1].collect()
 // merge single-sample vcf files
+//    path snps
 process "bcftools" {
 
     label "low"
@@ -40,7 +41,7 @@ process "bcftools" {
      
     input:
     path samples
-    path snps
+    path "output/${sample}.vcf.gz"
     path tbis
     
     output:
