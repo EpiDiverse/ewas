@@ -11,8 +11,8 @@ process "tabix" {
     tuple val(sample), path(snp)
     
     output:
-    path "*.vcf.gz"
-    path "*.tbi"
+    path ".vcf.gz"
+    path ".tbi"
     
     when:
     params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE && !params.GWAS) || params.Gmodel || params.GxE || params.GWAS)
