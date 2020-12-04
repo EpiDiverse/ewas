@@ -19,7 +19,7 @@ process "tabix" {
 
     script:
     """
-    tabix -f -p vcf ${sample}.vcf.gz
+    tabix -f -p vcf *.vcf.gz
     """
 }
 
