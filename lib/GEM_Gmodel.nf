@@ -11,25 +11,20 @@ process "tabix" {
     tuple val(sample), path(snp)
     
     output:
-    path ".vcf.gz"
-    path ".tbi"
+    path "*.vcf.gz"
+    path "*.tbi"
     
     when:
     params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE && !params.GWAS) || params.Gmodel || params.GxE || params.GWAS)
 
     script:
     """
-    tabix -f -p vcf ${snp}
-    """
-}
-
-/*
     mkdir output
     sed "s|no_sample_specified|${sample}|g" <(bcftools view ${snp}) > output/${sample}.vcf
     bgzip output/${sample}.vcf
     tabix -f -p vcf output/${sample}.vcf.gz
-    
-*/    
+    """
+}
 
 
 //nextflow.processor.TaskPath
@@ -114,7 +109,7 @@ process "BEAGLE_SNP_Imputation" {
     path "snps_imputed.gt.vcf.gz"
 
     when:
-     params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE && !params.GWAS) || params.Gmodel || params.GxE || params.GWAS)
+    params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE && !params.GWAS) || params.Gmodel || params.GxE || params.GWAS)
     
     script:
     """
