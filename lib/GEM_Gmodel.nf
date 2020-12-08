@@ -81,6 +81,7 @@ process "vcftools_missing" {
     
     output:
     path "out.recode.vcf"
+    path "out.recode.vcf.gz"
     //file("out.imiss")
     //file("out.log")
     //path "out.log"
@@ -90,7 +91,8 @@ process "vcftools_missing" {
 
     script:
     """
-    vcftools --gzvcf input/filtered.vcf.gz --max-missing ${params.max_missing} --recode --stdout 
+    vcftools --gzvcf input/filtered.vcf.gz --max-missing ${params.max_missing} --recode --stdout | bgzip > out.recode.vcf.gz
+    gunzip -c out.recode.vcf.gz > out.recode.vcf
     """ 
 } 
 
