@@ -370,9 +370,13 @@ single_channel = CpG_single.mix(CHG_single,CHH_single)
 
 // handle errors with missing files in CpG
 if(!params.noCpG){
-samples_channel
-    .collect().toList()
-    .mix(CpG_single.map{it -> return it[2]}.collect().toList())
+CpG_single
+    .ifEmpty{exit 1, "ERROR: specified sample names missing from CpG directory in: ${params.input}\n \
+    did you mean to run with --noCpG ?"}
+    .map{it -> it[2]}
+    .collect()
+    .toList()
+    .mix(samples_channel.collect().toList())
     .collect()
     .subscribe{ if( it[0].size() != it[1].size() ){
             exit 1, "ERROR: specified sample names missing from CpG directory in: ${params.input}"
@@ -382,9 +386,13 @@ samples_channel
 
 // handle errors with missing files in CHG
 if(!params.noCHG){
-samples_channel
-    .collect().toList()
-    .mix(CHG_single.map{it -> return it[2]}.collect().toList())
+CHG_single
+    .ifEmpty{exit 1, "ERROR: specified sample names missing from CHG directory in: ${params.input}\n \
+    did you mean to run with --noCHG ?"}
+    .map{it -> it[2]}
+    .collect()
+    .toList()
+    .mix(samples_channel.collect().toList())
     .collect()
     .subscribe{ if( it[0].size() != it[1].size() ){
             exit 1, "ERROR: specified sample names missing from CHG directory in: ${params.input}"
@@ -394,9 +402,13 @@ samples_channel
 
 // handle errors with missing files in CHH
 if(!params.noCHH){
-samples_channel
-    .collect().toList()
-    .mix(CHH_single.map{it -> return it[2]}.collect().toList())
+CHH_single
+    .ifEmpty{exit 1, "ERROR: specified sample names missing from CHH directory in: ${params.input}\n \
+    did you mean to run with --noCHH ?"}
+    .map{it -> it[2]}
+    .collect()
+    .toList()
+    .mix(samples_channel.collect().toList())
     .collect()
     .subscribe{ if( it[0].size() != it[1].size() ){
             exit 1, "ERROR: specified sample names missing from CHH directory in: ${params.input}"
