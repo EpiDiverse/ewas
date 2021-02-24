@@ -251,10 +251,22 @@ log.info ""
 // STAGE CHANNELS //
 ////////////////////
 
+// VALIDATE SAMPLESHEET
+Channel
+    .from(file("${params.samples}").readLines())
+    .ifEmpty{ exit 1, "ERROR: samples file is missing. Please remember to use the --samples parameter." }
+    .map { line ->
+        def field = line.toString().tokenize('\t')
+        return field.size()}
+    .collect()
+    .subscribe{ if( it.unique().size() != 1 ){
+            exit 1, "ERROR: samples file contains unbalanced number of columns."
+        }
+    }
+
 // STAGE SAMPLES CHANNEL
 samples_channel = Channel
     .from(file("${params.samples}").readLines())
-    .ifEmpty{ exit 1, "ERROR: samples file is missing. Please remember to use the --samples parameter." }
     .map { line ->
         def field = line.toString().tokenize('\t').take(1)
         return tuple(field[0].replaceAll("\\s",""))}
