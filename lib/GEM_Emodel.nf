@@ -257,7 +257,7 @@ process "average_over_regions" {
 
     maxForks "${params.fork}".toInteger()
 
-    publishDir "${params.output}/regions", pattern: "${context}.${type}.bed", mode: 'copy', enabled:true
+    publishDir "${params.output}/input/bed", pattern: "${context}.${type}.bed", mode: 'copy', enabled:true
  
     input:
     tuple val(context), val(bedGraph), path("methylation.txt"), val(type), path("differential.txt")

@@ -17,9 +17,9 @@ if(params.help){
 
          Options: GENERAL
               --input [path/to/input/dir]       [REQUIRED] Specify input path for the directory containing outputs from the WGBS pipeline.
-                                                The pipeline searches for bedGraph files in '*/bedGraph/{sample_name}_{context}.bedGraph'
-                                                format, where sample names must correspond to the samplesheet and context can be either
-                                                "CpG", "CHG", or "CHH".
+                                                The pipeline searches for bedGraph files in '*/{context}/{sample_name}.bedGraph' format,
+                                                where sample names must correspond to the samplesheet and context can be either "CpG",
+                                                "CHG", or "CHH".
 
               --samples [path/to/samples.tsv]   [REQUIRED] Specify the path to the samplesheet file containing information regarding
                                                 sample names and corresponding environment and covariate values. The file must contain
@@ -28,12 +28,12 @@ if(params.help){
 
               --DMPs [path/to/DMPs/dir]         Specify path to the DMR pipeline output directory to run EWAS analyses in addition with
                                                 methylated positions filtered by significant DMPs. The pipeline searches for bed files in
-                                                '*/{context}/metilene/*/*.bed' format where context can be either "CpG", "CHG", or "CHH".
+                                                '*/{context}/*.bed' format where context can be either "CpG", "CHG", or "CHH".
          
               --DMRs [path/to/DMRs/dir]         Specify path to the DMR pipeline output directory to run EWAS analyses in addition with
                                                 methylated positions filtered by significant DMRs. In addition, the pipeline will call
                                                 the union of all significant regions and attempt to run EWAS with whole regions as markers.
-                                                The pipeline searches for bed files in '*/{context}/metilene/*/*.bed' format where context
+                                                The pipeline searches for bed files in '*/{context}/*.bed' format where context
                                                 can be either "CpG", "CHG", or "CHH".
 
               --SNPs [path/to/vcf/dir]          Specify path to the SNP pipeline output directory to enable EWAS analyses Gmodel and GxEmodel
@@ -107,6 +107,7 @@ if(params.help){
               --Gmodel_pv <FLOAT>             Set the p-value threshold to filter results from "G model" [default: 0.00000001]
                                               
               --GxE_pv <FLOAT>                Set the p-value threshold to filter results from "GxE model" [default: 0.00000001]
+
 
          Options: VISUALISATION
               --kplots <INT>                  Specify the number of plots to generate for the top k significant results in "GxE model"  
@@ -356,34 +357,40 @@ CHH_single = CHH.combine(samples_channel, by: 0).map{tuple("CHH", "bedGraph", *i
 single_channel = CpG_single.mix(CHG_single,CHH_single)
 
 // handle errors with missing files in CpG
+if(!params.noCpG){
 samples_channel
-    .collect()
-    .mix(CpG_single.collect())
+    .collect().toList()
+    .mix(CpG_single.map{it -> return it[2]}.collect().toList())
     .collect()
     .subscribe{ if( it[0].size() != it[1].size() ){
-            exit 1, "ERROR: specified sample names missing from CpG input."
+            exit 1, "ERROR: specified sample names missing from CpG directory in: ${params.input}"
         }
     }
+}
 
 // handle errors with missing files in CHG
+if(!params.noCHG){
 samples_channel
-    .collect()
-    .mix(CHG_single.collect())
+    .collect().toList()
+    .mix(CHG_single.map{it -> return it[2]}.collect().toList())
     .collect()
     .subscribe{ if( it[0].size() != it[1].size() ){
-            exit 1, "ERROR: specified sample names missing from CHG input."
+            exit 1, "ERROR: specified sample names missing from CHG directory in: ${params.input}"
         }
     }
+}
 
 // handle errors with missing files in CHH
+if(!params.noCHH){
 samples_channel
-    .collect()
-    .mix(CHH_single.collect())
+    .collect().toList()
+    .mix(CHH_single.map{it -> return it[2]}.collect().toList())
     .collect()
     .subscribe{ if( it[0].size() != it[1].size() ){
-            exit 1, "ERROR: specified sample names missing from CHH input."
+            exit 1, "ERROR: specified sample names missing from CHH directory in: ${params.input}"
         }
     }
+}
 
 // METHYLATION DMPs
 CpG_DMPs_single = CpG_DMPs.map{tuple("CpG", "DMPs", *it)}

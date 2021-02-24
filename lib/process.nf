@@ -115,7 +115,7 @@ process "calculate_FDR" {
     mkdir tmp input ${model}
 
     total=\$(cat ${logs} | grep "100.00%" | cut -d " " -f3 | tr -d "," | awk 'BEGIN{c=0} {c+=\$0} END{print c}')
-    echo -e "${model == "Emodel" ? "cpg" : "cpg\\tsnp"}\\tbeta\\tstats\\tpvalue\\tFDR" |
+    echo -e "${model == "Emodel" ? "ID" : "ID\\tsnp"}\\tbeta\\tstats\\tpvalue\\tFDR" |
     tee input/header.txt ${model}/${key}.txt ${model}/${key}.filtered_${model == "Emodel" ? "${params.Emodel_pv}" : model == "Gmodel" ? "${params.Gmodel_pv}" : "${params.GxE_pv}"}_pval.txt
 
     # calculate FDR
@@ -129,7 +129,9 @@ process "calculate_FDR" {
     fi
 
     # sort filtered output
+    if [ -f ${model}/${key}.unsorted ]; then
     sort -gk5 ${model}/${key}.unsorted >> ${model}/${key}.filtered_${model == "Emodel" ? "${params.Emodel_pv}" : model == "Gmodel" ? "${params.Gmodel_pv}" : "${params.GxE_pv}"}_pval.txt
+    fi
     """ 
 }
 

@@ -15,7 +15,7 @@ gg.dotplot <- function(df, title, contigs){
     df$spos <- ceiling(df$spos)
 
     # set the size of scaffolds and rank
-    chr <- aggregate(c(df$cpos, df$spos), by = list(c(as.character(df$cpg), as.character(df$snp))), max)
+    chr <- aggregate(c(df$cpos, df$spos), by = list(c(as.character(df$ID), as.character(df$snp))), max)
     chr <- chr[order(-chr$x),]
     chr$x1 <- cumsum(chr$x)
     chr$x0 <- chr$x1 - chr$x
@@ -34,9 +34,12 @@ gg.dotplot <- function(df, title, contigs){
     chr.max <- chr$x1[-1]
 
     # modify the values in df based on ranking of scaffolds
-    df$tip <- paste0("Meth (", df$cpg, ":", df$cpos-1, "-", df$cpos, ")<br>SNP (", df$snp, ":", df$spos-1, "-", df$spos, ")")
-    df$cpos <- df$cpos + chr$x0[match(df$cpg, chr$Group.1)]
+    df$tip <- paste0("Meth (", df$ID, ":", df$cpos-1, "-", df$cpos, ")<br>SNP (", df$snp, ":", df$spos-1, "-", df$spos, ")")
+    df$cpos <- df$cpos + chr$x0[match(df$ID, chr$Group.1)]
     df$spos <- df$spos + chr$x0[match(df$snp, chr$Group.1)]
+    #df$tip <- paste0("Meth (", df$cpg, ":", df$cpos-1, "-", df$cpos, ")<br>SNP (", df$snp, ":", df$spos-1, "-", df$spos, ")")
+    #df$cpos <- df$cpos + chr$x0[match(df$cpg, chr$Group.1)]
+    #df$spos <- df$spos + chr$x0[match(df$snp, chr$Group.1)]
 
     p <- ggplot(df, aes(spos,cpos,color=dist,text=tip)) +
         # show all points
@@ -86,6 +89,6 @@ df <- try(read.table(args[1],header=F))
 if(inherits(df, "try-error")){
     write("Input data contains zero rows!", stderr())
 }else{
-    colnames(df)= c("cpg","cpos","snp","spos","dist")
+    colnames(df)= c("ID","cpos","snp","spos","dist")
     gg.dotplot(df, args[2], args[3])
 }

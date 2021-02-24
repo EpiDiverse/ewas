@@ -35,7 +35,7 @@ NXF_VER=20.07.1 nextflow run epidiverse/ewas -profile test,<docker|singularity|c
 
 ```bash
 NXF_VER=20.07.1 nextflow run epidiverse/ewas -profile <docker|singularity|conda> \
---input /path/to/wgbs/directory --samples /path/to/samples.tsv
+--input /path/to/wgbs/bedGraph --samples /path/to/samples.tsv
 ```
 
 > See the [usage documentation](docs/usage.md) for all of the available options when running the pipeline.
