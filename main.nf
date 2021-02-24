@@ -474,8 +474,8 @@ workflow 'EWAS' {
         }
 
         // sorting on union bed files
-        sort_DMPs = DMPs_combined.filter{ it[3].size() == 1 }.mix(bedtools_unionbedg.out.filter{ it[1] == "DMPs" })
-        sort_DMRs = DMRs_combined.filter{ it[3].size() == 1 }.mix(bedtools_unionbedg.out.filter{ it[1] == "DMRs" })
+        sort_DMPs = DMPs_combined.filter{ it[3].size() == 1 }.map{tuple(it.flatten())}.mix(bedtools_unionbedg.out.filter{ it[1] == "DMPs" })
+        sort_DMRs = DMRs_combined.filter{ it[3].size() == 1 }.map{tuple(it.flatten())}.mix(bedtools_unionbedg.out.filter{ it[1] == "DMRs" })
         bedtools_sorting(bedtools_filtering_output.mix(sort_DMPs, sort_DMRs))
         
         // stage channels for downstream processes
