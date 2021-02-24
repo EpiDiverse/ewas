@@ -9,39 +9,38 @@ process "parsing" {
 
     maxForks "${params.fork}".toInteger()
     
-    publishDir "${params.output}/input", pattern: "env.txt" , mode: 'copy', enabled: params.input ? true : false
-    publishDir "${params.output}/input", pattern: "cov.txt" , mode: 'copy', enabled: params.input ? true : false
-    publishDir "${params.output}/input", pattern: "gxe.txt" , mode: 'copy', enabled: params.input ? true : false
+    publishDir "${params.output}/", pattern: "input/env.txt" , mode: 'copy', enabled: params.input ? true : false
+    publishDir "${params.output}/", pattern: "input/cov.txt" , mode: 'copy', enabled: params.input ? true : false
+    publishDir "${params.output}/", pattern: "input/gxe.txt" , mode: 'copy', enabled: params.input ? true : false
     
     input:
     path samples
 
     output:
-    path "env.txt"
-    path "cov.txt"
-    path "gxe.txt"
+    path "input/env.txt"
+    path "input/cov.txt"
+    path "input/gxe.txt"
 
     when:
     params.input
 
     script:
     """
-    sed '/[0-9]\\,/s/\\,/./g' ${samples} |
-    awk -F "\\t" '{printf \"%s\\t%.6f",\$1,\$2; for(i=3; i<=NF; i++) {printf \"\\t%s\",\$i}; print null}' |
-    awk -F "\\t" '{printf \"%s\\t%s\",\$1,\$2; for(i=3; i<=NF; i++) {printf \"\\t%s\",\$i}; print null}' > samples2.txt
-    
-    cat samples2.txt | grep '[0-9]'| sed 's/,//g' > samples3.txt
-    echo -e "ID\\tenv" | cat - samples3.txt > samples4.txt
-    cat <(cut -f1 samples4.txt | paste -s) <(cut -f2 samples4.txt | paste -s) > env.txt
+    mkdir input
 
-    cut -f1 samples3.txt > header.txt
-    cut -d \$'\\t' -f3- samples3.txt  > pre_cov.txt
-    
-    paste header.txt pre_cov.txt > 2pre_cov.txt
-    awk 'NR==1{printf "ID"; for(i=1; i<=NF-1; i++) h=h OFS "cov" i; print h}1' OFS='\\t' 2pre_cov.txt > 3pre_cov.txt
-    cat 3pre_cov.txt | datamash transpose | tr -d "\\r" > cov.txt
+    # remove non-standard chars and sort
+    cat ${samples} | tr -d " " | sed 's/\\r\$//' | sort -k1 > input/sorted.tsv
 
-    cat cov.txt <(tail -1 env.txt) > gxe.txt
+    # generate env file
+    echo -e "ID\\tenv" | cat - input/sorted.tsv | cut -f-2 | datamash transpose > input/env.txt
+
+    # generate cov.txt
+    paste <(cut -f1 input/sorted.tsv) <(cut -f3- input/sorted.tsv) |
+    awk -v OFS="\\t" 'NR==1{printf "ID"; for(i=1; i<=NF-1; i++){printf "%scov%s", OFS,i}; print null}1' |
+    datamash transpose > input/cov.txt
+
+    # generate gxe.txt
+    cat input/cov.txt <(tail -1 input/env.txt) > input/gxe.txt
     """
 }
 
@@ -89,13 +88,13 @@ process "calculate_FDR" {
     label "finish"
     tag "${model}:${key}"
     
-    publishDir "${params.output}/regions", pattern: "${model}/${context}.region.filtered_${params.output_FDR}_FDR.txt" , mode: 'copy', enabled: params.input && (params.DMRs || params.merge) ? true : false
+    publishDir "${params.output}/regions", pattern: "${model}/${context}.region.filtered_${model == "Emodel" ? "${params.Emodel_pv}" : model == "Gmodel" ? "${params.Gmodel_pv}" : "${params.GxE_pv}"}_pval.txt" , mode: 'copy', enabled: params.input && (params.DMRs || params.merge) ? true : false
     publishDir "${params.output}/regions", pattern: "${model}/${context}.region.txt" , mode: 'copy', enabled: params.input && (params.DMRs || params.merge) ? true : false 
-    publishDir "${params.output}/positions", pattern: "${model}/${context}.DMRs.filtered_${params.output_FDR}_FDR.txt" , mode: 'copy', enabled: params.input ? true : false
+    publishDir "${params.output}/positions", pattern: "${model}/${context}.DMRs.filtered_${model == "Emodel" ? "${params.Emodel_pv}" : model == "Gmodel" ? "${params.Gmodel_pv}" : "${params.GxE_pv}"}_pval.txt" , mode: 'copy', enabled: params.input ? true : false
     publishDir "${params.output}/positions", pattern: "${model}/${context}.DMRs.txt" , mode: 'copy', enabled: params.input  ? true : false
-    publishDir "${params.output}/positions", pattern: "${model}/${context}.DMPs.filtered_${params.output_FDR}_FDR.txt" , mode: 'copy', enabled: params.input ? true : false
+    publishDir "${params.output}/positions", pattern: "${model}/${context}.DMPs.filtered_${model == "Emodel" ? "${params.Emodel_pv}" : model == "Gmodel" ? "${params.Gmodel_pv}" : "${params.GxE_pv}"}_pval.txt" , mode: 'copy', enabled: params.input ? true : false
     publishDir "${params.output}/positions", pattern: "${model}/${context}.DMPs.txt" , mode: 'copy', enabled: params.input  ? true : false
-    publishDir "${params.output}/positions", pattern: "${model}/${context}.bedGraph.filtered_${params.output_FDR}_FDR.txt" , mode: 'copy', enabled: params.input ? true : false
+    publishDir "${params.output}/positions", pattern: "${model}/${context}.bedGraph.filtered_${model == "Emodel" ? "${params.Emodel_pv}" : model == "Gmodel" ? "${params.Gmodel_pv}" : "${params.GxE_pv}"}_pval.txt" , mode: 'copy', enabled: params.input ? true : false
     publishDir "${params.output}/positions", pattern: "${model}/${context}.bedGraph.txt" , mode: 'copy', enabled: params.input  ? true : false
  
     
@@ -106,7 +105,7 @@ process "calculate_FDR" {
     output:
     tuple val(model), val(key), val(type), path("${model}/*.txt")
     //tuple model, key, val("${types.unique().join("")}"), path("${model}/*.txt")
-    //tuple model, key, val("${types.unique().join("")}"), path("input/*.txt"), path("${model}/${key}.filtered_${params.output_FDR}_FDR.txt")
+    //tuple model, key, val("${types.unique().join("")}"), path("input/*.txt"), path("${model}/${key}.filtered_${params.Emodel_pv}_pval.txt")
 
     when:
     params.input
@@ -114,20 +113,23 @@ process "calculate_FDR" {
     script:
     """
     mkdir tmp input ${model}
-    #tail -q -n+2 ${results} > input/${key}.txt
+
     total=\$(cat ${logs} | grep "100.00%" | cut -d " " -f3 | tr -d "," | awk 'BEGIN{c=0} {c+=\$0} END{print c}')
     echo -e "${model == "Emodel" ? "cpg" : "cpg\\tsnp"}\\tbeta\\tstats\\tpvalue\\tFDR" |
-    tee input/header.txt ${model}/${key}.txt ${model}/${key}.filtered_${params.output_FDR}_FDR.txt
+    tee input/header.txt ${model}/${key}.txt ${model}/${key}.filtered_${model == "Emodel" ? "${params.Emodel_pv}" : model == "Gmodel" ? "${params.Gmodel_pv}" : "${params.GxE_pv}"}_pval.txt
 
-    #if [[ \$(head input/${key}.txt | wc -l) == 0 ]]; then
+    # calculate FDR
     if [[ \$(head ${results} | wc -l) == 0 ]]; then
-    echo "No findings with ${model == "Emodel" ? "--Emodel_pv ${params.Emodel_pv}" : model == "Gmodel" ? "--Gmodel_pv ${params.Gmodel_pv}" : "--GxE_pv ${params.GxE_pv}"}" > ${model}/${key}.txt
+    echo "No findings within current parameter scope" > ${model}/${key}.txt
     else
     sort -T tmp --parallel=${task.cpus} -grk5 ${results} | cut -f${model == "Emodel" ? "2-" : "1-"} |
     awk -F "\\t" -v t="\$total" 'BEGIN{OFS="\\t";p=1;r=t} {fdr=(t/r)*${model == "Emodel" ? "\$4" : "\$5"};
-    if(fdr>p){fdr=p}; if(fdr<=${params.output_FDR}){print \$0,fdr >> "${model}/${key}.filtered_${params.output_FDR}_FDR.txt"};
+    if(fdr>p){fdr=p}; if(p<=${model == "Emodel" ? "${params.Emodel_pv}" : model == "Gmodel" ? "${params.Gmodel_pv}" : "${params.GxE_pv}"}){print \$0,fdr >> "${model}/${key}.unsorted"};
     print \$0,fdr; p=fdr;r--}' >> ${model}/${key}.txt || exit \$?
     fi
+
+    # sort filtered output
+    sort -gk5 ${model}/${key}.unsorted >> ${model}/${key}.filtered_${model == "Emodel" ? "${params.Emodel_pv}" : model == "Gmodel" ? "${params.Gmodel_pv}" : "${params.GxE_pv}"}_pval.txt
     """ 
 }
 

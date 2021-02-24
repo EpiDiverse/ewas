@@ -101,17 +101,12 @@ if(params.help){
               --minQ <INT>                     Minimum quality score [default: 30]
 
 
-         Options: OUTPUT FILTERING   
-              --output_FDR <FLOAT>            Specify the maximum FDR threshold for filtering EWAS post-analysis [default: 0.05]
-              
-              --Emodel_pv <FLOAT>             Set the p-value to run "E model". Note: this filter is applied prior to FDR calculation
-                                              and should be used cautiously [default: 1]
+         Options: OUTPUT FILTERING                 
+              --Emodel_pv <FLOAT>             Set the p-value threshold to filter results from "E model" [default: 0.00000001]
                                               
-              --Gmodel_pv <FLOAT>             Set the p-value to run "G model". Note: this filter is applied prior to FDR calculation
-                                              and should be used cautiously [default: 1]
+              --Gmodel_pv <FLOAT>             Set the p-value threshold to filter results from "G model" [default: 0.00000001]
                                               
-              --GxE_pv <FLOAT>                Set the p-value to run "GxE model". Note: this filter is applied prior to FDR calculation
-                                              and should be used cautiously [default: 1]
+              --GxE_pv <FLOAT>                Set the p-value threshold to filter results from "GxE model" [default: 0.00000001]
 
          Options: VISUALISATION
               --kplots <INT>                  Specify the number of plots to generate for the top k significant results in "GxE model"  
@@ -153,26 +148,26 @@ if(params.version){
 ParameterChecks.checkParams(params)
 
 // DEFINE PATHS
-CpG_path = "${params.input}/*/bedGraph/*_CpG.bedGraph"
-CHG_path = "${params.input}/*/bedGraph/*_CHG.bedGraph"
-CHH_path = "${params.input}/*/bedGraph/*_CHH.bedGraph"
-//CpG_path = "${params.input}/CpG/*.bedGraph"
-//CHG_path = "${params.input}/CHG/*.bedGraph"
-//CHH_path = "${params.input}/CHH/*.bedGraph"
+//CpG_path = "${params.input}/*/bedGraph/*_CpG.bedGraph"
+//CHG_path = "${params.input}/*/bedGraph/*_CHG.bedGraph"
+//CHH_path = "${params.input}/*/bedGraph/*_CHH.bedGraph"
+CpG_path = "${params.input}/CpG/*.bedGraph"
+CHG_path = "${params.input}/CHG/*.bedGraph"
+CHH_path = "${params.input}/CHH/*.bedGraph"
   
-CpG_path_DMPs = "${params.DMPs}/CpG/metilene/*" 
-CHG_path_DMPs = "${params.DMPs}/CHG/metilene/*"
-CHH_path_DMPs = "${params.DMPs}/CHH/metilene/*"
-//CpG_path_DMPs = "${params.DMPs}/CpG/*.bed" 
-//CHG_path_DMPs = "${params.DMPs}/CHG/*.bed"
-//CHH_path_DMPs = "${params.DMPs}/CHH/*.bed"
+//CpG_path_DMPs = "${params.DMPs}/CpG/metilene/*" 
+//CHG_path_DMPs = "${params.DMPs}/CHG/metilene/*"
+//CHH_path_DMPs = "${params.DMPs}/CHH/metilene/*"
+CpG_path_DMPs = "${params.DMPs}/CpG/*.bed" 
+CHG_path_DMPs = "${params.DMPs}/CHG/*.bed"
+CHH_path_DMPs = "${params.DMPs}/CHH/*.bed"
 
-CpG_path_DMRs = "${params.DMRs}/CpG/metilene/*" 
-CHG_path_DMRs = "${params.DMRs}/CHG/metilene/*"
-CHH_path_DMRs = "${params.DMRs}/CHH/metilene/*"
-//CpG_path_DMRs = "${params.DMRs}/CpG/*.bed" 
-//CHG_path_DMRs = "${params.DMRs}/CHG/*.bed"
-//CHH_path_DMRs = "${params.DMRs}/CHH/*.bed"
+//CpG_path_DMRs = "${params.DMRs}/CpG/metilene/*" 
+//CHG_path_DMRs = "${params.DMRs}/CHG/metilene/*"
+//CHH_path_DMRs = "${params.DMRs}/CHH/metilene/*"
+CpG_path_DMRs = "${params.DMRs}/CpG/*.bed" 
+CHG_path_DMRs = "${params.DMRs}/CHG/*.bed"
+CHH_path_DMRs = "${params.DMRs}/CHH/*.bed"
 
 // PARAMETER CHECKS
 //if( !params.input ){error "ERROR: Missing required parameter --input"}
@@ -210,12 +205,6 @@ log.info "         Analysis Configuration"
 log.info "         =================================================="
 log.info "         GEM model(s)                    : ${Emodel ? "Emodel " : ""}${Gmodel ? "Gmodel " : ""}${GxE ? "GxE" : ""}"
 log.info "         Methylation context(s)          : ${params.noCpG ? "" : "CpG "}${params.noCHH ? "" : "CHH "}${params.noCHG ? "" : "CHG"}"
-if(Emodel && params.Emodel_pv.toInteger() < 1){
-log.info "         Emodel p-value                  : ${params.Emodel_pv}" }
-if(params.SNPs && Gmodel && params.Gmodel_pv.toInteger() < 1){
-log.info "         Gmodel p-value                  : ${params.Gmodel_pv}" }
-if(params.SNPs && GxE && params.GxE_pv.toInteger() < 1){
-log.info "         GxE p-value                     : ${params.GxE_pv}" }
 log.info ""
 log.info "         Input Filtering"
 log.info "         =================================================="
@@ -236,22 +225,16 @@ log.info "         maximum missing                 : ${params.max_missing}"
 log.info "         minor allele count              : ${params.mac}"
 log.info "         minimum quality score           : ${params.minQ}"
 log.info "" }
-//if(params.burnin || params.iterations || params.phase_states || params.imp_states || params.ne || nthreads_SNP){
-//log.info "         =================================================="
-//log.info "         SNP Imputation with BEAGLE"
-//log.info "         =================================================="
-//log.info "         burnin iterations                                      : ${params.burnin}"
-//log.info "         iterations for genotype phase estimation               : ${params.iters}"
-//log.info "         number of model states for genotype estimation         : ${params.phase_states}"
-//log.info "         number of model states for ungenotype estimation       : ${params.imp_states}"
-//log.info "         effective population size                              : ${params.ne}"
-//log.info "         number of threads of execution                         : ${params.nthreads_SNP}"
-//log.info "" }
-log.info "         =================================================="
 log.info "         =================================================="
 log.info "         Output"
 log.info "         =================================================="
-log.info "         output FDR                      : ${params.output_FDR}"
+//log.info "         output FDR                      : ${params.output_FDR}"
+if(Emodel){
+log.info "         Emodel p-value                  : ${params.Emodel_pv}" }
+if(params.SNPs && Gmodel){
+log.info "         Gmodel p-value                  : ${params.Gmodel_pv}" }
+if(params.SNPs && GxE){
+log.info "         GxE p-value                     : ${params.GxE_pv}" }
 if(params.SNPs && Gmodel){
 log.info "         methQTL distance                : ${params.distance}" }
 if(params.SNPs && GxE){
@@ -274,6 +257,14 @@ samples_channel = Channel
     .map { line ->
         def field = line.toString().tokenize('\t').take(1)
         return tuple(field[0].replaceAll("\\s",""))}
+
+// handle errors with repeated sample names
+samples_channel
+    .collect()
+    .subscribe{ if( it.size() != it.unique().size() ){
+            exit 1, "ERROR: samples file contains repeated sample names."
+        }
+    }
 
 
 // STAGE TEST PROFILE 
@@ -363,6 +354,36 @@ CpG_single = CpG.combine(samples_channel, by: 0).map{tuple("CpG", "bedGraph", *i
 CHG_single = CHG.combine(samples_channel, by: 0).map{tuple("CHG", "bedGraph", *it)}
 CHH_single = CHH.combine(samples_channel, by: 0).map{tuple("CHH", "bedGraph", *it)}
 single_channel = CpG_single.mix(CHG_single,CHH_single)
+
+// handle errors with missing files in CpG
+samples_channel
+    .collect()
+    .mix(CpG_single.collect())
+    .collect()
+    .subscribe{ if( it[0].size() != it[1].size() ){
+            exit 1, "ERROR: specified sample names missing from CpG input."
+        }
+    }
+
+// handle errors with missing files in CHG
+samples_channel
+    .collect()
+    .mix(CHG_single.collect())
+    .collect()
+    .subscribe{ if( it[0].size() != it[1].size() ){
+            exit 1, "ERROR: specified sample names missing from CHG input."
+        }
+    }
+
+// handle errors with missing files in CHH
+samples_channel
+    .collect()
+    .mix(CHH_single.collect())
+    .collect()
+    .subscribe{ if( it[0].size() != it[1].size() ){
+            exit 1, "ERROR: specified sample names missing from CHH input."
+        }
+    }
 
 // METHYLATION DMPs
 CpG_DMPs_single = CpG_DMPs.map{tuple("CpG", "DMPs", *it)}
@@ -516,35 +537,6 @@ workflow 'EWAS' {
         kplots_channel = calculate_FDR.out.filter{ it[0] == "GxE" }.map{ it.tail() }.combine(GxE_plot, by:0).combine(GxE_head, by:0)
         topKplots(kplots_channel, vcftools_extract.out, parsing.out[2])
 
-/*
-    // emit results
-    emit:
-        parsing_env = parsing.out[0]
-        parsing_cov = parsing.out[1]
-        parsing_gxe = GxE ? parsing.out[2] : Channel.empty()
-        vcftools_extract_out = vcftools_extract.out
-
-        bedtools_unionbedg_out = bedtools_sorting.out
-        bedtools_intersect_out = bedtools_intersect.out
-        average_over_regions_out = average_over_regions.out
-
-        calculate_FDR_reg = calculate_FDR.out[0].filter{ it[2] == "region" || it[2] == "merged" }
-        calculate_FDR_pos = calculate_FDR.out[0].filter{ it[2] != "region" && it[2] != "merged" }
-
-        qqPlot_png_reg = qqPlot.out.filter{ it[0] == "region" || it[0] == "merged" }
-        qqPlot_png_pos = qqPlot.out.filter{ it[0] != "region" && it[0] != "merged" }
-        manhattan_png_reg = manhattan.out[0].filter{ it[0] == "region" || it[0] == "merged" }
-        manhattan_png_pos = manhattan.out[0].filter{ it[0] != "region" && it[0] != "merged" }
-        manhattan_zip_reg = manhattan.out[1].filter{ it[0] == "region" || it[0] == "merged" }
-        manhattan_zip_pos = manhattan.out[1].filter{ it[0] != "region" && it[0] != "merged" }
-        dotPlot_png_reg = dotPlot.out[0].filter{ it[0] == "region" || it[0] == "merged" }
-        dotPlot_png_pos = dotPlot.out[0].filter{ it[0] != "region" && it[0] != "merged" }
-        dotPlot_zip_reg = dotPlot.out[1].filter{ it[0] == "region" || it[0] == "merged" }
-        dotPlot_zip_pos = dotPlot.out[1].filter{ it[0] != "region" && it[0] != "merged" }
-        topKplots_png_reg = topKplots.out.filter{ it[0] == "region" || it[0] == "merged" }
-        topKplots_png_pos = topKplots.out.filter{ it[0] != "region" && it[0] != "merged" }
-*/
-
 }
 
 // MAIN WORKFLOW 
@@ -553,34 +545,7 @@ workflow {
     // call sub-workflows
     main:
         EWAS(samples, input_channel, SNPs)
-/*
-    // publish files
-    publish:
-        EWAS.out.parsing_env to: "${params.output}/input", mode: 'copy'
-        EWAS.out.parsing_cov to: "${params.output}/input", mode: 'copy'
-        EWAS.out.parsing_gxe to: "${params.output}/input", mode: 'copy'
-        EWAS.out.vcftools_extract_out to: "${params.output}/input", mode: 'copy'
 
-        EWAS.out.bedtools_unionbedg_out to: "${params.output}/input", mode: 'copy'
-        EWAS.out.bedtools_intersect_out to: "${params.output}/positions", mode: 'copy'
-        EWAS.out.average_over_regions_out to: "${params.output}/regions", mode: 'copy'
-
-        EWAS.out.calculate_FDR_reg to: "${params.output}/regions", mode: 'copy'
-        EWAS.out.calculate_FDR_pos to: "${params.output}/positions", mode: 'copy'
-
-        EWAS.out.qqPlot_png_reg to: "${params.output}/regions", mode: 'copy'
-        EWAS.out.qqPlot_png_pos to: "${params.output}/positions", mode: 'copy'
-        EWAS.out.manhattan_png_reg to: "${params.output}/regions/Emodel", mode: 'copy'
-        EWAS.out.manhattan_png_pos to: "${params.output}/positions/Emodel", mode: 'copy'
-        EWAS.out.manhattan_zip_reg to: "${params.output}/regions/Emodel", mode: 'copy'
-        EWAS.out.manhattan_zip_pos to: "${params.output}/positions/Emodel", mode: 'copy'
-        EWAS.out.dotPlot_png_reg to: "${params.output}/regions", mode: 'copy'
-        EWAS.out.dotPlot_png_pos to: "${params.output}/positions", mode: 'copy'
-        EWAS.out.dotPlot_zip_reg to: "${params.output}/regions", mode: 'copy'
-        EWAS.out.dotPlot_zip_pos to: "${params.output}/positions", mode: 'copy'
-        EWAS.out.topKplots_png_reg to: "${params.output}/regions", mode: 'copy'
-        EWAS.out.topKplots_png_pos to: "${params.output}/positions", mode: 'copy'
-*/
 }
 
 

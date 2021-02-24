@@ -68,7 +68,7 @@ process "bedtools_unionbedg" {
 
     script:
     """
-    bedtools unionbedg -filler NA -i ${beds} -header -names ${samples.join(" ")} > ${context}.${types.unique().join("")}.bed
+    bedtools unionbedg -filler NA -i ${beds.sort()} -header -names ${samples.sort().join(" ")} > ${context}.${types.unique().join("")}.bed
     """
 } 
 
@@ -315,7 +315,7 @@ process "GEM_Emodel" {
     """
     mkdir output
     awk -F "\\t" '{printf \"%s:%s-%s\",\$1,\$2,\$3; for(i=4; i<=NF; i++) {printf \"\\t%s\",\$i}; print null}' ${meth} > \$(basename ${meth} .bed).txt
-    Rscript ${baseDir}/bin/GEM_Emodel.R ${baseDir}/bin ${envs} ${covs} \$(basename ${meth} .bed).txt ${params.Gmodel_pv} output/temp > ${context}.${type}.log || exit \$?
+    Rscript ${baseDir}/bin/GEM_Emodel.R ${baseDir}/bin ${envs} ${covs} \$(basename ${meth} .bed).txt 1 output/temp > ${context}.${type}.log || exit \$?
     tail -n+2 output/temp.txt > ${context}.${type}.txt
     """
 
@@ -331,21 +331,21 @@ process "manhattan" {
     label "ignore"
     tag "${key}"
     
-    publishDir "${params.output}/positions/${model}", pattern: "*.bedGraph.filtered_${params.output_FDR}_FDR.png" , mode: 'copy', \
+    publishDir "${params.output}/positions/${model}", pattern: "*.bedGraph.filtered_${params.Emodel_pv}_pval.png" , mode: 'copy', \
             enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
-    publishDir "${params.output}/positions/${model}", pattern: "*.bedGraph.filtered_${params.output_FDR}_FDR.zip" , mode: 'copy', \
+    publishDir "${params.output}/positions/${model}", pattern: "*.bedGraph.filtered_${params.Emodel_pv}_pval.zip" , mode: 'copy', \
             enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
-    publishDir "${params.output}/positions/${model}", pattern: "*.DMRs.filtered_${params.output_FDR}_FDR.png" , mode: 'copy', \
+    publishDir "${params.output}/positions/${model}", pattern: "*.DMRs.filtered_${params.Emodel_pv}_pval.png" , mode: 'copy', \
             enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
-    publishDir "${params.output}/positions/${model}", pattern: "*.DMRs.filtered_${params.output_FDR}_FDR.zip" , mode: 'copy', \
+    publishDir "${params.output}/positions/${model}", pattern: "*.DMRs.filtered_${params.Emodel_pv}_pval.zip" , mode: 'copy', \
             enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
-    publishDir "${params.output}/positions/${model}", pattern: "*.DMPs.filtered_${params.output_FDR}_FDR.png" , mode: 'copy', \
+    publishDir "${params.output}/positions/${model}", pattern: "*.DMPs.filtered_${params.Emodel_pv}_pval.png" , mode: 'copy', \
             enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
-    publishDir "${params.output}/positions/${model}", pattern: "*.DMPs.filtered_${params.output_FDR}_FDR.zip" , mode: 'copy', \
+    publishDir "${params.output}/positions/${model}", pattern: "*.DMPs.filtered_${params.Emodel_pv}_pval.zip" , mode: 'copy', \
             enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false            
-    publishDir "${params.output}/regions/${model}", pattern: "*.region.filtered_${params.output_FDR}_FDR.png" , mode: 'copy', \
+    publishDir "${params.output}/regions/${model}", pattern: "*.region.filtered_${params.Emodel_pv}_pval.png" , mode: 'copy', \
             enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
-    publishDir "${params.output}/regions/${model}", pattern: "*.region.filtered_${params.output_FDR}_FDR.zip" , mode: 'copy', \
+    publishDir "${params.output}/regions/${model}", pattern: "*.region.filtered_${params.Emodel_pv}_pval.zip" , mode: 'copy', \
             enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false
     
     input:
@@ -362,7 +362,7 @@ process "manhattan" {
     script:
     """
     awk -F "\\t" 'BEGIN{OFS="\\t"; print "SNP","CHR","BP","P"} NR!=1{split(\$1,cpg,":"); split(cpg[2],cpos,"-"); pos=(cpos[1]+cpos[2])/2;
-    print \$1,cpg[1],pos,\$5}' ${key}.filtered_${params.output_FDR}_FDR.txt > manhattan.txt
-    Rscript ${baseDir}/bin/manhattan.R manhattan.txt ${key}.filtered_${params.output_FDR}_FDR 0.00000001 0.000001
+    print \$1,cpg[1],pos,\$4}' ${key}.filtered_${params.Emodel_pv}_pval.txt > manhattan.txt
+    Rscript ${baseDir}/bin/manhattan.R manhattan.txt ${key}.filtered_${params.Emodel_pv}_pval ${params.Emodel_pv} ${params.Emodel_pv*100 >= 1 ? "0.1" : "${params.Emodel_pv*100}"}
     """ 
 }
