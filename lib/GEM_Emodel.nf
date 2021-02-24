@@ -31,8 +31,7 @@ process "filtering" {
         """  
     else
         """
-        file=${workflow.profile.contains("test") ? "${bed}" : "${bed}/${bed}.bed"}
-        awk 'BEGIN{OFS=\"\\t\"} \$4<=${params.filter_FDR}{printf \"%s\\t%s\\t%s\\t%1.3f\\n\", \$1,\$2,\$3,\$4}' \$file |
+        awk 'BEGIN{OFS=\"\\t\"} \$4<=${params.filter_FDR}{printf \"%s\\t%s\\t%s\\t%1.3f\\n\", \$1,\$2,\$3,\$4}' ${bed} |
         sort -k1,1 -k2,2n > ${sample}.filtered.bed
         """  
 } 
