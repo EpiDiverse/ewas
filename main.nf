@@ -318,34 +318,34 @@ if ( workflow.profile.tokenize(",").contains("test") ){
     // STAGE DMP CHANNELS
     CpG_DMPs = params.noCpG  ? Channel.empty() : !params.DMPs ? Channel.empty() :
         Channel
-            .fromFilePairs( CpG_path_DMPs, size: 1, type: "dir")
+            .fromFilePairs( CpG_path_DMPs, size: 1)
             .ifEmpty{ exit 1, "ERROR: No DMP input found for CpG *.bed files: ${params.DMPs}/CpG\n\n \
             -Please check files exist or specify --noCpG"}
     CHG_DMPs = params.noCHG  ? Channel.empty() : !params.DMPs ? Channel.empty() :
         Channel
-            .fromFilePairs( CHG_path_DMPs, size: 1, type: "dir")
+            .fromFilePairs( CHG_path_DMPs, size: 1)
             .ifEmpty{ exit 1, "ERROR: No DMP input found for CHG *.bed files: ${params.DMPs}/CHG\n\n \
             -Please check files exist or specify --noCHG"}
     CHH_DMPs = params.noCHH  ? Channel.empty() : !params.DMPs ? Channel.empty() :
         Channel
-            .fromFilePairs( CHH_path_DMPs, size: 1, type: "dir")
+            .fromFilePairs( CHH_path_DMPs, size: 1)
             .ifEmpty{ exit 1, "ERROR: No DMP input found for CHH *.bed files: ${params.DMPs}/CHH\n\n \
             -Please check files exist or specify --noCHH"}
 
     // STAGE DMR CHANNELS
     CpG_DMRs = params.noCpG  ? Channel.empty() : !params.DMRs ? Channel.empty() :
         Channel
-            .fromFilePairs( CpG_path_DMRs, size: 1, type: "dir")
+            .fromFilePairs( CpG_path_DMRs, size: 1)
             .ifEmpty{ exit 1, "ERROR: No DMR input found for CpG *.bed files: ${params.DMRs}\n\n \
             -Please check files exist or specify --noCpG"}
     CHG_DMRs = params.noCHG  ? Channel.empty() : !params.DMRs ? Channel.empty() :
         Channel
-            .fromFilePairs( CHG_path_DMRs, size: 1, type: "dir")
+            .fromFilePairs( CHG_path_DMRs, size: 1)
             .ifEmpty{ exit 1, "ERROR: No DMR input found for CHG *.bed files: ${params.DMRs}\n\n \
             -Please check files exist or specify --noCHG"}
     CHH_DMRs = params.noCHH  ? Channel.empty() : !params.DMRs ? Channel.empty() :
         Channel
-            .fromFilePairs( CHH_path_DMRs, size: 1, type: "dir")
+            .fromFilePairs( CHH_path_DMRs, size: 1)
             .ifEmpty{ exit 1, "ERROR: No DMR input found for CHH *.bed files: ${params.DMRs}\n\n \
             -Please check files exist or specify --noCHH"}
 
