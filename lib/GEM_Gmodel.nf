@@ -173,7 +173,7 @@ process "GEM_Gmodel" {
     
     output:
     //tuple context, type, path("output/*.txt"), path("output/*.log")
-    path "output/${context}.${type}.txt"
+    path "output/${context}.${type}.txt.gz"
     path "output/${context}.${type}.log"
    
     when:
