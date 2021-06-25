@@ -209,7 +209,7 @@ process "GEM_GxEmodel" {
     output:
     //tuple context, type, path("output/*.txt"), path("output/*.log")
     //tuple context, type, path("*.txt")
-    path "output/${context}.${type}.txt"
+    path "output/${context}.${type}.txt.gz"
     path "output/${context}.${type}.log"
     path "${context}.${type}.txt"
     tuple val(context), val(type), path("header.txt")
@@ -225,7 +225,7 @@ process "GEM_GxEmodel" {
     head -1 meth.txt > header.txt && tail -n+2 meth.txt > ${context}.${type}.txt
 
     Rscript ${baseDir}/bin/GEM_GxE.R ${baseDir}/bin ${snps} ${gxe} meth.txt 1 output/meth > output/${context}.${type}.log || exit \$?
-    tail -n+2 output/meth.txt > output/${context}.${type}.txt
+    tail -n+2 output/temp.txt | gzip -c > output/${context}.${type}.txt.gz && rm output/temp.txt
     """
 }
 
