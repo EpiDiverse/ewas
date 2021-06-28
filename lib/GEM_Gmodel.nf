@@ -160,6 +160,7 @@ process "GEM_Gmodel" {
     label "low"
     label "finish"
     tag "${context}.${type} - ${meth.baseName}"
+    maxForks 5
     
     //publishDir "${params.output}/positions/Gmodel", pattern: "*.txt" , mode: 'copy', \
     //        enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel) ? true : false
