@@ -289,6 +289,7 @@ process "GEM_Emodel" {
     label "low"
     label "finish"
     tag "${context}.${type} - ${meth.baseName}"
+    maxForks 5
      
 //    publishDir "${params.output}/positions/Emodel", patern: "${context}.${key}.txt" , mode: 'copy', \
 //            enabled: params.input && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel) ? true : false         
@@ -304,7 +305,7 @@ process "GEM_Emodel" {
     
     output:
     //tuple context, type, path("output/*.txt"), path("output/*.log")
-    path "${context}.${type}.txt"
+    path "${context}.${type}.txt.gz"
     path "${context}.${type}.log"
    
     when:
@@ -315,7 +316,7 @@ process "GEM_Emodel" {
     mkdir output
     awk -F "\\t" '{printf \"%s:%s-%s\",\$1,\$2,\$3; for(i=4; i<=NF; i++) {printf \"\\t%s\",\$i}; print null}' ${meth} > \$(basename ${meth} .bed).txt
     Rscript ${baseDir}/bin/GEM_Emodel.R ${baseDir}/bin ${envs} ${covs} \$(basename ${meth} .bed).txt 1 output/temp > ${context}.${type}.log || exit \$?
-    tail -n+2 output/temp.txt > ${context}.${type}.txt
+    tail -n+2 output/temp.txt | gzip -c > output/${context}.${type}.txt.gz && rm output/temp.txt
     """
 
 }
