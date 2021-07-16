@@ -157,7 +157,7 @@ process "vcftools_extract" {
 // RUN GEM Gmodel
 process "GEM_Gmodel" {
     
-    label "low"
+    label "mid"
     label "finish"
     tag "${context}.${type} - ${meth.baseName}"
     maxForks 5
