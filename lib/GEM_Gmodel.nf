@@ -193,7 +193,7 @@ process "GEM_Gmodel" {
 // RUN GEM Gmodel
 process "GEM_GxEmodel" {
     
-    label "low"
+    label "mid"
     label "finish"
     tag "${context}.${type} - ${meth.baseName}"
     
