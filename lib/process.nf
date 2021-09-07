@@ -78,8 +78,30 @@ process "split_scaffolds" {
 }
 //split_scaffolds.out.transpose()
 
+process "split_scaffolds2" {
 
+    label "low"
+    label "finish"
+    tag "${context}.${type}"
+     
+    input:
+    tuple val(context), val(type), path(bed)
+    
+    output:
+    tuple val(context), val(type), path("output/*.bed")
 
+    when:
+    params.input
+
+    script:
+    """   
+    mkdir output
+    awk -F "\\t" '{if(NR-1){if(\$1 in arr == 0){arr[\$1]=\$1; print header > "output/"\$1".bed"};
+    print \$0 >> "output/"\$1".bed"} else {header=\$0}}' ${bed}
+    """ 
+}
+
+/*
 // GEM_Gmodel.out.map{ tuple( it[0] + "." + it[1], *it) }.groupTuple().map{ tuple("Gmodel", *it) }
 // process to calculate FDR on combined files after splitting
 process "calculate_FDR" {
@@ -185,3 +207,4 @@ process "qqPlot" {
     Rscript ${baseDir}/bin/QQplot.R ${key}.txt.gz ${model}/${key}
     """ 
 }
+*/
