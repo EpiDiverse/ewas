@@ -94,7 +94,7 @@ process "calculate_FDR" {
     publishDir "${params.output}/positions", pattern: "${model}/${key}.bedGraph.filtered_${model == "Emodel" ? "${params.Emodel_pv}" : model == "Gmodel" ? "${params.Gmodel_pv}" : "${params.GxE_pv}"}_pval.txt.gz" , mode: 'copy', enabled: params.input ? true : false
     
     input:
-    tuple val(model), val(key), val(context), val(type), path(results), path(logs)
+    tuple val(model), val(key), val(context), val(type), path("${results}.gz"), path(logs)
     //tuple model, key, contexts, types, path(results), path(logs)
     
     output:
