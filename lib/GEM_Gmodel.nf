@@ -226,7 +226,7 @@ process "GEM_GxEmodel" {
     head -1 meth.txt > header.txt && tail -n+2 meth.txt > ${context}.${type}.txt
 
     Rscript ${baseDir}/bin/GEM_GxE.R ${baseDir}/bin ${snps} ${gxe} meth.txt ${params.GxE_pv} output/meth > output/${context}.${type}.log || exit \$?
-    tail -n+2 output/temp.txt | gzip -c > output/${context}.${type}.txt.gz && rm output/temp.txt
+    tail -n+2 output/meth.txt | gzip -c > output/${context}.${type}.txt.gz && rm output/meth.txt
     """
 }
 
