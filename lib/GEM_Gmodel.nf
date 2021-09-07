@@ -225,7 +225,7 @@ process "GEM_GxEmodel" {
     awk -F "\\t" '{printf \"%s:%s-%s\",\$1,\$2,\$3; for(i=4; i<=NF; i++) {printf \"\\t%s\",\$i}; print null}' ${meth} > meth.txt
     head -1 meth.txt > header.txt && tail -n+2 meth.txt > ${context}.${type}.txt
 
-    Rscript ${baseDir}/bin/GEM_GxE.R ${baseDir}/bin ${snps} ${gxe} meth.txt 1 output/meth > output/${context}.${type}.log || exit \$?
+    Rscript ${baseDir}/bin/GEM_GxE.R ${baseDir}/bin ${snps} ${gxe} meth.txt ${params.GxE_pv} output/meth > output/${context}.${type}.log || exit \$?
     tail -n+2 output/temp.txt | gzip -c > output/${context}.${type}.txt.gz && rm output/temp.txt
     """
 }
