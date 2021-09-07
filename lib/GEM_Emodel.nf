@@ -305,8 +305,8 @@ process "GEM_Emodel" {
     
     output:
     //tuple context, type, path("output/*.txt"), path("output/*.log")
-    path "${context}.${type}.txt.gz"
-    path "${context}.${type}.log"
+    path "output/${context}.${type}.txt.gz"
+    path ""output/${context}.${type}.log"
    
     when:
     params.input && (!params.Emodel && !params.Gmodel && !params.GxE) || params.Emodel
