@@ -113,24 +113,16 @@ process "calculate_FDR" {
     script:
     """
     mkdir tmp input ${model}
-
     total=\$(cat ${logs} | grep "100.00%" | cut -d " " -f3 | tr -d "," | awk 'BEGIN{c=0} {c+=\$0} END{print c}')
-    echo -e "${model == "Emodel" ? "ID" : "ID\\tsnp"}\\tbeta\\tstats\\tpvalue\\tFDR" |
-    tee input/header.txt ${model}/${key}.txt.gz ${model}/${key}.filtered_${model == "Emodel" ? "${params.Emodel_pv}" : model == "Gmodel" ? "${params.Gmodel_pv}" : "${params.GxE_pv}"}_pval.txt.gz
-
-    # calculate FDR
-    if [[ \$(head ${results}.gz | wc -l) == 0 ]]; then
-    echo "No findings within current parameter scope" > ${model}/${key}.txt.gz
+    echo -e "${model == "Emodel" ? "cpg" : "cpg\\tsnp"}\\tbeta\\tstats\\tpvalue\\tFDR" |
+    tee input/header.txt ${model}/${key}.txt.gz ${model}/${key}.filtered_${params.output_FDR}_FDR.txt.gz
+    if [[ \$(head ${results} | wc -l) == 0 ]]; then
+    echo "No findings with ${model == "Emodel" ? "--Emodel_pv ${params.Emodel_pv}" : model == "Gmodel" ? "--Gmodel_pv ${params.Gmodel_pv}" : "--GxE_pv ${params.GxE_pv}"}" > ${model}/${key}.txt.gz
     else
-    sort -T tmp --parallel=${task.cpus} -grk5 ${results}.gz | cut -f${model == "Emodel" ? "2-" : "1-"} |
+    sort -T tmp --parallel=${task.cpus} -grk5 ${results} | cut -f${model == "Emodel" ? "2-" : "1-"} |
     awk -F "\\t" -v t="\$total" 'BEGIN{OFS="\\t";p=1;r=t} {fdr=(t/r)*${model == "Emodel" ? "\$4" : "\$5"};
-    if(fdr>p){fdr=p}; if(p<=${model == "Emodel" ? "${params.Emodel_pv}" : model == "Gmodel" ? "${params.Gmodel_pv}" : "${params.GxE_pv}"}){print \$0,fdr >> "${model}/${key}.gz.unsorted"};
+    if(fdr>p){fdr=p}; if(fdr<=${params.output_FDR}){print \$0,fdr >> "${model}/${key}.filtered_${params.output_FDR}_FDR.txt.gz"};
     print \$0,fdr; p=fdr;r--}' >> ${model}/${key}.txt.gz || exit \$?
-    fi
-
-    # sort filtered output
-    if [ -f ${model}/${key}.gz.unsorted ]; then
-    sort -gk5 ${model}/${key}.gz.unsorted >> ${model}/${key}.filtered_${model == "Emodel" ? "${params.Emodel_pv}" : model == "Gmodel" ? "${params.Gmodel_pv}" : "${params.GxE_pv}"}_pval.txt.gz
     fi
     """ 
 }
