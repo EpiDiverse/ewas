@@ -84,7 +84,7 @@ process "split_scaffolds" {
 // process to calculate FDR on combined files after splitting
 process "calculate_FDR" {
 
-    label "high"
+    label "mid"
     label "finish"
     tag "${model}:${key}"
     
