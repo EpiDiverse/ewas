@@ -113,8 +113,8 @@ process "calculate_FDR" {
     tee input/header.txt ${model}/${key}.txt ${model}/${key}.filtered_${model == "Emodel" ? "${params.Emodel_pv}" : model == "Gmodel" ? "${params.Gmodel_pv}" : "${params.GxE_pv}"}_pval.txt
     
     # calculate FDR
-    gunzip -c ${results} > ${2results}
-    if [[ \$(head ${2results} | wc -l) == 0 ]]; then
+    gunzip -c ${results} > ${key}.txt
+    if [[ \$(head ${key}.txt | wc -l) == 0 ]]; then
     echo "No findings within current parameter scope" > ${model}/${key}.txt
     else
     sort -T tmp --parallel=${task.cpus} -grk5 ${2results} | cut -f${model == "Emodel" ? "2-" : "1-"} |
