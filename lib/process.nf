@@ -93,11 +93,11 @@ process "calculate_FDR" {
     publishDir "${params.output}/positions", pattern: "${model}/${key}.bedGraph.filtered_${model == "Emodel" ? "${params.Emodel_pv}" : model == "Gmodel" ? "${params.Gmodel_pv}" : "${params.GxE_pv}"}_pval.txt.gz" , mode: 'copy', enabled: params.input ? true : false
     
     input:
-    tuple val(model), val(key), val(context), val(type), path("${results}.gz"), path(logs)
+    tuple val(model), val(key), val(context), val(type), path(results), path(logs)
     //tuple model, key, contexts, types, path(results), path(logs)
     
     output:
-    tuple val(model), val(key), val(type), path("${model}/*.txt.gz")
+    tuple val(model), val(key), val(type), path("${model}/*.txt")
     //tuple model, key, val("${types.unique().join("")}"), path("${model}/*.txt")
     //tuple model, key, val("${types.unique().join("")}"), path("input/*.txt"), path("${model}/${key}.filtered_${params.Emodel_pv}_pval.txt")
 
@@ -110,21 +110,21 @@ process "calculate_FDR" {
 
     total=\$(cat ${logs} | grep "100.00%" | cut -d " " -f3 | tr -d "," | awk 'BEGIN{c=0} {c+=\$0} END{print c}')
     echo -e "${model == "Emodel" ? "ID" : "ID\\tsnp"}\\tbeta\\tstats\\tpvalue\\tFDR" |
-    tee input/header.txt ${model}/${key}.txt.gz ${model}/${key}.filtered_${model == "Emodel" ? "${params.Emodel_pv}" : model == "Gmodel" ? "${params.Gmodel_pv}" : "${params.GxE_pv}"}_pval.txt.gz
+    tee input/header.txt ${model}/${key}.txt ${model}/${key}.filtered_${model == "Emodel" ? "${params.Emodel_pv}" : model == "Gmodel" ? "${params.Gmodel_pv}" : "${params.GxE_pv}"}_pval.txt
 
     # calculate FDR
-    if [[ \$(head ${results}.gz | wc -l) == 0 ]]; then
-    echo "No findings within current parameter scope" > ${model}/${key}.txt.gz
+    if [[ \$(head ${results} | wc -l) == 0 ]]; then
+    echo "No findings within current parameter scope" > ${model}/${key}.txt
     else
-    sort -T tmp --parallel=${task.cpus} -grk5 ${results}.gz | cut -f${model == "Emodel" ? "2-" : "1-"} |
+    sort -T tmp --parallel=${task.cpus} -grk5 ${results} | cut -f${model == "Emodel" ? "2-" : "1-"} |
     awk -F "\\t" -v t="\$total" 'BEGIN{OFS="\\t";p=1;r=t} {fdr=(t/r)*${model == "Emodel" ? "\$4" : "\$5"};
-    if(fdr>p){fdr=p}; if(p<=${model == "Emodel" ? "${params.Emodel_pv}" : model == "Gmodel" ? "${params.Gmodel_pv}" : "${params.GxE_pv}"}){print \$0,fdr >> "${model}/${key}.gz.unsorted"};
-    print \$0,fdr; p=fdr;r--}' >> ${model}/${key}.txt.gz || exit \$?
+    if(fdr>p){fdr=p}; if(p<=${model == "Emodel" ? "${params.Emodel_pv}" : model == "Gmodel" ? "${params.Gmodel_pv}" : "${params.GxE_pv}"}){print \$0,fdr >> "${model}/${key}.unsorted"};
+    print \$0,fdr; p=fdr;r--}' >> ${model}/${key}.txt || exit \$?
     fi
 
     # sort filtered output
-    if [ -f ${model}/${key}.gz.unsorted ]; then
-    sort -gk5 ${model}/${key}.gz.unsorted >> ${model}/${key}.filtered_${model == "Emodel" ? "${params.Emodel_pv}" : model == "Gmodel" ? "${params.Gmodel_pv}" : "${params.GxE_pv}"}_pval.txt.gz
+    if [ -f ${model}/${key}.unsorted ]; then
+    sort -gk5 ${model}/${key}.unsorted >> ${model}/${key}.filtered_${model == "Emodel" ? "${params.Emodel_pv}" : model == "Gmodel" ? "${params.Gmodel_pv}" : "${params.GxE_pv}"}_pval.txt
     fi
     """ 
 }
