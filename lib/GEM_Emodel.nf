@@ -316,12 +316,12 @@ process "GEM_Emodel" {
     mkdir output
     awk -F "\\t" '{printf \"%s:%s-%s\",\$1,\$2,\$3; for(i=4; i<=NF; i++) {printf \"\\t%s\",\$i}; print null}' ${meth} > \$(basename ${meth} .bed).txt
     Rscript ${baseDir}/bin/GEM_Emodel.R ${baseDir}/bin ${envs} ${covs} \$(basename ${meth} .bed).txt 1 output/temp > output/${context}.${type}.log || exit \$?
-    tail -n+2 output/temp.txt | gzip -c > output/${context}.${type}.txt.gz && rm output/temp.txt
+    tail -n+2 output/temp.txt | gzip -c > output/${context}.${type}.txt.gz 
     """
 
 }
 
-
+//&& rm output/temp.txt
 
 // GEM_Emodel.out[0]
 // process to generate manhattan plots from Emodel
