@@ -180,7 +180,6 @@ process "qqPlot" {
 
     script:
     """
-    gunzip -c ${results} > ${key}.txt
     mkdir ${model}
     Rscript ${baseDir}/bin/QQplot.R ${key}.txt ${model}/${key}
     """ 
