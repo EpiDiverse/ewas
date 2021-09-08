@@ -524,7 +524,7 @@ workflow 'EWAS' {
         GEM_GxEmodel(split_scaffolds.out.transpose(), vcftools_extract.out, parsing.out[2])
         
         // calculate FDR
-        Emodel_txt = GEM_Emodel.out[0].collectFile().map{ tuple(it.baseName, it) }
+        Emodel_txt = GEM_Emodel.out[0].collectFile().compress.map{ tuple(it.baseName, it) }
         Emodel_log = GEM_Emodel.out[1].collectFile().map{ tuple(it.baseName, it) }
         Emodel_channel = Emodel_txt.combine(Emodel_log, by: 0)
             .map { it -> 
