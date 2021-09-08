@@ -93,7 +93,7 @@ process "calculate_FDR" {
     publishDir "${params.output}/positions", pattern: "${model}/${key}.bedGraph.filtered_${model == "Emodel" ? "${params.Emodel_pv}" : model == "Gmodel" ? "${params.Gmodel_pv}" : "${params.GxE_pv}"}_pval.txt.gz" , mode: 'copy', enabled: params.input ? true : false
     
     input:
-    tuple val(model), val(key), val(context), val(type), path(results), path(logs)
+    tuple val(model), val(key), val(context), val(type), path("${results}.gz"), path(logs)
     //tuple model, key, contexts, types, path(results), path(logs)
     
     output:
@@ -107,12 +107,13 @@ process "calculate_FDR" {
     script:
     """
     mkdir tmp input ${model}
-
+    
     total=\$(cat ${logs} | grep "100.00%" | cut -d " " -f3 | tr -d "," | awk 'BEGIN{c=0} {c+=\$0} END{print c}')
     echo -e "${model == "Emodel" ? "ID" : "ID\\tsnp"}\\tbeta\\tstats\\tpvalue\\tFDR" |
     tee input/header.txt ${model}/${key}.txt ${model}/${key}.filtered_${model == "Emodel" ? "${params.Emodel_pv}" : model == "Gmodel" ? "${params.Gmodel_pv}" : "${params.GxE_pv}"}_pval.txt
-
+    
     # calculate FDR
+    gunzip -c ${results}.gz
     if [[ \$(head ${results} | wc -l) == 0 ]]; then
     echo "No findings within current parameter scope" > ${model}/${key}.txt
     else
@@ -121,7 +122,7 @@ process "calculate_FDR" {
     if(fdr>p){fdr=p}; if(p<=${model == "Emodel" ? "${params.Emodel_pv}" : model == "Gmodel" ? "${params.Gmodel_pv}" : "${params.GxE_pv}"}){print \$0,fdr >> "${model}/${key}.unsorted"};
     print \$0,fdr; p=fdr;r--}' >> ${model}/${key}.txt || exit \$?
     fi
-
+    
     # sort filtered output
     if [ -f ${model}/${key}.unsorted ]; then
     sort -gk5 ${model}/${key}.unsorted >> ${model}/${key}.filtered_${model == "Emodel" ? "${params.Emodel_pv}" : model == "Gmodel" ? "${params.Gmodel_pv}" : "${params.GxE_pv}"}_pval.txt
@@ -181,6 +182,6 @@ process "qqPlot" {
     script:
     """
     mkdir ${model}
-    Rscript ${baseDir}/bin/QQplot.R ${key}.txt.gz ${model}/${key}
+    Rscript ${baseDir}/bin/QQplot.R ${key}.txt ${model}/${key}
     """ 
 }
