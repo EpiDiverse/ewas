@@ -117,7 +117,7 @@ process "calculate_FDR" {
     if [[ \$(head ${key}.txt | wc -l) == 0 ]]; then
     echo "No findings within current parameter scope" > ${model}/${key}.txt
     else
-    sort -T tmp --parallel=${task.cpus} -grk5 ${2results} | cut -f${model == "Emodel" ? "2-" : "1-"} |
+    sort -T tmp --parallel=${task.cpus} -grk5 ${key}.txt | cut -f${model == "Emodel" ? "2-" : "1-"} |
     awk -F "\\t" -v t="\$total" 'BEGIN{OFS="\\t";p=1;r=t} {fdr=(t/r)*${model == "Emodel" ? "\$4" : "\$5"};
     if(fdr>p){fdr=p}; if(p<=${model == "Emodel" ? "${params.Emodel_pv}" : model == "Gmodel" ? "${params.Gmodel_pv}" : "${params.GxE_pv}"}){print \$0,fdr >> "${model}/${key}.unsorted"};
     print \$0,fdr; p=fdr;r--}' >> ${model}/${key}.txt || exit \$?
