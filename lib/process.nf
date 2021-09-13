@@ -78,14 +78,7 @@ process "split_scaffolds" {
 }
 //split_scaffolds.out.transpose()
 
-
-/*
-  publishDir "${params.output}/regions", pattern: "${model}/${context}.region.filtered_${model == "Emodel" ? "${params.Emodel_pv}" : model == "Gmodel" ? "${params.Gmodel_pv}" : "${params.GxE_pv}"}_pval.txt.gz" , mode: 'copy', enabled: params.input && (params.DMRs || params.merge) ? true : false
-    publishDir "${params.output}/positions", pattern: "${model}/${context}.DMRs.filtered_${model == "Emodel" ? "${params.Emodel_pv}" : model == "Gmodel" ? "${params.Gmodel_pv}" : "${params.GxE_pv}"}_pval.txt.gz" , mode: 'copy', enabled: params.input ? true : false
-    publishDir "${params.output}/positions", pattern: "${model}/${context}.DMPs.filtered_${model == "Emodel" ? "${params.Emodel_pv}" : model == "Gmodel" ? "${params.Gmodel_pv}" : "${params.GxE_pv}"}_pval.txt.gz" , mode: 'copy', enabled: params.input ? true : false
-    publishDir "${params.output}/positions", pattern: "${model}/${context}.bedGraph.filtered_${model == "Emodel" ? "${params.Emodel_pv}" : model == "Gmodel" ? "${params.Gmodel_pv}" : "${params.GxE_pv}"}_pval.txt.gz" , mode: 'copy', enabled: params.input ? true : false
-    
-*/    
+ 
 
 
 // GEM_Gmodel.out.map{ tuple( it[0] + "." + it[1], *it) }.groupTuple().map{ tuple("Gmodel", *it) }
@@ -96,11 +89,11 @@ process "calculate_FDR" {
     label "finish"
     tag "${model}:${key}"
     
-    publishDir "${params.output}/regions", pattern: "${model}/${context}.region.filtered_${params.output_FDR}_FDR.txt" , mode: 'copy', enabled: params.input && (params.DMRs || params.merge) ? true : false
-    publishDir "${params.output}/positions", pattern: "${model}/${context}.DMRs.filtered_${params.output_FDR}_FDR.txt" , mode: 'copy', enabled: params.input ? true : false
-    publishDir "${params.output}/positions", pattern: "${model}/${context}.DMPs.filtered_${params.output_FDR}_FDR.txt" , mode: 'copy', enabled: params.input ? true : false
-    publishDir "${params.output}/positions", pattern: "${model}/${context}.bedGraph.filtered_${params.output_FDR}_FDR.txt" , mode: 'copy', enabled: params.input ? true : false
- 
+    publishDir "${params.output}/regions", pattern: "${model}/${context}.region.filtered_${model == "Emodel" ? "${params.Emodel_pv}" : model == "Gmodel" ? "${params.Gmodel_pv}" : "${params.GxE_pv}"}_pval.txt" , mode: 'copy', enabled: params.input && (params.DMRs || params.merge) ? true : false
+    publishDir "${params.output}/positions", pattern: "${model}/${context}.DMRs.filtered_${model == "Emodel" ? "${params.Emodel_pv}" : model == "Gmodel" ? "${params.Gmodel_pv}" : "${params.GxE_pv}"}_pval.txt" , mode: 'copy', enabled: params.input ? true : false
+    publishDir "${params.output}/positions", pattern: "${model}/${context}.DMPs.filtered_${model == "Emodel" ? "${params.Emodel_pv}" : model == "Gmodel" ? "${params.Gmodel_pv}" : "${params.GxE_pv}"}_pval.txt" , mode: 'copy', enabled: params.input ? true : false
+    publishDir "${params.output}/positions", pattern: "${model}/${context}.bedGraph.filtered_${model == "Emodel" ? "${params.Emodel_pv}" : model == "Gmodel" ? "${params.Gmodel_pv}" : "${params.GxE_pv}"}_pval.txt" , mode: 'copy', enabled: params.input ? true : false
+    
   
     input:
     tuple val(model), val(key), val(context), val(type), path(results), path(logs)
