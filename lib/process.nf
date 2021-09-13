@@ -87,10 +87,10 @@ process "calculate_FDR" {
     label "finish"
     tag "${model}:${key}"
     
-    publishDir "${params.output}/regions", pattern: "${model}/${key}.region.filtered_${model == "Emodel" ? "${params.Emodel_pv}" : model == "Gmodel" ? "${params.Gmodel_pv}" : "${params.GxE_pv}"}_pval.txt.gz" , mode: 'copy', enabled: params.input && (params.DMRs || params.merge) ? true : false
-    publishDir "${params.output}/positions", pattern: "${model}/${key}.DMRs.filtered_${model == "Emodel" ? "${params.Emodel_pv}" : model == "Gmodel" ? "${params.Gmodel_pv}" : "${params.GxE_pv}"}_pval.txt.gz" , mode: 'copy', enabled: params.input ? true : false
-    publishDir "${params.output}/positions", pattern: "${model}/${key}.DMPs.filtered_${model == "Emodel" ? "${params.Emodel_pv}" : model == "Gmodel" ? "${params.Gmodel_pv}" : "${params.GxE_pv}"}_pval.txt.gz" , mode: 'copy', enabled: params.input ? true : false
-    publishDir "${params.output}/positions", pattern: "${model}/${key}.bedGraph.filtered_${model == "Emodel" ? "${params.Emodel_pv}" : model == "Gmodel" ? "${params.Gmodel_pv}" : "${params.GxE_pv}"}_pval.txt.gz" , mode: 'copy', enabled: params.input ? true : false
+    publishDir "${params.output}/regions", pattern: "${model}/${context}.region.filtered_${model == "Emodel" ? "${params.Emodel_pv}" : model == "Gmodel" ? "${params.Gmodel_pv}" : "${params.GxE_pv}"}_pval.txt.gz" , mode: 'copy', enabled: params.input && (params.DMRs || params.merge) ? true : false
+    publishDir "${params.output}/positions", pattern: "${model}/${context}.DMRs.filtered_${model == "Emodel" ? "${params.Emodel_pv}" : model == "Gmodel" ? "${params.Gmodel_pv}" : "${params.GxE_pv}"}_pval.txt.gz" , mode: 'copy', enabled: params.input ? true : false
+    publishDir "${params.output}/positions", pattern: "${model}/${context}.DMPs.filtered_${model == "Emodel" ? "${params.Emodel_pv}" : model == "Gmodel" ? "${params.Gmodel_pv}" : "${params.GxE_pv}"}_pval.txt.gz" , mode: 'copy', enabled: params.input ? true : false
+    publishDir "${params.output}/positions", pattern: "${model}/${context}.bedGraph.filtered_${model == "Emodel" ? "${params.Emodel_pv}" : model == "Gmodel" ? "${params.Gmodel_pv}" : "${params.GxE_pv}"}_pval.txt.gz" , mode: 'copy', enabled: params.input ? true : false
     
     input:
     tuple val(model), val(key), val(context), val(type), path(results), path(logs)
