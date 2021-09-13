@@ -97,13 +97,9 @@ process "calculate_FDR" {
     tag "${model}:${key}"
     
     publishDir "${params.output}/regions", pattern: "${model}/${context}.region.filtered_${params.output_FDR}_FDR.txt" , mode: 'copy', enabled: params.input && (params.DMRs || params.merge) ? true : false
-    publishDir "${params.output}/regions", pattern: "${model}/${context}.region.txt" , mode: 'copy', enabled: params.input && (params.DMRs || params.merge) ? true : false 
     publishDir "${params.output}/positions", pattern: "${model}/${context}.DMRs.filtered_${params.output_FDR}_FDR.txt" , mode: 'copy', enabled: params.input ? true : false
-    publishDir "${params.output}/positions", pattern: "${model}/${context}.DMRs.txt" , mode: 'copy', enabled: params.input  ? true : false
     publishDir "${params.output}/positions", pattern: "${model}/${context}.DMPs.filtered_${params.output_FDR}_FDR.txt" , mode: 'copy', enabled: params.input ? true : false
-    publishDir "${params.output}/positions", pattern: "${model}/${context}.DMPs.txt" , mode: 'copy', enabled: params.input  ? true : false
     publishDir "${params.output}/positions", pattern: "${model}/${context}.bedGraph.filtered_${params.output_FDR}_FDR.txt" , mode: 'copy', enabled: params.input ? true : false
-    publishDir "${params.output}/positions", pattern: "${model}/${context}.bedGraph.txt" , mode: 'copy', enabled: params.input  ? true : false
  
   
     input:
