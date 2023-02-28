@@ -69,55 +69,6 @@ process "bcftools" {
 
 
 // bcftools.out
-// get missing information
-process "vcftools_missing" {
-
-    label "low"
-    label "finish"
-     
-    input:
-    path snp
-    
-    output:
-    path "out.recode.vcf.gz"
-    //file("out.imiss")
-    //file("out.log")
-    //path "out.log"
-
-    when:
-    params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel || params.GxE)
-
-    script:
-    """
-    vcftools --gzvcf ${snp} --max-missing ${params.max_missing} --recode --stdout | bgzip  > out.recode.vcf.gz
-    """ 
-} 
-
-process "BEAGLE_SNP_Imputation" {
-    
-    label "low"
-    label "finish"
-    
-    //beforeScript "set +u; source activate ewas"
-    //afterScript "set +u; source deactivate"
-    
-    input:
-    path "out.recode.vcf.gz"
-    
-    output:
-    path "snps_imputed.gt.vcf.gz"
-
-    when:
-    params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel || params.GxE)
-    
-    script:
-    """
-    beagle gt=out.recode.vcf.gz iterations=${params.iters} phase-states=${params.phase_states} imp-states=${params.imp_states} ne=${params.ne} nthreads=${params.nthreads_SNP} out=snps_imputed.gt
-   
-    """ 
-} 
-
-// bcftools.out
 // extract required format
 process "vcftools_extract" {
 
@@ -128,7 +79,7 @@ process "vcftools_extract" {
             enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel || params.GxE) ? true : false
     
     input:
-    path ("snps_imputed.gt.vcf.gz")
+    path snps
     
     output:
     path "snps.txt"
@@ -140,8 +91,8 @@ process "vcftools_extract" {
 
     script:
     """   
-    vcftools --gzvcf snps_imputed.gt.vcf.gz \\
-    --max-missing 1 \\
+    vcftools --gzvcf ${snps} \\
+    --max-missing ${params.max_missing} \\
     --mac ${params.mac} \\
     --minQ ${params.minQ} \\
     --012 \\

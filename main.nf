@@ -33,15 +33,16 @@ if(params.help){
               --DMRs [path/to/DMRs/dir]         Specify path to the DMR pipeline output directory to run EWAS analyses in addition with
                                                 methylated positions filtered by significant DMRs. In addition, the pipeline will call
                                                 the union of all significant regions and attempt to run EWAS with whole regions as markers.
-                                                The pipeline searches for bed files in '*/{context}/*.bed' format where context
-                                                can be either "CpG", "CHG", or "CHH".
+                                                The pipeline searches for bed files in '*/{context}/*.bed' format where context can be
+                                                either "CpG", "CHG", or "CHH".
 
               --SNPs [path/to/vcf/dir]          Specify path to the SNP pipeline output directory to enable EWAS analyses Gmodel and GxEmodel
                                                 which attempt to create a genome-wide methQTL map. ONLY SUITABLE FOR DIPLOID ORGANISMS.
-                                                The pipeline searches for VCF files in '*/vcf/{sample_name}.{extension}' where sample names
-                                                must correspond to the samplesheet and the extension can be any standard vcf extension
-                                                readable by 'bcftools' and defined with --extension parameter. Alternatively, the path to a
-                                                single multi-sample VCF file can be provided.
+                                                The pipeline searches for VCF files in '*/{sample_name}.{extension}' where sample names must
+                                                correspond to the samplesheet and the extension can be any standard vcf extension readable
+                                                by 'bcftools' and defined with --extension parameter. Alternatively, the path to a single,
+                                                multi-sample VCF file can be provided directly. Each sample must be represented with a column
+                                                ID matching the sample names in the samplesheet.
 
               --extension <STR>                 Specify the extension to use when searching for VCF files [default: vcf.gz]
 
@@ -78,15 +79,15 @@ if(params.help){
          Options: INPUT FILTERING
               --coverage <INT>                 Specify the minimum coverage threshold to filter individual methylated positions from the
                                                --input directory before running analyses [default: 0] 
-            
-              --filter_FDR <FLOAT>             Specify the minimum FDR significance threshold to include DMPs and/or DMRs from the respective
-                                               --DMPs and --DMRs directories [default: 0.05]          
 
               --filter_NA <FLOAT>              Specify the maximum proportion of samples that can contain a missing value before a methylated
                                                position is removed from the analysis [default: 0] 
 
               --filter_SD <FLOAT>              Specify the maximum standard deviation in methylation between samples to filter individual
                                                positions based on the degree of difference [default: 0] 
+
+              --filter_FDR <FLOAT>             Specify the minimum FDR significance threshold to include DMPs and/or DMRs from the respective
+                                               --DMPs and --DMRs directories. Assumes an FDR value present in column 4 [default: off]          
 
               --proportion <FLOAT>             Minimum proportion of samples that must share a DMP and/or DMR for it to be considered in the
                                                analysis [default: 0.2]
@@ -96,9 +97,13 @@ if(params.help){
 
 
          Options: SNP FILTERING
+              --minQ <INT>                     Minimum quality score [default: 30]
+
               --mac <INT>                      Minor allele count [default: 3]
               
-              --minQ <INT>                     Minimum quality score [default: 30]
+              --max_missing <FLOAT>            Exclude sites on the basis of the proportion of missing data (defined to be between 0 and 1,
+                                               where 0 allows sites that are completely missing and 1 indicates no missing data allowed)
+                                               [default: 1]
 
 
          Options: OUTPUT FILTERING                 
@@ -149,30 +154,19 @@ if(params.version){
 ParameterChecks.checkParams(params)
 
 // DEFINE PATHS
-//CpG_path = "${params.input}/*/bedGraph/*_CpG.bedGraph"
-//CHG_path = "${params.input}/*/bedGraph/*_CHG.bedGraph"
-//CHH_path = "${params.input}/*/bedGraph/*_CHH.bedGraph"
 CpG_path = "${params.input}/CpG/*.bedGraph"
 CHG_path = "${params.input}/CHG/*.bedGraph"
 CHH_path = "${params.input}/CHH/*.bedGraph"
-  
-//CpG_path_DMPs = "${params.DMPs}/CpG/metilene/*" 
-//CHG_path_DMPs = "${params.DMPs}/CHG/metilene/*"
-//CHH_path_DMPs = "${params.DMPs}/CHH/metilene/*"
+
 CpG_path_DMPs = "${params.DMPs}/CpG/*.bed" 
 CHG_path_DMPs = "${params.DMPs}/CHG/*.bed"
 CHH_path_DMPs = "${params.DMPs}/CHH/*.bed"
 
-//CpG_path_DMRs = "${params.DMRs}/CpG/metilene/*" 
-//CHG_path_DMRs = "${params.DMRs}/CHG/metilene/*"
-//CHH_path_DMRs = "${params.DMRs}/CHH/metilene/*"
 CpG_path_DMRs = "${params.DMRs}/CpG/*.bed" 
 CHG_path_DMRs = "${params.DMRs}/CHG/*.bed"
 CHH_path_DMRs = "${params.DMRs}/CHH/*.bed"
 
 // PARAMETER CHECKS
-//if( !params.input ){error "ERROR: Missing required parameter --input"}
-//if( params.noCpG && params.noCHG && params.noCHH ){error "ERROR: please specify at least one methylation context for analysis"}
 if( !params.Emodel && !params.Gmodel && !params.GxE ){
     Emodel = true
     Gmodel = true
@@ -278,7 +272,6 @@ samples_channel
             exit 1, "ERROR: samples file contains repeated sample names."
         }
     }
-
 
 // STAGE TEST PROFILE 
 if ( workflow.profile.tokenize(",").contains("test") ){
@@ -459,9 +452,9 @@ workflow 'EWAS' {
         // perform filtering on individual files
         filtering(input_channel)
         // stage channels for downstream processes
-        bedGraph_combined = filtering.out.filter{it[1] == "bedGraph"}.groupTuple()
-        DMPs_combined = filtering.out.filter{it[1] == "DMPs"}.groupTuple()
-        DMRs_combined = filtering.out.filter{it[1] == "DMRs"}.groupTuple()
+        bedGraph_combined = filtering.out.filter{it[1] == "bedGraph"}.groupTuple().map {context,type,sample,bed -> tuple(context,type,sample.sort(),bed.sort{it.baseName})}
+        DMPs_combined = filtering.out.filter{it[1] == "DMPs"}.groupTuple().map {context,type,sample,bed -> tuple(context,type,sample.sort(),bed.sort{it.baseName})}
+        DMRs_combined = filtering.out.filter{it[1] == "DMRs"}.groupTuple().map {context,type,sample,bed -> tuple(context,type,sample.sort(),bed.sort{it.baseName})}
         bedtools_input = bedGraph_combined.mix(DMPs_combined, DMRs_combined)
 
         // bedtools_unionbedg for taking the union set in each context
@@ -502,19 +495,18 @@ workflow 'EWAS' {
             log.warn "average_over_regions: no data left to analyse after intersection: ${it[0]}.${it[1]}.bed"
         }
 
-        // stage channels for downstream processes
-        bedGraph_channel = params.all || (!params.DMPs && !params.DMRs) ? bedtools_sorting.out.filter{it[1] == "bedGraph"} : Channel.empty()
-        meth_channel = bedGraph_channel.mix(bedtools_intersect.out, average_over_regions_output)
-
         // SNPs
         // index individual vcf files, optionally rename header
         tabix(SNPs)
         // merge files, normalise, validate sample names in header
         bcftools(samples, tabix.out[0].collect(), tabix.out[1].collect())
-        // extract missing information
-        vcftools_missing(bcftools.out)
         // extract snps.txt for GEM_GModel
         vcftools_extract(bcftools.out)
+
+
+        // stage channels for downstream processes
+        bedGraph_channel = params.all || (!params.DMPs && !params.DMRs) ? bedtools_sorting.out.filter{it[1] == "bedGraph"} : Channel.empty()
+        meth_channel = bedGraph_channel.mix(bedtools_intersect.out, average_over_regions_output)
         // split data based on scaffolds
         split_scaffolds(meth_channel)
 
@@ -523,7 +515,7 @@ workflow 'EWAS' {
         GEM_Gmodel(split_scaffolds.out.transpose(), vcftools_extract.out, parsing.out[1])
         GEM_GxEmodel(split_scaffolds.out.transpose(), vcftools_extract.out, parsing.out[2])
         
-        // calculate FDR
+        // calculate FDR - Emodel
         Emodel_txt = GEM_Emodel.out[0].collectFile().map{ tuple(it.baseName, it) }
         Emodel_log = GEM_Emodel.out[1].collectFile().map{ tuple(it.baseName, it) }
         Emodel_channel = Emodel_txt.combine(Emodel_log, by: 0)
@@ -534,6 +526,7 @@ workflow 'EWAS' {
                 return tuple("Emodel", it[0], context, type, it[1], it[2])
             }
 
+        // calculate FDR - Gmodel
         Gmodel_txt = GEM_Gmodel.out[0].collectFile().map{ tuple(it.baseName, it) }
         Gmodel_log = GEM_Gmodel.out[1].collectFile().map{ tuple(it.baseName, it) }
         Gmodel_channel = Gmodel_txt.combine(Gmodel_log, by: 0)
@@ -544,6 +537,7 @@ workflow 'EWAS' {
                 return tuple("Gmodel", it[0], context, type, it[1], it[2])
             }
 
+        // calculate FDR - GxE
         GxE_txt = GEM_GxEmodel.out[0].collectFile().map{ tuple(it.baseName, it) }
         GxE_log = GEM_GxEmodel.out[1].collectFile().map{ tuple(it.baseName, it) }
         GxE_channel = GxE_txt.combine(GxE_log, by: 0)
@@ -561,7 +555,6 @@ workflow 'EWAS' {
         qqPlot(calculate_FDR.out)
         manhattan(calculate_FDR.out.filter{ it[0] == "Emodel" })
         dotPlot(calculate_FDR.out.filter{ it[0] == "Gmodel" })
-        //kplots_channel = calculate_FDR.out.filter{ it[0] == "GxE" }.map{ it.tail() }.combine(GEM_GxEmodel.out[1].map{ tuple( it[0] + "." + it[1], it.last()) }.groupTuple(), by:0)
 
         GxE_plot = GEM_GxEmodel.out[2].collectFile().map{ tuple(it.baseName, it) }
         GxE_head = GEM_GxEmodel.out[3].map{ tuple( it[0] + "." + it[1], it[2]) }.unique{ it[0] }

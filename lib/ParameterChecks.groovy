@@ -11,7 +11,7 @@ class ParameterChecks {
         assert Double.valueOf(params.proportion) >= 0.0d && Double.valueOf(params.proportion) <= 1.0d, "Proportion of shared regions must be a decimal in the range of 0 and 1!"
         assert Double.valueOf(params.filter_SD) >= 0.0d && Double.valueOf(params.filter_SD) <= 1.0d, "Variation filter --filter_SD must be a decimal in the range of 0 and 1!"
         assert Double.valueOf(params.filter_NA) >= 0.0d && Double.valueOf(params.filter_NA) <= 1.0d, "Missing value filter --filter_NA must be a decimal in the range of 0 and 1!"
-        assert Double.valueOf(params.filter_FDR) >= 0.0d && Double.valueOf(params.filter_FDR) <= 1.0d, "Input FDR filter --filter_FDR must be a decimal in the range of 0 and 1!"
+        assert !params.filter_FDR || (Double.valueOf(params.filter_FDR) >= 0.0d && Double.valueOf(params.filter_FDR) <= 1.0d), "Input FDR filter --filter_FDR must be a decimal in the range of 0 and 1!"
         assert Double.valueOf(params.output_FDR) >= 0.0d && Double.valueOf(params.output_FDR) <= 1.0d, "Output FDR filter must be a decimal in the range of 0 and 1!"
         assert Double.valueOf(params.Emodel_pv) >= 0.0d && Double.valueOf(params.Emodel_pv) <= 1.0d, "Emodel p-value must be a decimal in the range of 0 and 1!"
         assert Double.valueOf(params.Gmodel_pv) >= 0.0d && Double.valueOf(params.Gmodel_pv) <= 1.0d, "Gmodel p-value must be a decimal in the range of 0 and 1!"

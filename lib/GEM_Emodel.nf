@@ -29,9 +29,14 @@ process "filtering" {
         awk 'BEGIN{OFS=\"\\t\"} {if((\$5+\$6)>=${params.coverage}) {printf \"%s\\t%s\\t%s\\t%1.2f\\n\", \$1,\$2,\$3,(\$4/100)}}' |
         sort -k1,1 -k2,2n > ${sample}.filtered.bed
         """  
-    else
+    else if ( params.filter_FDR )
         """
         awk 'BEGIN{OFS=\"\\t\"} \$4<=${params.filter_FDR}{printf \"%s\\t%s\\t%s\\t%1.3f\\n\", \$1,\$2,\$3,\$4}' ${bed} |
+        sort -k1,1 -k2,2n > ${sample}.filtered.bed
+        """
+    else
+        """
+        awk 'BEGIN{OFS=\"\\t\"} {printf \"%s\\t%s\\t%s\\t1.0\\n\", \$1,\$2,\$3}' ${bed} |
         sort -k1,1 -k2,2n > ${sample}.filtered.bed
         """  
 } 
@@ -67,7 +72,7 @@ process "bedtools_unionbedg" {
 
     script:
     """
-    bedtools unionbedg -filler NA -i ${beds.sort()} -header -names ${samples.sort().join(" ")} > ${context}.${types.unique().join("")}.bed
+    bedtools unionbedg -filler NA -i ${beds} -header -names ${samples.join(" ")} > ${context}.${types.unique().join("")}.bed
     """
 } 
 
