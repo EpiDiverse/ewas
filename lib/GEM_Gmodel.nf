@@ -108,9 +108,10 @@ process "vcftools_extract" {
 // RUN GEM Gmodel
 process "GEM_Gmodel" {
     
-    label "low"
+    label "mid"
     label "finish"
     tag "${context}.${type} - ${meth.baseName}"
+    maxForks 5
     
     //publishDir "${params.output}/positions/Gmodel", pattern: "*.txt" , mode: 'copy', \
     //        enabled: params.SNPs && ((!params.Emodel && !params.Gmodel && !params.GxE) || params.Gmodel) ? true : false
@@ -135,7 +136,7 @@ process "GEM_Gmodel" {
     mkdir output
     awk -F "\\t" '{printf \"%s:%s-%s\",\$1,\$2,\$3; for(i=4; i<=NF; i++) {printf \"\\t%s\",\$i}; print null}' ${meth} > \$(basename ${meth} .bed).txt
     Rscript ${baseDir}/bin/GEM_Gmodel.R ${baseDir}/bin ${snps} ${covs} \$(basename ${meth} .bed).txt 1 output/temp > output/${context}.${type}.log || exit \$?
-    tail -n+2 output/temp.txt > output/${context}.${type}.txt
+    tail -n+2 output/temp.txt > output/${context}.${type}.txt && rm output/temp.txt
     """
 }
 
@@ -143,7 +144,7 @@ process "GEM_Gmodel" {
 // RUN GEM Gmodel
 process "GEM_GxEmodel" {
     
-    label "low"
+    label "mid"
     label "finish"
     tag "${context}.${type} - ${meth.baseName}"
     
@@ -175,8 +176,8 @@ process "GEM_GxEmodel" {
     awk -F "\\t" '{printf \"%s:%s-%s\",\$1,\$2,\$3; for(i=4; i<=NF; i++) {printf \"\\t%s\",\$i}; print null}' ${meth} > meth.txt
     head -1 meth.txt > header.txt && tail -n+2 meth.txt > ${context}.${type}.txt
 
-    Rscript ${baseDir}/bin/GEM_GxE.R ${baseDir}/bin ${snps} ${gxe} meth.txt 1 output/meth > output/${context}.${type}.log || exit \$?
-    tail -n+2 output/meth.txt > output/${context}.${type}.txt
+    Rscript ${baseDir}/bin/GEM_GxE.R ${baseDir}/bin ${snps} ${gxe} meth.txt ${params.GxE_pv} output/meth > output/${context}.${type}.log || exit \$?
+    tail -n+2 output/meth.txt > output/${context}.${type}.txt && rm output/meth.txt
     """
 }
 

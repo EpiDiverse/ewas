@@ -78,6 +78,7 @@ process "split_scaffolds" {
 }
 //split_scaffolds.out.transpose()
 
+ 
 
 
 // GEM_Gmodel.out.map{ tuple( it[0] + "." + it[1], *it) }.groupTuple().map{ tuple("Gmodel", *it) }
@@ -89,15 +90,11 @@ process "calculate_FDR" {
     tag "${model}:${key}"
     
     publishDir "${params.output}/regions", pattern: "${model}/${context}.region.filtered_${model == "Emodel" ? "${params.Emodel_pv}" : model == "Gmodel" ? "${params.Gmodel_pv}" : "${params.GxE_pv}"}_pval.txt" , mode: 'copy', enabled: params.input && (params.DMRs || params.merge) ? true : false
-    publishDir "${params.output}/regions", pattern: "${model}/${context}.region.txt" , mode: 'copy', enabled: params.input && (params.DMRs || params.merge) ? true : false 
     publishDir "${params.output}/positions", pattern: "${model}/${context}.DMRs.filtered_${model == "Emodel" ? "${params.Emodel_pv}" : model == "Gmodel" ? "${params.Gmodel_pv}" : "${params.GxE_pv}"}_pval.txt" , mode: 'copy', enabled: params.input ? true : false
-    publishDir "${params.output}/positions", pattern: "${model}/${context}.DMRs.txt" , mode: 'copy', enabled: params.input  ? true : false
     publishDir "${params.output}/positions", pattern: "${model}/${context}.DMPs.filtered_${model == "Emodel" ? "${params.Emodel_pv}" : model == "Gmodel" ? "${params.Gmodel_pv}" : "${params.GxE_pv}"}_pval.txt" , mode: 'copy', enabled: params.input ? true : false
-    publishDir "${params.output}/positions", pattern: "${model}/${context}.DMPs.txt" , mode: 'copy', enabled: params.input  ? true : false
     publishDir "${params.output}/positions", pattern: "${model}/${context}.bedGraph.filtered_${model == "Emodel" ? "${params.Emodel_pv}" : model == "Gmodel" ? "${params.Gmodel_pv}" : "${params.GxE_pv}"}_pval.txt" , mode: 'copy', enabled: params.input ? true : false
-    publishDir "${params.output}/positions", pattern: "${model}/${context}.bedGraph.txt" , mode: 'copy', enabled: params.input  ? true : false
- 
     
+  
     input:
     tuple val(model), val(key), val(context), val(type), path(results), path(logs)
     //tuple model, key, contexts, types, path(results), path(logs)
@@ -113,11 +110,11 @@ process "calculate_FDR" {
     script:
     """
     mkdir tmp input ${model}
-
+    
     total=\$(cat ${logs} | grep "100.00%" | cut -d " " -f3 | tr -d "," | awk 'BEGIN{c=0} {c+=\$0} END{print c}')
     echo -e "${model == "Emodel" ? "ID" : "ID\\tsnp"}\\tbeta\\tstats\\tpvalue\\tFDR" |
     tee input/header.txt ${model}/${key}.txt ${model}/${key}.filtered_${model == "Emodel" ? "${params.Emodel_pv}" : model == "Gmodel" ? "${params.Gmodel_pv}" : "${params.GxE_pv}"}_pval.txt
-
+    
     # calculate FDR
     if [[ \$(head ${results} | wc -l) == 0 ]]; then
     echo "No findings within current parameter scope" > ${model}/${key}.txt
@@ -127,7 +124,7 @@ process "calculate_FDR" {
     if(fdr>p){fdr=p}; if(p<=${model == "Emodel" ? "${params.Emodel_pv}" : model == "Gmodel" ? "${params.Gmodel_pv}" : "${params.GxE_pv}"}){print \$0,fdr >> "${model}/${key}.unsorted"};
     print \$0,fdr; p=fdr;r--}' >> ${model}/${key}.txt || exit \$?
     fi
-
+    
     # sort filtered output
     if [ -f ${model}/${key}.unsorted ]; then
     sort -gk5 ${model}/${key}.unsorted >> ${model}/${key}.filtered_${model == "Emodel" ? "${params.Emodel_pv}" : model == "Gmodel" ? "${params.Gmodel_pv}" : "${params.GxE_pv}"}_pval.txt
